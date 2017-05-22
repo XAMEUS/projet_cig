@@ -1,4 +1,5 @@
 #include "ei_draw.h"
+#include <stdlib.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
@@ -14,18 +15,18 @@ void ei_draw_polyline (ei_surface_t			surface,
 						 const ei_linked_point_t*	first_point,
 						 const ei_color_t		color,
 						 const ei_rect_t*		clipper) {
-    if(ei_linked_point_t == NULL) return;
-    if(ei_linked_point_t->next == NULL) {
+    if(first_point == NULL) return;
+    if(first_point->next == NULL) {
         //Dessiner
         return;
     }
-    ei_linked_point_t *a = &first_point;
+    ei_linked_point_t *a = (ei_linked_point_t *) first_point;
     do {
         a = a->next;
-        int x_1 = a->point->x;
-        int y_1 = a->point->y;
-        int x_2 = a->next->point->x;
-        int y_2 = a->next->point->y;
+        int x_1 = a->point.x;
+        int y_1 = a->point.y;
+        int x_2 = a->next->point.x;
+        int y_2 = a->next->point.y;
         int abs_dx = abs(x_2 - x_1);
         int abs_dy = abs(y_2 - y_1);
         int incr_x = 1 - 2 * (x_2 < x_1);
@@ -58,7 +59,7 @@ void ei_draw_polyline (ei_surface_t			surface,
                 }
             }
         }
-    } while(a->next->next != NULL && a->next->next->point != first_point->point);
+    } while(a->next->next != NULL && a->next->next != first_point);
 }
 void ei_draw_polygon(ei_surface_t surface,
 						 const ei_linked_point_t* first_point,
