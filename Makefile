@@ -12,7 +12,7 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+LIBEIOBJS	:= ./objs/ei_draw.o
 
 
 
@@ -21,7 +21,7 @@ LIBEIOBJS	:=
 ifeq (${PLATFORM},Darwin)
 
 	# Building for Mac OS X
-	
+
 	PLATDIR		= _osx
 	INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
 	LINK		= ${CC}
@@ -33,7 +33,7 @@ ifeq (${PLATFORM},Darwin)
 else
 
 	# Building for Linux
-	
+
 	PLATDIR		= _x11
 	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
 	LINK		= ${CC}
@@ -53,9 +53,8 @@ endif
 
 TARGETS		=	${LIBEI} \
 			minimal lines frame button hello_world puzzle two048
+
 all : ${TARGETS}
-
-
 
 ########## Test-programs
 
@@ -73,7 +72,7 @@ ${OBJDIR}/minimal.o : ${TESTS}/minimal.c
 
 lines : ${OBJDIR}/lines.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o lines ${OBJDIR}/lines.o ${LIBEI} ${LIBS}
-	
+
 ${OBJDIR}/lines.o : ${TESTS}/lines.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/lines.c -o ${OBJDIR}/lines.o
 
@@ -119,6 +118,9 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/two048.c -o ${OBJDIR}/two048.o
 
 
+# VERY IMPORTANT TO DEFAULT COMPILE .o
+$(OBJDIR)/%.o: ./src/%.c
+	${CC} ${CCFLAGS} ${INCFLAGS} $< -o $@
 
 # Building of the library libei
 
