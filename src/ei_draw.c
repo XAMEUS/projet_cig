@@ -22,7 +22,6 @@ void ei_draw_polyline (ei_surface_t			surface,
     }
     ei_linked_point_t *a = (ei_linked_point_t *) first_point;
     do {
-        a = a->next;
         int x_1 = a->point.x;
         int y_1 = a->point.y;
         int x_2 = a->next->point.x;
@@ -59,7 +58,8 @@ void ei_draw_polyline (ei_surface_t			surface,
                 }
             }
         }
-    } while(a->next->next != NULL && a->next->next != first_point);
+    a = a->next;
+    } while(a->next != NULL && a->next != first_point);
 }
 void ei_draw_polygon(ei_surface_t surface,
 						 const ei_linked_point_t* first_point,
