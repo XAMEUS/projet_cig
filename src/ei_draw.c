@@ -3,10 +3,10 @@
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
     hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
-    uint32_t c = color->red << 8*(3-r) +
-                        color->green << 8*(3-g) +
-                        color->blue << 8*(3-b) +
-                        color->alpha << 8*(3-a);
+    uint32_t c = (color->red << (8*(3-r))) +
+                        (color->green << (8*(3-g))) +
+                        (color->blue << (8*(3-b))) +
+                        (color->alpha << (8*(3-a)));
     return c;
 }
 
@@ -43,5 +43,5 @@ int	ei_copy_surface(ei_surface_t destination,
 						 const ei_surface_t	source,
 						 const ei_rect_t* src_rect,
 						 const ei_bool_t alpha) {
-    return NULL;
+    return 0;
 }
