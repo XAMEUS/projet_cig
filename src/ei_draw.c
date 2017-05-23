@@ -312,11 +312,113 @@ void ei_fill(ei_surface_t surface,
     }
     return;
 }
+/**
+ * \brief	Copies a surface, or a subpart, to another one.
+ *		The source and destination area of the copy (either the entire surfaces, or
+ *		subparts) must have the same size (before clipping). Both the source and destination
+ *		surfaces must be *locked* by \ref hw_surface_lock.
+ *
+ * @param	destination	The surface on which to copy pixels from the source surface.
+ * @param	dst_rect	If NULL, the entire destination surface is used. If not NULL,
+ *				defines the rectangle on the destination surface where to copy
+ *				the pixels.
+ * @param	source		The surface from which to copy pixels.
+ * @param	src_rect	If NULL, the entire source surface is used. If not NULL, defines the
+ *				rectangle on the source surface from which to copy the pixels.
+ * @param	alpha		If true, the final pixels are a combination of source and
+ *				destination pixels weighted by the source alpha channel. The
+ *				transparency of the final pixels is set	to opaque.
+ *				If false, the final pixels are an exact copy of the source pixels,
+ 				including the alpha channel.
+ *
+ * @return			Returns 0 on success, 1 on failure (different ROI size).
+ */
 
 int	ei_copy_surface(ei_surface_t destination,
 						 const ei_rect_t* dst_rect,
 						 const ei_surface_t	source,
 						 const ei_rect_t* src_rect,
 						 const ei_bool_t alpha) {
-    return 0;
+	uint32_t *src_buff = (uint32_t *) hw_surface_get_buffer(source);
+ 	ei_size_t src_size = hw_surface_get_size(source);
+	uint32_t *dst_buff = (uint32_t *) hw_surface_get_buffer(destination);
+	ei_size_t dst_size = hw_surface_get_size(destination);
+
+	ei_point_t src_clipper_pt;
+	ei_size_t src_clipper_size;
+	if(src_rect) {
+		if(src_rect->size.width >= 0 && src_rect->size.height >= 0) {
+			src_clipper_pt.x = src_rect->top_left.x;
+			src_clipper_pt.y = src_rect->top_left.y;
+			src_clipper_size.width = src_rect->size.width;
+			src_clipper_size.height = src_rect->size.height;
+		}
+		else return 1;
+	} else {
+		src_clipper_pt.x = 0;
+		src_clipper_pt.y = 0;
+		src_clipper_size.width = src_size.width;
+		src_clipper_size.height = src_size.height;
+	}
+	ei_point_t dst_clipper_pt;
+	ei_size_t clipper_size;
+	if(dst_rect) {
+		if(dst_rect->size.width >= 0 && dst_rect->size.height >= 0) {
+			dst_clipper_pt.x = dst_rect->top_left.x;
+			dst_clipper_pt.y = dst_rect->top_left.y;
+			clipper_size.width = dst_rect->size.width;
+			clipper_size.height = dst_rect->size.height;
+		}
+		else return 1;
+	} else {
+		dst_clipper_pt.x = 0;
+		dst_clipper_pt.y = 0;
+		clipper_size.width = dst_size.width;
+		clipper_size.height = dst_size.height;
+	}
+	if(clipper_size.width == src_clipper_size.width &&
+			clipper_size.height == src_clipper_size.height) {
+		// Now we only use clipper_size because both have the same size
+		if(src_clipper_pt.x < 0) {
+			dst_clipper_pt.x -= src_clipper_pt.x;
+			clipper_size.width -= src_clipper_pt.x;
+			src_clipper_pt.x = 0;
+		}
+		if(src_clipper_pt.y < 0) {
+			dst_clipper_pt.y -= src_clipper_pt.y;
+			clipper_size.width -= src_clipper_pt.y;
+			src_clipper_pt.y = 0;
+		}
+		if(src_clipper_pt.x + clipper_size.width >= src_size.width)
+			clipper_size.width = src_size.width - src_clipper_pt.x;
+		if(src_clipper_pt.y + clipper_size.height >= src_size.height)
+			clipper_size.height = src_size.height - src_clipper_pt.y;
+		if(dst_clipper_pt.x < 0) {
+		    src_clipper_pt.x -= dst_clipper_pt.x;
+		    clipper_size.width -= dst_clipper_pt.x;
+		    dst_clipper_pt.x = 0;
+		}
+		if(dst_clipper_pt.y < 0) {
+		    src_clipper_pt.y -= dst_clipper_pt.y;
+		    clipper_size.width -= dst_clipper_pt.y;
+		    dst_clipper_pt.y = 0;
+		}
+		if(dst_clipper_pt.x + clipper_size.width >= dst_size.width)
+		    clipper_size.width = dst_size.width - dst_clipper_pt.x;
+		if(dst_clipper_pt.y + clipper_size.height >= dst_size.height)
+		    clipper_size.height = dst_size.height - dst_clipper_pt.y;
+
+		if (clipper_size.width > 0 && clipper_size.height > 0) {
+			// We can copy now
+			int src_offset = src_clipper_pt.x * src_size.width + src_clipper_pt.y;
+			int dst_offset = dst_clipper_pt.x * dst_size.width + dst_clipper_pt.y;
+			for (int i = 0; i < clipper_size.height; i++)
+				for (int j = 0; j < clipper_size.width; j++)
+					dst_buff[i*dst_size.width + j + dst_offset] =
+							src_buff[i*src_size.width + j + src_offset];
+		}
+		return 0;
+	}
+	else return 1;
+
 }
