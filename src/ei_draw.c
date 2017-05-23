@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 
 #include "ei_draw.h"
 #include <stdlib.h>
@@ -65,68 +66,117 @@ void ei_draw_polyline (ei_surface_t			surface,
     } while(a->next != NULL && a->next != first_point);
 }
 
-typedef struct {
+struct polygon_side{
   int y_max;
   int x_ymin;
-  float fract;
-  polygon_side *next;
-} polygon_side;
+  int dy;
+  int err;
+  int incr_x;
+  struct polygon_side* next;
+};
 
-void extremum_pts(const ei_linked_point_t* first_point,
-                  int *xmin,
-                  int *xmax,
-                  int *ymin,
-                  int *ymax;) {
-    ei_linked_point_t p = first_point;
+void extremum_y(ei_linked_point_t* first_point,
+                  int* ymin,
+                  int* ymax) {
+    ei_linked_point_t *p = first_point;
     while (p != NULL) {
-      if (p.point.x < *xmin) *xmin = p.x;
-      else if (p.point.x > *xmax) *max = p.x;
-      if (p.point.y < *ymin) *ymin = p.y;
-      else if (p.point.y > *ymax) * ymax = p.y;
-      p = p.next;
+      if (p->point.y < *ymin) *ymin = p->point.y;
+      else if (p->point.y > *ymax) *ymax = p->point.y;
+      p = p->next;
     }
 }
 
-void insert_side(polygon_side* head,
-                 polygon_side* side) {
-  if (head == NULL) {
-    head = side;
-    side.next = NULL;
-  } else if (side.y_max < head.y_max) {
-    side.next = head;
-    head = side;
+// void insert_side(struct polygon_side* head,
+//                  struct polygon_side* side) {
+//   if (head == NULL) {
+//     head = side;
+//     side->next = NULL;
+//   } else if (side->y_max < head->y_max) {
+//     side->next = head;
+//     head = side;
+//   } else {
+//     struct polygon_side* curr = head, * next = head->next;
+//     while (next != NULL) {
+//       if (side->y_max < next->y_max) {
+//         curr->next = side;
+//         side->next = next;
+//         return;
+//       }
+//       curr = curr->next;
+//       next = next->next;
+//     }
+//     curr->next = side; // insertion en fin
+//   }
+// }
+
+void init_polygon_side(struct polygon_side* TC[],
+                       ei_linked_point_t* curr,
+                       ei_linked_point_t* next) {
+  struct polygon_side* side = malloc(sizeof(struct polygon_side));
+  assert(side != NULL);
+  side->dy = abs(next->point.y - curr->point.y);
+  side->err = abs(next->point.x - curr->point.x) - side->dy;
+  side->incr_x = (curr->point.x < next->point.x) ? 1 : -1;
+  if (curr->point.y > next->point.y) {
+    side->y_max = curr->point.y;
+    side->x_ymin = next->point.x;
+    // insert_side(TC[next->point.y], side);
+    side->next = TC[next->point.y];
+    TC[next->point.y] = side;
   } else {
-    polygon_side* curr, next = head, head.next;
-    while (next != NULL) {
-      if (side.y_max < next.y_max) {
-        curr.next = side;
-        side.next = next;
-        return;
-      }
-      curr = curr.next;
-      next = next.next;
-    }
-    curr.next = side; // insertion en fin
+    side->y_max = next->point.y;
+    side->x_ymin = curr->point.x;
+    // insert_side(TC[curr->point.y], side);
+    side->next = TC[curr->point.y];
+    TC[curr->point.y] = side;
   }
 }
 
-void init_TC(polygon_side* TC[]) {
-  ei_linked_point_t *curr = first_point, *next = first_point.next;
+void init_TC(struct polygon_side* TC[],
+            const ei_linked_point_t* first_point) {
+  ei_linked_point_t* curr = (ei_linked_point_t*) first_point, * next = first_point->next;
   while (next != NULL) {
-    polygon_side* side = malloc(sizeof(polygon_side));
-    assert(side != NULL);
-    side.fract = (next.point.x - curr.point.x) / (next.point.y - curr.point.y);
-    if (curr.point.y > next.point.y) {
-      side.y_max = curr.point.y;
-      side.x_ymin = next.point.x;
-      insert_side(TC[next.point.y], side);
-    } else {
-      side.y_max = next.point.y;
-      side.x_ymin = curr.point.x;
-      insert_side(TC[curr.point.y], side);
+    init_polygon_side(TC, curr, next);
+    curr = curr->next;
+  }
+  init_polygon_side(TC, (ei_linked_point_t*) first_point, curr); // curr = last point
+}
+
+void remove_side(struct polygon_side* head,
+                 struct polygon_side* side) {
+  if (head == side) {
+    head = head->next;
+    free(side);
+  } else {
+    for (struct polygon_side* prec = head; prec->next != NULL; prec = prec->next) {
+      if (prec->next == side) {
+        prec->next = side->next;
+        free(side);
+      }
     }
-    curr = curr.next;
-    next = next.next;
+  }
+}
+
+void sort_list(struct polygon_side* head) {
+  struct polygon_side* prec = head, * curr = head->next;
+  while(curr != NULL) {
+    if (curr->y_max < head->y_max) {
+      prec->next = curr->next;
+      curr->next = head;
+      head = curr;
+    } else {
+      struct polygon_side* s_prec = head, * s_curr = head->next;
+      while (s_curr != curr) {
+        if (curr->y_max < s_curr->y_max) {
+          prec->next = curr->next;
+          curr->next = s_curr;
+          s_prec->next = curr;
+          break;
+        }
+      }
+    }
+    prec = curr;
+    curr = curr->next;
   }
 }
 
@@ -135,24 +185,60 @@ void ei_draw_polygon(ei_surface_t surface,
 						 const ei_color_t color,
 						 const ei_rect_t* clipper) {
     if (first_point != NULL) {
-      hw_surface_lock(surface);
-      int xmin = length(surface), xmax = 0;
-      int ymin = length(surface), ymax = 0;
-      extremum_pts(surface, &xmin, &xmax, &ymin, &ymax);
-      //const ei_rect_t rect
+      int ymin = (int)INFINITY, ymax = 0;
+      extremum_y(surface, &ymin, &ymax);
 
       /* Initialisation */
-      polygon_side* TC[ymax-ymin];
-      init_TC(TC);
-      polygon_side* TCA = NULL;
+      int TC_size = ymax-ymin;
+      struct polygon_side* TC[TC_size];
+      init_TC(TC, first_point);
+      struct polygon_side* TCA = NULL;
 
       /* Dessin du polygone */
-      // TODO
+      int y_scanline = 0;
+      while(y_scanline < TC_size && TCA != NULL) {
 
+        /* Insertion de TC(y_scanline) dans TCA */
+        if (y_scanline < TC_size) {
+          while (TC[y_scanline] != NULL) {
+            struct polygon_side* s = TC[y_scanline];
+            TC[y_scanline] = s->next;
+            s->next = NULL;
+            // insert_side(TCA, s);
+            s->next = TCA;
+            TCA = s;
+          }
+        }
 
-      hw_surface_unlock(surface);
-      // hw_surface_update_rects(surface, rect);
+        if (TCA != NULL) {
+          /*Suppression de TCA(y_max == y_scanline) */
+          for(struct polygon_side* s = TCA; s != NULL; s = s->next) {
+            if (s->y_max == y_scanline + TC_size) remove_side(TCA, s);
+          }
+          /* Tri par insertion dans TCA */
+          sort_list(TCA);
+          /* Remplissage (par paire)*/
+          for(struct polygon_side *s = TCA; s != NULL; s = s->next->next) {
+
+          }
+
+          /* Passage à la scanline suivante */
+          y_scanline++;
+          /* maj segments dans TCA */
+          for (struct polygon_side* s = TCA; s!= NULL; s = s->next) {
+            if (2 * s->err > - s->dy) {
+              s->err -= s->dy;
+              s->x_ymin += s->incr_x;
+            }
+          }
+
+        } else {
+          /* Passage à la scanline suivante */
+          y_scanline++;
+        }
+
     }
+  }
 }
 
 void ei_draw_text (ei_surface_t	surface,
