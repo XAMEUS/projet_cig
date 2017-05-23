@@ -8,11 +8,12 @@
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
     hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
-    uint8_t d = a < 0;
-    uint32_t c = (color->red << (8*(r))) +
-                    (color->green << (8*(g))) +
-                    (color->blue << (8*(b))) +
-                    ((a >= 0) ? (color->alpha << (8*(a))) : 255);
+    uint32_t c = 0;
+    uint8_t *composante = (uint8_t*) &c;
+    composante[r] = color->red;
+    composante[g] = color->green;
+    composante[b] = color->blue;
+    if(a >= 0) composante[a] = color->alpha;
     return c;
 }
 
@@ -419,12 +420,12 @@ int	ei_copy_surface(ei_surface_t destination,
 			    hw_surface_get_channel_indices(destination, &r, &g, &b, &a);
 			    int r1, g1, b1, a1;
 			    hw_surface_get_channel_indices(source, &r1, &g1, &b1, &a1);
+                printf("%d %d %d %d \n", r, g, b, a);
+                printf("%d %d %d %d \n", r1, g1, b1, a1);
 				for (int i = 0; i < clipper_size.height; i++) {
 					for (int j = 0; j < clipper_size.width; j++) {
 						int s_pos = (i*src_size.width + j + src_offset) * 4;
 						int d_pos = (i*dst_size.width + j + dst_offset) * 4;
-						printf("%d %d %d %d \n", r, g, b, a);
-						printf("%d %d %d %d \n", r1, g1, b1, a1);
 						uint8_t d = a < 0;
 						uint8_t d1 = a1 < 0;
 						uint8_t s_r = src_buff[s_pos + r1];
@@ -437,7 +438,7 @@ int	ei_copy_surface(ei_surface_t destination,
 						dst_buff[d_pos + (r)] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
 						dst_buff[d_pos + (g)] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
 						dst_buff[d_pos + (b)] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
-						src_buff[s_pos + (d ? 3:a)] = s_a;
+						// src_buff[s_pos + (d ? 3:a)] = s_a;
 						// printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
 					}
 				}
