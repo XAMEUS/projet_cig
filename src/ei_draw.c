@@ -10,10 +10,11 @@ void private_ei_draw_line (ei_surface_t			surface,
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
     hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
-    uint32_t c = (color->red << (8*(3-r))) +
-                        (color->green << (8*(3-g))) +
-                        (color->blue << (8*(3-b))) +
-                        (color->alpha << (8*(3-a)));
+    uint8_t d = a < 0;
+    uint32_t c = (color->red << (8*(3-r-d))) +
+                    (color->green << (8*(3-g-d))) +
+                    (color->blue << (8*(3-b-d))) +
+                    ((a >= 0) ? (color->alpha << (8*(3-a))) : 0);
     return c;
 }
 void private_ei_draw_line (ei_surface_t			surface,
@@ -119,9 +120,19 @@ void ei_draw_text (ei_surface_t	surface,
     return;
 }
 
-void ei_fill (ei_surface_t surface,
-						 const ei_color_t* color,
-						 const ei_rect_t* clipper) {
+void ei_fill(ei_surface_t surface,
+                const ei_color_t* color,
+                const ei_rect_t* clipper) {
+    uint32_t *p = (uint32_t *)hw_surface_get_buffer(surface);
+    ei_size_t size = hw_surface_get_size(surface);
+    if (clipper == NULL) {
+        int c = 0;
+        while (c < size.width * size.height) {
+            *p = ei_map_rgba(surface, color);
+            p++;
+            c++;
+        }
+    }
     return;
 }
 
