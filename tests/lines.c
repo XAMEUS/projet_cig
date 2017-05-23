@@ -7,7 +7,18 @@
 #include "ei_draw.h"
 #include "ei_types.h"
 
+/* test_text --
+ */
+void test_text(ei_surface_t surface, ei_rect_t* clipper)
+{
+	ei_color_t color = { 255, 0, 255, 255};
+	ei_point_t where = {200, 150};
+	char* text = "Hello World!";
+	ei_font_t font = hw_text_font_create("misc/font.ttf", ei_style_normal, 12);
 
+	ei_draw_text(surface, &where, text, font, &color, clipper);
+	hw_text_font_free(font);
+}
 
 /* test_line --
  *
@@ -22,7 +33,7 @@ void test_line(ei_surface_t surface, ei_rect_t* clipper)
 
 	pts[0].point.x = 200; pts[0].point.y = 200; pts[0].next = &pts[1];
 	pts[1].point.x = 600; pts[1].point.y = 400; pts[1].next = NULL;
-	
+
 	ei_draw_polyline(surface, pts, color, clipper);
 }
 
@@ -108,7 +119,7 @@ void test_square(ei_surface_t surface, ei_rect_t* clipper)
 
 /* test_dot --
  *
- *	Draws a dot in the middle of the screen. This is meant to test the special 
+ *	Draws a dot in the middle of the screen. This is meant to test the special
  *	case when dx = dy = 0
  */
 void test_dot(ei_surface_t surface, ei_rect_t* clipper)
@@ -137,28 +148,29 @@ int ei_main(int argc, char** argv)
 	ei_rect_t*		clipper_ptr	= NULL;
 //	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
 //	clipper_ptr		= &clipper;
-	
+
 	hw_init();
-		
+
 	main_window = hw_create_window(&win_size, EI_FALSE);
-	
+
 	/* Lock the drawing surface, paint it white. */
 	hw_surface_lock	(main_window);
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	/* Draw polylines. */
+	test_text	(main_window, clipper_ptr);
 	test_line	(main_window, clipper_ptr);
 	test_octogone	(main_window, clipper_ptr);
 	test_square	(main_window, clipper_ptr);
 	test_dot	(main_window, clipper_ptr);
-	
+
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);
 	hw_surface_update_rects(main_window, NULL);
-	
+
 	/* Wait for a character on command line. */
 	getchar();
-	
+
 	hw_quit();
 	return (EXIT_SUCCESS);
 }
