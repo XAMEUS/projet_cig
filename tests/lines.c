@@ -167,10 +167,10 @@ int ei_main(int argc, char** argv)
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	/* Draw polylines. */
-	test_text	(main_window, clipper_ptr);
-	test_line	(main_window, clipper_ptr);
+	//test_text	(main_window, clipper_ptr);
 	test_octogone	(main_window, clipper_ptr);
 	test_square	(main_window, clipper_ptr);
+	test_line	(main_window, clipper_ptr);
 	test_dot	(main_window, clipper_ptr);
 	// test_copy	(main_window, clipper_ptr);
 

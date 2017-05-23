@@ -8,7 +8,7 @@
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
     hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
-    uint32_t c = 0;
+    uint32_t c = 255;
     uint8_t *composante = (uint8_t*) &c;
     composante[r] = color->red;
     composante[g] = color->green;
@@ -22,7 +22,6 @@ void ei_draw_polyline (ei_surface_t			surface,
 						 const ei_color_t		color,
 						 const ei_rect_t*		clipper) {
     if(first_point == NULL) return;
-	uint32_t col = ei_map_rgba(surface, &color);
 	ei_point_t pt_min = first_point->point;
 	ei_point_t pt_max = first_point->point;
 	ei_linked_point_t *ptr_tmp = (ei_linked_point_t *) first_point;
@@ -34,7 +33,8 @@ void ei_draw_polyline (ei_surface_t			surface,
 		ptr_tmp = ptr_tmp->next;
 	}
 	ei_size_t box = {pt_max.x - pt_min.x + 1, pt_max.y - pt_min.y + 1};
-	ei_surface_t n_surface = hw_surface_create(surface, &box, 1);
+	ei_surface_t n_surface = hw_surface_create(surface, &box, EI_TRUE);
+	uint32_t col = ei_map_rgba(n_surface, &color);
 	hw_surface_lock(n_surface);
 	uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(n_surface);
 	printf("%d\n", *n_buff);
@@ -64,7 +64,7 @@ void ei_draw_polyline (ei_surface_t			surface,
 		ptr_tmp = ptr_tmp->next;
 	}
 	ei_rect_t dst_rect = {pt_min, box};
-	printf("%d", ei_copy_surface(surface, &dst_rect, n_surface, NULL, 1));
+	printf("%d", ei_copy_surface(surface, &dst_rect, n_surface, NULL, EI_TRUE));
 	hw_surface_unlock(n_surface);
 	hw_surface_free(n_surface);
 }
