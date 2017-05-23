@@ -9,10 +9,10 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color) {
     int r, g, b, a;
     hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
     uint8_t d = a < 0;
-    uint32_t c = (color->red << (8*(3-r-d))) +
-                    (color->green << (8*(3-g-d))) +
-                    (color->blue << (8*(3-b-d))) +
-                    ((a >= 0) ? (color->alpha << (8*(3-a))) : 0);
+    uint32_t c = (color->red << (8*(r))) +
+                    (color->green << (8*(g))) +
+                    (color->blue << (8*(b))) +
+                    ((a >= 0) ? (color->alpha << (8*(a))) : 255);
     return c;
 }
 
@@ -35,9 +35,10 @@ void ei_draw_polyline (ei_surface_t			surface,
 		ptr_tmp = ptr_tmp->next;
 	}
 	ei_size_t box = {pt_max.x - pt_min.x + 1, pt_max.y - pt_min.y + 1};
-	ei_surface_t n_surface = hw_surface_create(surface, &box, 0);
+	ei_surface_t n_surface = hw_surface_create(surface, &box, 1);
 	hw_surface_lock(n_surface);
 	uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(n_surface);
+	printf("%d\n", *n_buff);
 	int offset = pt_min.x + pt_min.y * box.width;
 
 	ptr_tmp = (ei_linked_point_t *) first_point;
@@ -64,7 +65,7 @@ void ei_draw_polyline (ei_surface_t			surface,
 		ptr_tmp = ptr_tmp->next;
 	}
 	ei_rect_t dst_rect = {pt_min, box};
-	printf("%d", ei_copy_surface(surface, &dst_rect, n_surface, NULL, 0));
+	printf("%d", ei_copy_surface(surface, &dst_rect, n_surface, &box, 1));
 	hw_surface_unlock(n_surface);
 	hw_surface_free(n_surface);
 }
@@ -426,17 +427,21 @@ int	ei_copy_surface(ei_surface_t destination,
 					for (int j = 0; j < clipper_size.width; j++) {
 						int s_pos = (i*src_size.width + j + src_offset) * 4;
 						int d_pos = (i*dst_size.width + j + dst_offset) * 4;
+						printf("%d %d %d %d \n", r, g, b, a);
+						printf("%d %d %d %d \n", r1, g1, b1, a1);
 						uint8_t d = a < 0;
-						uint8_t s_r = src_buff[s_pos + (3-r1-d)];
-						uint8_t s_g = src_buff[s_pos + (3-g1-d)];
-						uint8_t s_b = src_buff[s_pos + (3-b1-d)];
-						uint8_t s_a = src_buff[s_pos + (d ? 3:3-a1)];
-						uint8_t d_r = dst_buff[d_pos + (3-r-d)];
-						uint8_t d_g = dst_buff[d_pos + (3-g-d)];
-						uint8_t d_b = dst_buff[d_pos + (3-b-d)];
-						dst_buff[d_pos + (3-r-d)] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
-						dst_buff[d_pos + (3-g-d)] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
-						dst_buff[d_pos + (3-b-d)] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+						uint8_t d1 = a1 < 0;
+						uint8_t s_r = src_buff[s_pos + r1];
+						uint8_t s_g = src_buff[s_pos + g1];
+						uint8_t s_b = src_buff[s_pos + b1];
+						uint8_t s_a = src_buff[s_pos + (d1 ? 3:a1)];
+						uint8_t d_r = dst_buff[d_pos + (r)];
+						uint8_t d_g = dst_buff[d_pos + (g)];
+						uint8_t d_b = dst_buff[d_pos + (b)];
+						dst_buff[d_pos + (r)] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+						dst_buff[d_pos + (g)] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+						dst_buff[d_pos + (b)] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+						src_buff[s_pos + (d ? 3:a)] = s_a;
 						// printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
 					}
 				}
