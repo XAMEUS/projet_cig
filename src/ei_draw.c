@@ -116,7 +116,7 @@ struct polygon_side* insert_side(struct polygon_side* head,
   if (head == NULL) {
     head = side;
     side->next = NULL;
-  } else if (side->y_max < head->y_max) {
+  } else if (side->y_max < head->y_max || (side->y_max == head->y_max && side->x_ymin < head->x_ymin)) {
     side->next = head;
     head = side;
   } else {
@@ -127,7 +127,7 @@ struct polygon_side* insert_side(struct polygon_side* head,
         side->next = curr;
         break;
       } else {
-        while (side->y_max == curr->y_max) {
+        while (curr != NULL && side->y_max == curr->y_max) {
           if (side->x_ymin < curr->x_ymin) {
             prec->next = side;
             side->next = curr;
@@ -136,14 +136,17 @@ struct polygon_side* insert_side(struct polygon_side* head,
           prec = curr;
           curr = curr->next;
         }
+          prec->next = side;
+          side->next = NULL;
       }
-      prec = curr;
-      curr = curr->next;
     }
-    curr->next = side; // insertion en fin
+    prec->next = side;
+    side->next = NULL;
   }
   return head;
 }
+
+
 
 void init_polygon_side(struct polygon_side* TC[],
                        const int offset,
@@ -199,51 +202,60 @@ struct polygon_side* remove_side(struct polygon_side* head,
   return head;
 }
 
+// struct polygon_side* sort_TCA(struct polygon_side* head) {
+//   struct polygon_side* prec = head, * curr = head->next;
+//   while(curr != NULL) {
+//     fprintf(stderr, "\n prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
+//     print_TCA(head);
+//     if (curr->y_max < head->y_max || (curr->y_max == head->y_max && curr->x_ymin < head->x_ymin)) {
+//       prec->next = curr->next;
+//       curr->next = head;
+//       head = curr;
+//       curr = prec->next;
+//       // fprintf(stderr, "fin insert head = prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
+//       continue;
+//     } else {
+//       struct polygon_side* s_prec = head, * s_curr = head->next;
+//       bool sub_break = false;
+//       while (s_curr != curr) {
+//         if (curr->y_max < s_curr->y_max) {
+//           prec->next = curr->next;
+//           curr->next = s_curr;
+//           s_prec->next = curr;
+//           break;
+//         } else {
+//           while (curr->y_max == s_curr->y_max) {
+//             if (curr->x_ymin < s_curr->x_ymin) {
+//               prec->next = curr->next;
+//               curr->next = s_curr;
+//               s_prec->next = curr;
+//               sub_break = true;
+//               break;
+//             }
+//             s_prec = s_prec->next;
+//             s_curr = s_curr->next;
+//           }
+//         }
+//         if (sub_break) break;
+//         s_prec = s_curr;
+//         s_curr = s_curr->next;
+//       }
+//     }
+//     prec = prec->next;
+//     curr = prec->next;
+//     print_TCA(head);
+//   }
+//   return head;
+// }
+
 struct polygon_side* sort_TCA(struct polygon_side* head) {
-  struct polygon_side* prec = head, * curr = head->next;
-  while(curr != NULL) {
-    fprintf(stderr, "\n prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
-    print_TCA(head);
-    if (curr->y_max < head->y_max || (curr->y_max == head->y_max && curr->x_ymin < head->x_ymin)) {
-      prec->next = curr->next;
-      curr->next = head;
-      head = curr;
-      curr = prec->next;
-      // fprintf(stderr, "fin insert head = prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
-      continue;
+    struct polygon_side* new_head = NULL;
+    while(head != NULL) {
+      struct polygon_side* s = head;
+      head = head->next;
+      new_head = insert_side(new_head, s);
     }
-    // else {
-    //   struct polygon_side* s_prec = head, * s_curr = head->next;
-    //   bool sub_break = false;
-    //   while (s_curr != curr) {
-    //     if (curr->y_max < s_curr->y_max) {
-    //       prec->next = curr->next;
-    //       curr->next = s_curr;
-    //       s_prec->next = curr;
-    //       break;
-    //     } else {
-    //       while (curr->y_max == s_curr->y_max) {
-    //         if (curr->x_ymin < s_curr->x_ymin) {
-    //           prec->next = curr->next;
-    //           curr->next = s_curr;
-    //           s_prec->next = curr;
-    //           sub_break = true;
-    //           break;
-    //         }
-    //         s_prec = s_curr;
-    //         s_curr = s_curr->next;
-    //       }
-    //     }
-    //     if (sub_break) break;
-    //     s_prec = s_curr;
-    //     s_curr = s_curr->next;
-    //   }
-    // }
-    prec = prec->next;
-    curr = curr->next;
-    print_TCA(head);
-  }
-  return head;
+    return new_head;
 }
 
 
