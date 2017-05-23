@@ -91,6 +91,20 @@ void ei_fill(ei_surface_t surface,
             c++;
         }
     }
+    else {
+        p += size.width * clipper->top_left.y + clipper->top_left.x;
+        int x; int y = 0;
+        uint32_t dx = clipper->top_left.x +
+                        size.width - (clipper->top_left.x + clipper->size.width);
+        while (y < clipper->size.height) {
+            x = 0;
+            while (x < clipper->size.width) {
+                *p = ei_map_rgba(surface, color);
+                p++; x++;
+            }
+            p += dx; y++;
+        }
+    }
     return;
 }
 
