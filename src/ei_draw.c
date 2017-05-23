@@ -82,13 +82,15 @@ struct polygon_side{
   struct polygon_side* next;
 };
 
-void extremum_y(ei_linked_point_t* first_point,
-                  int* ymin,
-                  int* ymax) {
+void extremum_pts(ei_linked_point_t* first_point,
+                  ei_point_t* pt_min,
+                  ei_point_t* pt_max) {
     ei_linked_point_t *p = first_point;
     while (p != NULL) {
-      if (p->point.y < *ymin) *ymin = p->point.y;
-      else if (p->point.y > *ymax) *ymax = p->point.y;
+      if (p->point.x < pt_min->x) pt_min->x = p->point.x;
+      else if (p->point.x > pt_max->x) pt_max->x = p->point.x;
+      if (p->point.y < pt_min->y) pt_min->y = p->point.y;
+      else if (p->point.y > pt_max->y) pt_max->y = p->point.y;
       p = p->next;
     }
 }
@@ -164,7 +166,7 @@ void remove_side(struct polygon_side* head,
   }
 }
 
-void sort_list(struct polygon_side* head) {
+void sort_TCA(struct polygon_side* head) {
   struct polygon_side* prec = head, * curr = head->next;
   while(curr != NULL) {
     if (curr->y_max < head->y_max) {
@@ -179,7 +181,20 @@ void sort_list(struct polygon_side* head) {
           curr->next = s_curr;
           s_prec->next = curr;
           break;
+        } else {
+          while (curr->y_max == s_curr->y_max) {
+            if (curr->x_ymin < s_curr->x_ymin) {
+              prec->next = curr->next;
+              curr->next = s_curr;
+              s_prec->next = curr;
+              break;
+            }
+            s_prec = s_curr;
+            s_curr = s_curr->next;
+          }
         }
+        s_prec = s_curr;
+        s_curr = s_curr->next;
       }
     }
     prec = curr;
@@ -191,12 +206,16 @@ void ei_draw_polygon(ei_surface_t surface,
 						 const ei_linked_point_t* first_point,
 						 const ei_color_t color,
 						 const ei_rect_t* clipper) {
-    if (first_point != NULL) {
-      int ymin = (int)INFINITY, ymax = 0;
-      extremum_y(surface, &ymin, &ymax);
+    if (first_point != NULL && first_point->next->next != NULL) {
+      ei_point_t pt_min = {(int)INFINITY, (int)INFINITY};
+      ei_point_t pt_max = {0, 0};
+      extremum_pts(surface, &pt_min, &pt_max);
 
       /* Initialisation */
-      int TC_size = ymax-ymin;
+      uint8_t *buff = hw_surface_get_buffer(surface);
+	    int W = hw_surface_get_size(surface).width;
+	    uint32_t col = ei_map_rgba(surface, &color);
+      int TC_size = pt_max.y - pt_min.y;
       struct polygon_side* TC[TC_size];
       init_TC(TC, first_point);
       struct polygon_side* TCA = NULL;
@@ -223,12 +242,13 @@ void ei_draw_polygon(ei_surface_t surface,
             if (s->y_max == y_scanline + TC_size) remove_side(TCA, s);
           }
           /* Tri par insertion dans TCA */
-          sort_list(TCA);
+          sort_TCA(TCA);
           /* Remplissage (par paire)*/
           for(struct polygon_side *s = TCA; s != NULL; s = s->next->next) {
-
+            for(int x = s->x_ymin; x < s->x_ymin; x++) {
+              *((uint32_t*)buff + x + W * y_scanline) = col;
+            }
           }
-
           /* Passage à la scanline suivante */
           y_scanline++;
           /* maj segments dans TCA */
@@ -238,13 +258,17 @@ void ei_draw_polygon(ei_surface_t surface,
               s->x_ymin += s->incr_x;
             }
           }
-
         } else {
           /* Passage à la scanline suivante */
           y_scanline++;
         }
-
     }
+
+    /* update rect */
+    ei_size_t update_size = {pt_max.x - pt_min.x, pt_max.y - pt_min.y};
+		ei_rect_t rect = {pt_min, update_size};
+		ei_linked_rect_t linked_rect = {rect, NULL};
+		hw_surface_update_rects(surface, &linked_rect);
   }
 }
 
