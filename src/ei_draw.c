@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "ei_draw.h"
 #include <stdlib.h>
@@ -82,193 +83,256 @@ struct polygon_side{
   struct polygon_side* next;
 };
 
-void extremum_pts(ei_linked_point_t* first_point,
+void print_TC(struct polygon_side* TC[], const int TC_size) {
+  fprintf(stderr, "TC\n");
+  for (int i = 0; i < TC_size; i++) {
+    struct polygon_side* s = TC[i];
+    if (s != NULL) fprintf(stderr, "\t %d ", i);
+    while(s != NULL) {
+      fprintf(stderr, "[%d %d] --> ", s->y_max, s->x_ymin);
+      s = s->next;
+    }
+    if (TC[i] != NULL) fprintf(stderr, "\n");
+  }
+}
+
+void print_TCA(struct polygon_side* TCA) {
+  fprintf(stderr, "TCA --> ");
+  for (struct polygon_side* s = TCA; s != NULL; s = s->next) {
+    fprintf(stderr, "[%d %d] --> ", s->y_max, s->x_ymin);
+  }
+  fprintf(stderr, "\n");
+}
+
+void extremum_pts(const ei_linked_point_t* first_point,
                   ei_point_t* pt_min,
                   ei_point_t* pt_max) {
-    ei_linked_point_t *p = first_point;
-    while (p != NULL) {
+    for (ei_linked_point_t* p = (ei_linked_point_t*) first_point; p != NULL; p = p->next) {
       if (p->point.x < pt_min->x) pt_min->x = p->point.x;
       else if (p->point.x > pt_max->x) pt_max->x = p->point.x;
       if (p->point.y < pt_min->y) pt_min->y = p->point.y;
       else if (p->point.y > pt_max->y) pt_max->y = p->point.y;
-      p = p->next;
     }
 }
 
-// void insert_side(struct polygon_side* head,
-//                  struct polygon_side* side) {
-//   if (head == NULL) {
-//     head = side;
-//     side->next = NULL;
-//   } else if (side->y_max < head->y_max) {
-//     side->next = head;
-//     head = side;
-//   } else {
-//     struct polygon_side* curr = head, * next = head->next;
-//     while (next != NULL) {
-//       if (side->y_max < next->y_max) {
-//         curr->next = side;
-//         side->next = next;
-//         return;
-//       }
-//       curr = curr->next;
-//       next = next->next;
-//     }
-//     curr->next = side; // insertion en fin
-//   }
-// }
+struct polygon_side* insert_side(struct polygon_side* head,
+                                 struct polygon_side* side) {
+  if (head == NULL) {
+    head = side;
+    side->next = NULL;
+  } else if (side->y_max < head->y_max) {
+    side->next = head;
+    head = side;
+  } else {
+    struct polygon_side* prec = head, * curr = head->next;
+    while (curr != NULL) {
+      if (side->y_max < curr->y_max) {
+        prec->next = side;
+        side->next = curr;
+        break;
+      } else {
+        while (side->y_max == curr->y_max) {
+          if (side->x_ymin < curr->x_ymin) {
+            prec->next = side;
+            side->next = curr;
+            return head;
+          }
+          prec = curr;
+          curr = curr->next;
+        }
+      }
+      prec = curr;
+      curr = curr->next;
+    }
+    curr->next = side; // insertion en fin
+  }
+  return head;
+}
 
 void init_polygon_side(struct polygon_side* TC[],
+                       const int offset,
                        ei_linked_point_t* curr,
                        ei_linked_point_t* next) {
+  // fprintf(stderr, "curr : %d %d next : %d %d offset : %d\n", curr->point.x, curr->point.y, curr->next->point.x, curr->next->point.y, offset);
   struct polygon_side* side = malloc(sizeof(struct polygon_side));
   assert(side != NULL);
+  side->next = NULL;
   side->dy = abs(next->point.y - curr->point.y);
   side->err = abs(next->point.x - curr->point.x) - side->dy;
   side->incr_x = (curr->point.x < next->point.x) ? 1 : -1;
-  if (curr->point.y > next->point.y) {
+  // fprintf(stderr, "branch : curr = %d next = %d\n", curr->point.y, next->point.y);
+  if (curr->point.y >= next->point.y) {
     side->y_max = curr->point.y;
     side->x_ymin = next->point.x;
-    // insert_side(TC[next->point.y], side);
-    side->next = TC[next->point.y];
-    TC[next->point.y] = side;
+    TC[next->point.y - offset] = insert_side(TC[next->point.y - offset], side);
   } else {
     side->y_max = next->point.y;
     side->x_ymin = curr->point.x;
-    // insert_side(TC[curr->point.y], side);
-    side->next = TC[curr->point.y];
-    TC[curr->point.y] = side;
+    TC[curr->point.y - offset] = insert_side(TC[curr->point.y - offset], side);
   }
 }
 
 void init_TC(struct polygon_side* TC[],
+            const int offset,
             const ei_linked_point_t* first_point) {
   ei_linked_point_t* curr = (ei_linked_point_t*) first_point, * next = first_point->next;
   while (next != NULL) {
-    init_polygon_side(TC, curr, next);
+    init_polygon_side(TC, offset, curr, next);
     curr = curr->next;
+    next = next->next;
   }
-  init_polygon_side(TC, (ei_linked_point_t*) first_point, curr); // curr = last point
 }
 
-void remove_side(struct polygon_side* head,
-                 struct polygon_side* side) {
+struct polygon_side* remove_side(struct polygon_side* head,
+                                 struct polygon_side* side) {
+  // fprintf(stderr, "a supprimer : %d %d\n", side->y_max, side->x_ymin);
   if (head == side) {
     head = head->next;
+    print_TCA(head);
     free(side);
   } else {
     for (struct polygon_side* prec = head; prec->next != NULL; prec = prec->next) {
+      // fprintf(stderr, "prec : %d %d next : %d %d\n", prec->y_max, prec->x_ymin, prec->next->y_max, prec->next->x_ymin);
       if (prec->next == side) {
         prec->next = side->next;
         free(side);
+        break;
       }
     }
   }
+  return head;
 }
 
-void sort_TCA(struct polygon_side* head) {
+struct polygon_side* sort_TCA(struct polygon_side* head) {
   struct polygon_side* prec = head, * curr = head->next;
   while(curr != NULL) {
-    if (curr->y_max < head->y_max) {
+    fprintf(stderr, "\n prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
+    print_TCA(head);
+    if (curr->y_max < head->y_max || (curr->y_max == head->y_max && curr->x_ymin < head->x_ymin)) {
       prec->next = curr->next;
       curr->next = head;
       head = curr;
-    } else {
-      struct polygon_side* s_prec = head, * s_curr = head->next;
-      while (s_curr != curr) {
-        if (curr->y_max < s_curr->y_max) {
-          prec->next = curr->next;
-          curr->next = s_curr;
-          s_prec->next = curr;
-          break;
-        } else {
-          while (curr->y_max == s_curr->y_max) {
-            if (curr->x_ymin < s_curr->x_ymin) {
-              prec->next = curr->next;
-              curr->next = s_curr;
-              s_prec->next = curr;
-              break;
-            }
-            s_prec = s_curr;
-            s_curr = s_curr->next;
-          }
-        }
-        s_prec = s_curr;
-        s_curr = s_curr->next;
-      }
+      curr = prec->next;
+      // fprintf(stderr, "fin insert head = prec : %d %d curr : %d %d\n", prec->y_max, prec->x_ymin, curr->y_max, curr->x_ymin);
+      continue;
     }
-    prec = curr;
+    // else {
+    //   struct polygon_side* s_prec = head, * s_curr = head->next;
+    //   bool sub_break = false;
+    //   while (s_curr != curr) {
+    //     if (curr->y_max < s_curr->y_max) {
+    //       prec->next = curr->next;
+    //       curr->next = s_curr;
+    //       s_prec->next = curr;
+    //       break;
+    //     } else {
+    //       while (curr->y_max == s_curr->y_max) {
+    //         if (curr->x_ymin < s_curr->x_ymin) {
+    //           prec->next = curr->next;
+    //           curr->next = s_curr;
+    //           s_prec->next = curr;
+    //           sub_break = true;
+    //           break;
+    //         }
+    //         s_prec = s_curr;
+    //         s_curr = s_curr->next;
+    //       }
+    //     }
+    //     if (sub_break) break;
+    //     s_prec = s_curr;
+    //     s_curr = s_curr->next;
+    //   }
+    // }
+    prec = prec->next;
     curr = curr->next;
+    print_TCA(head);
   }
+  return head;
 }
+
+
 
 void ei_draw_polygon(ei_surface_t surface,
 						 const ei_linked_point_t* first_point,
 						 const ei_color_t color,
 						 const ei_rect_t* clipper) {
     if (first_point != NULL && first_point->next->next != NULL) {
+
+      for (ei_linked_point_t* p = (ei_linked_point_t* ) first_point; p != NULL; p = p->next) {
+        printf("point %d %d\n", p->point.x, p->point.y);
+      }
+
       ei_point_t pt_min = {(int)INFINITY, (int)INFINITY};
       ei_point_t pt_max = {0, 0};
-      extremum_pts(surface, &pt_min, &pt_max);
+      extremum_pts(first_point, &pt_min, &pt_max);
 
       /* Initialisation */
       uint8_t *buff = hw_surface_get_buffer(surface);
 	    int W = hw_surface_get_size(surface).width;
 	    uint32_t col = ei_map_rgba(surface, &color);
-      int TC_size = pt_max.y - pt_min.y;
+      const int TC_size = pt_max.y - pt_min.y + 1;
       struct polygon_side* TC[TC_size];
-      init_TC(TC, first_point);
+      for(int i = 0; i < TC_size; i++) TC[i] = NULL; // necessaire ?
+      init_TC(TC, pt_min.y, first_point);
+      print_TC(TC, TC_size);
       struct polygon_side* TCA = NULL;
+
 
       /* Dessin du polygone */
       int y_scanline = 0;
-      while(y_scanline < TC_size && TCA != NULL) {
-
+      while(y_scanline < TC_size || TCA != NULL) {
+        getchar();
+        fprintf(stderr, "scanline n°%d\n", y_scanline);
+        print_TCA(TCA);
         /* Insertion de TC(y_scanline) dans TCA */
         if (y_scanline < TC_size) {
           while (TC[y_scanline] != NULL) {
             struct polygon_side* s = TC[y_scanline];
             TC[y_scanline] = s->next;
-            s->next = NULL;
-            // insert_side(TCA, s);
             s->next = TCA;
             TCA = s;
           }
         }
-
         if (TCA != NULL) {
           /*Suppression de TCA(y_max == y_scanline) */
           for(struct polygon_side* s = TCA; s != NULL; s = s->next) {
-            if (s->y_max == y_scanline + TC_size) remove_side(TCA, s);
+            if (s->y_max == (y_scanline - pt_min.y)) TCA = remove_side(TCA, s);
           }
           /* Tri par insertion dans TCA */
-          sort_TCA(TCA);
-          /* Remplissage (par paire)*/
-          for(struct polygon_side *s = TCA; s != NULL; s = s->next->next) {
-            for(int x = s->x_ymin; x < s->x_ymin; x++) {
-              *((uint32_t*)buff + x + W * y_scanline) = col;
-            }
-          }
-          /* Passage à la scanline suivante */
-          y_scanline++;
-          /* maj segments dans TCA */
-          for (struct polygon_side* s = TCA; s!= NULL; s = s->next) {
-            if (2 * s->err > - s->dy) {
-              s->err -= s->dy;
-              s->x_ymin += s->incr_x;
-            }
-          }
-        } else {
-          /* Passage à la scanline suivante */
-          y_scanline++;
+        if (TCA != NULL) {
+          fprintf(stderr, "TCA avant tri\n");
+          print_TCA(TCA);
+          TCA = sort_TCA(TCA);
+          fprintf(stderr, "TCA apres tri\n");
+          print_TCA(TCA);
         }
-    }
-
+          /* Remplissage (par paire)*/
+          // for(struct polygon_side *s = TCA; s != NULL; s = s->next->next) {
+          //   for(int x = s->x_ymin; x < s->x_ymin; x++) {
+          //     *((uint32_t*)buff + x + W * y_scanline) = col;
+          //   }
+          // }
+    //       /* Passage à la scanline suivante */
+    //       y_scanline++;
+    //       /* maj segments dans TCA */
+    //       for (struct polygon_side* s = TCA; s!= NULL; s = s->next) {
+    //         if (2 * s->err > - s->dy) {
+    //           s->err -= s->dy;
+    //           s->x_ymin += s->incr_x;
+    //         }
+    //       }
+    //     } else {
+    //       /* Passage à la scanline suivante */
+    //       y_scanline++;
+    //     }
+      }
+    y_scanline++;
     /* update rect */
-    ei_size_t update_size = {pt_max.x - pt_min.x, pt_max.y - pt_min.y};
-		ei_rect_t rect = {pt_min, update_size};
-		ei_linked_rect_t linked_rect = {rect, NULL};
-		hw_surface_update_rects(surface, &linked_rect);
+    // ei_size_t update_size = {pt_max.x - pt_min.x, pt_max.y - pt_min.y};
+		// ei_rect_t rect = {pt_min, update_size};
+		// ei_linked_rect_t linked_rect = {rect, NULL};
+		// hw_surface_update_rects(surface, &linked_rect);
+    }
   }
 }
 
