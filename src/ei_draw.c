@@ -1,5 +1,6 @@
 #include "ei_draw.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void private_ei_draw_line (ei_surface_t			surface,
 						 ei_point_t           	a,
@@ -111,12 +112,14 @@ void ei_draw_polygon(ei_surface_t surface,
     return;
 }
 
-void ei_draw_text (ei_surface_t	surface,
-						 const ei_point_t* where,
-						 const char* text,
-						 const ei_font_t font,
-						 const ei_color_t* color,
-						 const ei_rect_t* clipper) {
+void ei_draw_text(ei_surface_t	surface,
+					const ei_point_t* where,
+					const char* text,
+					const ei_font_t font,
+					const ei_color_t* color,
+					const ei_rect_t* clipper) {
+	ei_surface_t text_surface = hw_text_create_surface(text, font, color);
+	ei_copy_surface(surface, clipper, text_surface, clipper, EI_TRUE);
     return;
 }
 
