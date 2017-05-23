@@ -83,7 +83,8 @@ void ei_draw_text(ei_surface_t	surface,
 					const ei_color_t* color,
 					const ei_rect_t* clipper) {
 	ei_surface_t text_surface = hw_text_create_surface(text, font, color);
-	ei_copy_surface(surface, clipper, text_surface, clipper, EI_TRUE);
+	ei_rect_t clipper_text = hw_surface_get_rect(text_surface);
+	ei_copy_surface(surface, &clipper_text, text_surface, &clipper_text, EI_TRUE);
     return;
 }
 
@@ -148,6 +149,9 @@ int	ei_copy_surface(ei_surface_t destination,
 	uint32_t *dst_buff = (uint32_t *) hw_surface_get_buffer(destination);
 	ei_size_t dst_size = hw_surface_get_size(destination);
 
+	printf("src (cx,cy) : %d %d\n", src_rect->top_left.x, src_rect->top_left.y);
+	printf("dst (cx,cy) : %d %d\n", dst_rect->top_left.x, dst_rect->top_left.y);
+
 	ei_point_t src_clipper_pt;
 	ei_size_t src_clipper_size;
 	if(src_rect) {
@@ -180,8 +184,13 @@ int	ei_copy_surface(ei_surface_t destination,
 		clipper_size.width = dst_size.width;
 		clipper_size.height = dst_size.height;
 	}
+	printf("src_size: %d %d\n", src_size.width, src_size.height);
+	printf("dst_size: %d %d\n", dst_size.width, dst_size.height);
+	printf("src (cx,cy) : %d %d\n", src_clipper_pt.x, src_clipper_pt.y);
+	printf("dst (cx,cy) : %d %d\n", dst_clipper_pt.x, dst_clipper_pt.y);
 	if(clipper_size.width == src_clipper_size.width &&
 			clipper_size.height == src_clipper_size.height) {
+		printf("%d %d %d %d\n", clipper_size.width, clipper_size.height, src_clipper_size.width, src_clipper_size.height);
 		// Now we only use clipper_size because both have the same size
 		if(src_clipper_pt.x < 0) {
 			dst_clipper_pt.x -= src_clipper_pt.x;
@@ -212,14 +221,48 @@ int	ei_copy_surface(ei_surface_t destination,
 		if(dst_clipper_pt.y + clipper_size.height >= dst_size.height)
 		    clipper_size.height = dst_size.height - dst_clipper_pt.y;
 
+		printf("%d %d\n", clipper_size.width, clipper_size.height);
 		if (clipper_size.width > 0 && clipper_size.height > 0) {
 			// We can copy now
-			int src_offset = src_clipper_pt.x * src_size.width + src_clipper_pt.y;
-			int dst_offset = dst_clipper_pt.x * dst_size.width + dst_clipper_pt.y;
-			for (int i = 0; i < clipper_size.height; i++)
-				for (int j = 0; j < clipper_size.width; j++)
-					dst_buff[i*dst_size.width + j + dst_offset] =
-							src_buff[i*src_size.width + j + src_offset];
+			int src_offset = src_clipper_pt.y * src_size.width + src_clipper_pt.x;
+			int dst_offset = dst_clipper_pt.y * dst_size.width + dst_clipper_pt.x;
+			if (alpha) {
+				uint8_t *src_buff = hw_surface_get_buffer(source);
+				uint8_t *dst_buff = hw_surface_get_buffer(destination);
+			    int r, g, b, a;
+			    hw_surface_get_channel_indices(destination, &r, &g, &b, &a);
+			    int r1, g1, b1, a1;
+			    hw_surface_get_channel_indices(source, &r1, &g1, &b1, &a1);
+				for (int i = 0; i < clipper_size.height; i++) {
+					for (int j = 0; j < clipper_size.width; j++) {
+						int s_pos = (i*src_size.width + j + src_offset) * 4;
+						int d_pos = (i*dst_size.width + j + dst_offset) * 4;
+						uint8_t d = a < 0;
+						uint8_t s_r = src_buff[s_pos + (3-r1-d)];
+						uint8_t s_g = src_buff[s_pos + (3-g1-d)];
+						uint8_t s_b = src_buff[s_pos + (3-b1-d)];
+						uint8_t s_a = src_buff[s_pos + (d ? 3:3-a1)];
+						uint8_t d_r = dst_buff[d_pos + (3-r-d)];
+						uint8_t d_g = dst_buff[d_pos + (3-g-d)];
+						uint8_t d_b = dst_buff[d_pos + (3-b-d)];
+						dst_buff[d_pos + (3-r-d)] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+						dst_buff[d_pos + (3-g-d)] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+						dst_buff[d_pos + (3-b-d)] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+						// printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
+					}
+				}
+			}
+			else {
+				uint32_t *src_buff = (uint32_t *) hw_surface_get_buffer(source);
+				uint32_t *dst_buff = (uint32_t *) hw_surface_get_buffer(destination);
+				for (int i = 0; i < clipper_size.height; i++) {
+					for (int j = 0; j < clipper_size.width; j++) {
+						dst_buff[i*dst_size.width + j + dst_offset] =
+						src_buff[i*src_size.width + j + src_offset];
+						//printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
+					}
+				}
+			}
 		}
 		return 0;
 	}

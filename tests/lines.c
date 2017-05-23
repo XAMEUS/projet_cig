@@ -11,13 +11,22 @@
  */
 void test_text(ei_surface_t surface, ei_rect_t* clipper)
 {
-	ei_color_t color = { 255, 0, 255, 255};
+	ei_color_t color = {255, 0, 0, 255};
 	ei_point_t where = {200, 150};
 	char* text = "Hello World!";
-	ei_font_t font = hw_text_font_create("misc/font.ttf", ei_style_normal, 12);
+	ei_font_t font = hw_text_font_create("misc/font.ttf", ei_style_normal, 48);
 
 	ei_draw_text(surface, &where, text, font, &color, clipper);
 	hw_text_font_free(font);
+}
+
+/* test_copy --
+ */
+void test_copy(ei_surface_t surface, ei_rect_t* clipper)
+{
+	ei_size_t size = hw_surface_get_size(surface);
+	ei_surface_t surface2 = hw_surface_create(surface, &size, EI_FALSE);
+	ei_copy_surface(surface, clipper, surface2, clipper, EI_FALSE);
 }
 
 /* test_line --
@@ -163,6 +172,7 @@ int ei_main(int argc, char** argv)
 	test_octogone	(main_window, clipper_ptr);
 	test_square	(main_window, clipper_ptr);
 	test_dot	(main_window, clipper_ptr);
+	// test_copy	(main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);
