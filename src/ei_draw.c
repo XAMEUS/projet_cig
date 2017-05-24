@@ -164,8 +164,6 @@ struct polygon_side* insert_side(struct polygon_side* head,
     return head;
 }
 
-
-
 void init_polygon_side(struct polygon_side* TC[],
                        const int offset,
                        ei_linked_point_t* curr,
@@ -232,15 +230,18 @@ void ei_draw_polygon(ei_surface_t surface,
 
     if (first_point != NULL && first_point->next != NULL && first_point->next->next != NULL) {
 
-        uint8_t *buff = hw_surface_get_buffer(surface);
-        int W = hw_surface_get_size(surface).width;
-        uint32_t col = ei_map_rgba(surface, &color);
-
         ei_point_t pt_min = {(int)INFINITY, (int)INFINITY};
         ei_point_t pt_max = {0, 0};
         extremum_pts(first_point, &pt_min, &pt_max);
 
+        ei_size_t box = {pt_max.x - pt_min.x + 1, pt_max.y - pt_min.y + 1};
+    	ei_surface_t n_surface = hw_surface_create(surface, &box, EI_TRUE);
+    	uint32_t col = ei_map_rgba(n_surface, &color);
+    	hw_surface_lock(n_surface);
+    	uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(n_surface);
+
         /* Initialisation */
+        const int width = pt_max.x - pt_min.x + 1;
         const int TC_size = pt_max.y - pt_min.y + 1;
         struct polygon_side* TC[TC_size];
         for(int i = 0; i < TC_size; i++) TC[i] = NULL;
@@ -270,8 +271,8 @@ void ei_draw_polygon(ei_surface_t surface,
             TCA = sort_TCA(TCA);
             /* Remplissage (par paire)*/
             for(struct polygon_side *s = TCA; s != NULL && s->next != NULL; s = s->next->next) {
-                for(int x = floor(s->x_ymin); x <= ceil(s->next->x_ymin); x++) {
-                    *((uint32_t*)buff + x + W * (y_scanline + pt_min.y)) = col;
+                for(int x = floor(s->x_ymin); x < s->next->x_ymin; x++) {
+                    *((uint32_t*)n_buff + (x - pt_min.x) + width * y_scanline) = col;
                 }
             }
             /* Passage à la scanline suivante */
@@ -281,6 +282,29 @@ void ei_draw_polygon(ei_surface_t surface,
                 s->x_ymin = s->x_ymin + s->rslope;
             }
         }
+        ei_point_t pt_src = {0, 0};
+        ei_point_t pt_dst = pt_min;
+        ei_size_t draw_box = box;
+        if (clipper) {
+            if(clipper->top_left.x > pt_dst.x) {
+                draw_box.width += clipper->top_left.x - pt_dst.x;
+                pt_src.x += clipper->top_left.x - pt_dst.x;
+                pt_dst.x = clipper->top_left.x;
+            }
+            if(clipper->top_left.y > pt_dst.y) {
+                draw_box.height += clipper->top_left.y - pt_dst.y;
+                pt_src.y += clipper->top_left.y - pt_dst.y;
+                pt_dst.y = clipper->top_left.y;
+            }
+            //Not a bug: ei_copy_surface will cut the box to stay into the drawing area
+            draw_box.width = clipper->top_left.x - pt_dst.x + clipper->size.width;
+            draw_box.height = clipper->top_left.y - pt_dst.y + clipper->size.height;
+        }
+        ei_rect_t dst_rect = {pt_dst, draw_box};
+        ei_rect_t src_rect = {pt_src, draw_box};
+        ei_copy_surface(surface, &dst_rect, n_surface, &src_rect, EI_TRUE);
+        hw_surface_unlock(n_surface);
+        hw_surface_free(n_surface);
     }
 }
 
