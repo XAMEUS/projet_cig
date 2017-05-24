@@ -7,6 +7,8 @@
 #include "ei_draw.h"
 #include "ei_types.h"
 
+#include "ei_draw_ex.h"
+
 /* test_text --
  */
 void test_text(ei_surface_t surface, ei_rect_t* clipper)
@@ -144,6 +146,24 @@ void test_dot(ei_surface_t surface, ei_rect_t* clipper)
 	ei_draw_polyline(surface, pts, color, clipper);
 }
 
+void test_circle(ei_surface_t surface, ei_rect_t* clipper)
+{
+	ei_color_t		color		= { 0, 0, 255, 255 };
+	ei_point_t	center = { 400, 300 };
+	ei_linked_point_t* pts = convert_arc(center, 200, 0, 2 * acos(-1));
+
+	for(ei_linked_point_t* p = pts; p != NULL; p = p->next) {
+		fprintf(stderr, "%d %d\n", p->point.x, p->point.y);
+	}
+
+	ei_draw_polygon(surface, pts, color, clipper);
+
+	while(pts != NULL) {
+		ei_linked_point_t* p = pts;
+		pts = pts->next;
+		free(p);
+	}
+}
 
 
 /*
@@ -157,8 +177,8 @@ int ei_main(int argc, char** argv)
 	ei_surface_t		main_window	= NULL;
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_rect_t*		clipper_ptr	= NULL;
-	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
-	clipper_ptr		= &clipper;
+	// ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
+	// clipper_ptr		= &clipper;
 
 	hw_init();
 
@@ -170,12 +190,12 @@ int ei_main(int argc, char** argv)
 
 	/* Draw polylines. */
 	//test_text	(main_window, clipper_ptr);
-	test_octogone	(main_window, clipper_ptr);
-	test_square	(main_window, clipper_ptr);
-	test_line	(main_window, clipper_ptr);
-	test_dot	(main_window, clipper_ptr);
+	// test_octogone	(main_window, clipper_ptr);
+	// test_square	(main_window, clipper_ptr);
+	// test_line	(main_window, clipper_ptr);
+	// test_dot	(main_window, clipper_ptr);
 	// test_copy	(main_window, clipper_ptr);
-
+	test_circle (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);

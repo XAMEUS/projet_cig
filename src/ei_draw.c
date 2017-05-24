@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "ei_draw.h"
+#include "ei_draw_ex.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -496,4 +497,37 @@ int	ei_copy_surface(ei_surface_t destination,
 	}
 	else return 1;
 
+}
+
+/* Dessin de boutons en relief */
+ei_linked_point_t* convert_arc(const ei_point_t center,
+                               const int radius,
+                               const float first_angle,
+                               const float last_angle) {
+    int step_nbr = radius; // a reflechir
+    float angle_step = (last_angle - first_angle) / step_nbr;
+
+    ei_linked_point_t* first_point = malloc(sizeof(ei_linked_point_t));
+    assert(first_point != NULL);
+    first_point->point.x = center.x + radius * cos(first_angle);
+    first_point->point.y = center.y - radius * sin(first_angle);
+    first_point->next = NULL;
+    ei_linked_point_t* last_point = first_point;
+    for(float angle = (first_angle + angle_step); angle < last_angle; angle += angle_step) {
+        ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
+        assert(point != NULL);
+        point->point.x = center.x + radius * cos(angle);
+        point->point.y = center.y - radius * sin(angle);
+        last_point->next = point;
+        last_point = last_point->next;
+    }
+    // if (first_angle == fmod(last_angle, 2 * acos(-1))) {
+        /* cas du cercle -> a traiter dans le test pas ici */
+        ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
+        point->point.x = first_point->point.x;
+        point->point.y = first_point->point.y;
+        last_point->next = point;
+        point->next = NULL;
+    // }
+    return first_point;
 }
