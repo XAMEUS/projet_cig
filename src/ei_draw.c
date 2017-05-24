@@ -38,7 +38,6 @@ void ei_draw_polyline (ei_surface_t			surface,
 	uint32_t col = ei_map_rgba(n_surface, &color);
 	hw_surface_lock(n_surface);
 	uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(n_surface);
-	printf("%d\n", *n_buff);
 	int offset = pt_min.x + pt_min.y * box.width;
 
 	ptr_tmp = (ei_linked_point_t *) first_point;
@@ -64,8 +63,27 @@ void ei_draw_polyline (ei_surface_t			surface,
 		} while(pt_0.x != pt_1.x || pt_0.y != pt_1.y);
 		ptr_tmp = ptr_tmp->next;
 	}
-	ei_rect_t dst_rect = {pt_min, box};
-	printf("%d", ei_copy_surface(surface, &dst_rect, n_surface, NULL, EI_TRUE));
+    ei_point_t pt_src = {0, 0};
+    ei_point_t pt_dst = pt_min;
+    ei_size_t draw_box = box;
+    if(clipper) {
+        if(clipper->top_left.x > pt_dst.x) {
+            draw_box.width += clipper->top_left.x - pt_dst.x;
+            pt_src.x += clipper->top_left.x - pt_dst.x;
+            pt_dst.x = clipper->top_left.x;
+        }
+        if(clipper->top_left.y > pt_dst.y) {
+            draw_box.height += clipper->top_left.y - pt_dst.y;
+            pt_src.y += clipper->top_left.y - pt_dst.y;
+            pt_dst.y = clipper->top_left.y;
+        }
+        //Not a bug: ei_copy_surface will cut the box to stay into the drawing area
+        draw_box.width = clipper->top_left.x - pt_dst.x + clipper->size.width;
+        draw_box.height = clipper->top_left.y - pt_dst.y + clipper->size.height;
+    }
+    ei_rect_t dst_rect = {pt_dst, draw_box};
+    ei_rect_t src_rect = {pt_src, draw_box};
+	ei_copy_surface(surface, &dst_rect, n_surface, &src_rect, EI_TRUE);
 	hw_surface_unlock(n_surface);
 	hw_surface_free(n_surface);
 }
@@ -397,27 +415,6 @@ void ei_fill(ei_surface_t surface,
 		}
 	}
 }
-/**
- * \brief	Copies a surface, or a subpart, to another one.
- *		The source and destination area of the copy (either the entire surfaces, or
- *		subparts) must have the same size (before clipping). Both the source and destination
- *		surfaces must be *locked* by \ref hw_surface_lock.
- *
- * @param	destination	The surface on which to copy pixels from the source surface.
- * @param	dst_rect	If NULL, the entire destination surface is used. If not NULL,
- *				defines the rectangle on the destination surface where to copy
- *				the pixels.
- * @param	source		The surface from which to copy pixels.
- * @param	src_rect	If NULL, the entire source surface is used. If not NULL, defines the
- *				rectangle on the source surface from which to copy the pixels.
- * @param	alpha		If true, the final pixels are a combination of source and
- *				destination pixels weighted by the source alpha channel. The
- *				transparency of the final pixels is set	to opaque.
- *				If false, the final pixels are an exact copy of the source pixels,
- 				including the alpha channel.
- *
- * @return			Returns 0 on success, 1 on failure (different ROI size).
- */
 
 int	ei_copy_surface(ei_surface_t destination,
 						 const ei_rect_t* dst_rect,
@@ -459,22 +456,17 @@ int	ei_copy_surface(ei_surface_t destination,
 		clipper_size.width = dst_size.width;
 		clipper_size.height = dst_size.height;
 	}
-	printf("src_size: %d %d\n", src_size.width, src_size.height);
-	printf("dst_size: %d %d\n", dst_size.width, dst_size.height);
-	printf("src (cx,cy) : %d %d\n", src_clipper_pt.x, src_clipper_pt.y);
-	printf("dst (cx,cy) : %d %d\n", dst_clipper_pt.x, dst_clipper_pt.y);
 	if(clipper_size.width == src_clipper_size.width &&
 			clipper_size.height == src_clipper_size.height) {
-		printf("%d %d %d %d\n", clipper_size.width, clipper_size.height, src_clipper_size.width, src_clipper_size.height);
 		// Now we only use clipper_size because both have the same size
 		if(src_clipper_pt.x < 0) {
 			dst_clipper_pt.x -= src_clipper_pt.x;
-			clipper_size.width -= src_clipper_pt.x;
+			clipper_size.width += src_clipper_pt.x;
 			src_clipper_pt.x = 0;
 		}
 		if(src_clipper_pt.y < 0) {
 			dst_clipper_pt.y -= src_clipper_pt.y;
-			clipper_size.width -= src_clipper_pt.y;
+			clipper_size.width += src_clipper_pt.y;
 			src_clipper_pt.y = 0;
 		}
 		if(src_clipper_pt.x + clipper_size.width >= src_size.width)
@@ -483,7 +475,7 @@ int	ei_copy_surface(ei_surface_t destination,
 			clipper_size.height = src_size.height - src_clipper_pt.y;
 		if(dst_clipper_pt.x < 0) {
 		    src_clipper_pt.x -= dst_clipper_pt.x;
-		    clipper_size.width -= dst_clipper_pt.x;
+		    clipper_size.width += dst_clipper_pt.x;
 		    dst_clipper_pt.x = 0;
 		}
 		if(dst_clipper_pt.y < 0) {
@@ -496,7 +488,6 @@ int	ei_copy_surface(ei_surface_t destination,
 		if(dst_clipper_pt.y + clipper_size.height >= dst_size.height)
 		    clipper_size.height = dst_size.height - dst_clipper_pt.y;
 
-		printf("%d %d\n", clipper_size.width, clipper_size.height);
 		if (clipper_size.width > 0 && clipper_size.height > 0) {
 			// We can copy now
 			int src_offset = src_clipper_pt.y * src_size.width + src_clipper_pt.x;
@@ -508,26 +499,21 @@ int	ei_copy_surface(ei_surface_t destination,
 			    hw_surface_get_channel_indices(destination, &r, &g, &b, &a);
 			    int r1, g1, b1, a1;
 			    hw_surface_get_channel_indices(source, &r1, &g1, &b1, &a1);
-                printf("%d %d %d %d \n", r, g, b, a);
-                printf("%d %d %d %d \n", r1, g1, b1, a1);
 				for (int i = 0; i < clipper_size.height; i++) {
 					for (int j = 0; j < clipper_size.width; j++) {
 						int s_pos = (i*src_size.width + j + src_offset) * 4;
 						int d_pos = (i*dst_size.width + j + dst_offset) * 4;
-						uint8_t d = a < 0;
-						uint8_t d1 = a1 < 0;
 						uint8_t s_r = src_buff[s_pos + r1];
 						uint8_t s_g = src_buff[s_pos + g1];
 						uint8_t s_b = src_buff[s_pos + b1];
-						uint8_t s_a = src_buff[s_pos + (d1 ? 3:a1)];
-						uint8_t d_r = dst_buff[d_pos + (r)];
-						uint8_t d_g = dst_buff[d_pos + (g)];
-						uint8_t d_b = dst_buff[d_pos + (b)];
-						dst_buff[d_pos + (r)] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
-						dst_buff[d_pos + (g)] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
-						dst_buff[d_pos + (b)] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
-						// src_buff[s_pos + (d ? 3:a)] = s_a;
-						// printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
+						uint8_t s_a = src_buff[s_pos + a1];
+						uint8_t d_r = dst_buff[d_pos + r];
+						uint8_t d_g = dst_buff[d_pos + g];
+						uint8_t d_b = dst_buff[d_pos + b];
+						dst_buff[d_pos + r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+						dst_buff[d_pos + g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+						dst_buff[d_pos + b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+						dst_buff[d_pos + a] = 255;
 					}
 				}
 			}
@@ -535,11 +521,9 @@ int	ei_copy_surface(ei_surface_t destination,
 				uint32_t *src_buff = (uint32_t *) hw_surface_get_buffer(source);
 				uint32_t *dst_buff = (uint32_t *) hw_surface_get_buffer(destination);
 				for (int i = 0; i < clipper_size.height; i++) {
-					for (int j = 0; j < clipper_size.width; j++) {
+					for (int j = 0; j < clipper_size.width; j++)
 						dst_buff[i*dst_size.width + j + dst_offset] =
-						src_buff[i*src_size.width + j + src_offset];
-						//printf("%u\n", src_buff[i*src_size.width + j + src_offset]);
-					}
+						            src_buff[i*src_size.width + j + src_offset];
 				}
 			}
 		}
