@@ -7,7 +7,7 @@
 #ifndef EI_FRAME_H
 #define EI_FRAME_H
 
-#include "ei_draw.h"
+#include "ei_widget.h"
 
 typedef struct ei_frame_t {
     ei_widget_t widget;
