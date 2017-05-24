@@ -83,6 +83,7 @@ void test_octogone(ei_surface_t surface, ei_rect_t* clipper)
 
 	/* Draw the form with polylines */
 	ei_draw_polyline(surface, pts, color, clipper);
+	ei_draw_polygon(surface, pts, color, clipper);
 }
 
 
@@ -95,7 +96,7 @@ void test_octogone(ei_surface_t surface, ei_rect_t* clipper)
  */
 void test_square(ei_surface_t surface, ei_rect_t* clipper)
 {
-	ei_color_t		color		= { 255, 0, 0, 255 };
+	ei_color_t		color		= { 255, 0, 0, 100 };
 	ei_linked_point_t	pts[5];
 	int			i, xdiff, ydiff;
 
@@ -121,7 +122,7 @@ void test_square(ei_surface_t surface, ei_rect_t* clipper)
 	pts[i-1].next = NULL;
 
 	/* Draw the form with polylines */
-	// ei_draw_polyline(surface, pts, color, clipper);
+	ei_draw_polyline(surface, pts, color, clipper);
 	ei_draw_polygon(surface, pts, color, clipper);
 }
 
@@ -156,8 +157,8 @@ int ei_main(int argc, char** argv)
 	ei_surface_t		main_window	= NULL;
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_rect_t*		clipper_ptr	= NULL;
-//	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
-//	clipper_ptr		= &clipper;
+	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
+	clipper_ptr		= &clipper;
 
 	hw_init();
 
