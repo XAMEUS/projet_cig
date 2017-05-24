@@ -369,9 +369,28 @@ void ei_draw_text(ei_surface_t	surface,
 					const ei_color_t* color,
 					const ei_rect_t* clipper) {
 	ei_surface_t text_surface = hw_text_create_surface(text, font, color);
-	ei_rect_t clipper_text = hw_surface_get_rect(text_surface);
-	ei_copy_surface(surface, &clipper_text, text_surface, &clipper_text, EI_TRUE);
-    return;
+    ei_rect_t clipper_text = hw_surface_get_rect(text_surface);
+    ei_point_t pt_src = {0, 0};
+    ei_point_t pt_dst = *where;
+    ei_size_t draw_box = clipper_text.size;
+    if (clipper) {
+        if(clipper->top_left.x > pt_dst.x) {
+            draw_box.width += clipper->top_left.x - pt_dst.x;
+            pt_src.x += clipper->top_left.x - pt_dst.x;
+            pt_dst.x = clipper->top_left.x;
+        }
+        if(clipper->top_left.y > pt_dst.y) {
+            draw_box.height += clipper->top_left.y - pt_dst.y;
+            pt_src.y += clipper->top_left.y - pt_dst.y;
+            pt_dst.y = clipper->top_left.y;
+        }
+        //Not a bug: ei_copy_surface will cut the box to stay into the drawing area
+        draw_box.width = clipper->top_left.x - pt_dst.x + clipper->size.width;
+        draw_box.height = clipper->top_left.y - pt_dst.y + clipper->size.height;
+    }
+    ei_rect_t dst_rect = {pt_dst, draw_box};
+    ei_rect_t src_rect = {pt_src, draw_box};
+    ei_copy_surface(surface, &dst_rect, text_surface, &src_rect, EI_TRUE);
 }
 
 void ei_fill(ei_surface_t surface,
