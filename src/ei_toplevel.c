@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
-#include "ei_frame.h"
+#include "ei_toplevel.h"
 
-void ei_frame_register_class() {
+void ei_toplevel_register_class() {
     ei_widgetclass_t *widget = malloc(sizeof(ei_widgetclass_t));
-    strncpy(widget->name, "frame", 20);
+    strncpy(widget->name, "toplevel", 20);
     widget->allocfunc = NULL;
     widget->releasefunc = NULL;
     widget->drawfunc = NULL;

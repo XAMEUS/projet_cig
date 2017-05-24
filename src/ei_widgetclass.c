@@ -24,22 +24,3 @@ void ei_widgetclass_register(ei_widgetclass_t* widgetclass) {
 ei_widgetclass_t*  ei_widgetclass_from_name(ei_widgetclass_name_t name) {
     return;
 }
-
-
-/**
- * \brief	Registers the "button" widget class in the program. This must be called only
- *		once before widgets of the class "button" can be created and configured with
- *		\ref ei_button_configure.
- */
-void ei_button_register_class() {
-    return;
-}
-
-/**
- * \brief	Registers the "toplevel" widget class in the program. This must be called only
- *		once before widgets of the class "toplevel" can be created and configured with
- *		\ref ei_toplevel_configure.
- */
-void ei_toplevel_register_class() {
-    return;
-}

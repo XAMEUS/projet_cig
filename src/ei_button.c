@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
-#include "ei_frame.h"
+#include "ei_button.h"
 
-void ei_frame_register_class() {
+void ei_button_register_class() {
     ei_widgetclass_t *widget = malloc(sizeof(ei_widgetclass_t));
-    strncpy(widget->name, "frame", 20);
+    strncpy(widget->name, "button", 20);
     widget->allocfunc = NULL;
     widget->releasefunc = NULL;
     widget->drawfunc = NULL;

@@ -3,6 +3,7 @@
 #include "ei_widgetclass.h"
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /**
  * \brief	Creates an application.
@@ -26,8 +27,10 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     hw_init();
     /* We register all classes */
     ei_frame_register_class();
+    ei_toplevel_register_class();
+    ei_button_register_class();
     /* création du widget racine de la classe frame,*/
-    ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
+    // ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
 
     /* création d’une surface offscreen pour la gestion du picking :*/
     // surface=hw_surface_create(const ei_surface_t root, const ei_size_t* size, 0);
@@ -50,7 +53,7 @@ void ei_app_free() {
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run() {
-    getchar();
+    sleep(5);
 }
 
 /**
