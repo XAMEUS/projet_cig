@@ -1,5 +1,7 @@
 #include "ei_widgetclass.h"
 #include <stdlib.h>
+#include <assert.h>
+#include <string.h>
 
 ei_widgetclass_t *Classes = NULL;
 /**
@@ -22,5 +24,9 @@ void ei_widgetclass_register(ei_widgetclass_t* widgetclass) {
  * @return			The structure describing the class.
  */
 ei_widgetclass_t*  ei_widgetclass_from_name(ei_widgetclass_name_t name) {
-    return;
+    ei_widgetclass_t *candidate = Classes;
+    while(candidate != NULL && strncmp(candidate->name, name, 20) != 0)
+        candidate = candidate->next;
+    assert(candidate != NULL); //Maybe useless?
+    return candidate;
 }
