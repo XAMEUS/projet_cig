@@ -130,8 +130,8 @@ void extremum_pts(const ei_linked_point_t* first_point,
     }
 }
 
-struct polygon_side* insert_side(struct polygon_side* head,
-                                 struct polygon_side* side) {
+struct polygon_side* insert_in_TC(struct polygon_side* head,
+                                  struct polygon_side* side) {
     if (head == NULL) {
           head = side;
           side->next = NULL;
@@ -165,6 +165,30 @@ struct polygon_side* insert_side(struct polygon_side* head,
     return head;
 }
 
+struct polygon_side* insert_in_TCA(struct polygon_side* head,
+                                   struct polygon_side* side) {
+    if (head == NULL) {
+          head = side;
+          side->next = NULL;
+    } else if (side->x_ymin < head->x_ymin) {
+          side->next = head;
+          head = side;
+    } else {
+        struct polygon_side* prec = head, * curr = head->next;
+        while (curr != NULL) {
+            if (side->x_ymin < curr->x_ymin) {
+                prec->next = side;
+                side->next = curr;
+                break;
+            }
+        }
+        prec->next = side;
+        side->next = NULL;
+    }
+    return head;
+}
+
+
 void init_polygon_side(struct polygon_side* TC[],
                        const int offset,
                        ei_linked_point_t* curr,
@@ -176,11 +200,11 @@ void init_polygon_side(struct polygon_side* TC[],
       if (curr->point.y >= next->point.y) {
             side->y_max = curr->point.y;
             side->x_ymin = next->point.x;
-            TC[next->point.y - offset] = insert_side(TC[next->point.y - offset], side);
+            TC[next->point.y - offset] = insert_in_TC(TC[next->point.y - offset], side);
       } else {
             side->y_max = next->point.y;
             side->x_ymin = curr->point.x;
-            TC[curr->point.y - offset] = insert_side(TC[curr->point.y - offset], side);
+            TC[curr->point.y - offset] = insert_in_TC(TC[curr->point.y - offset], side);
       }
 }
 
@@ -219,7 +243,7 @@ struct polygon_side* sort_TCA(struct polygon_side* head) {
     while(head != NULL) {
           struct polygon_side* s = head;
           head = head->next;
-          new_head = insert_side(new_head, s);
+          new_head = insert_in_TCA(new_head, s);
     }
     return new_head;
 }
@@ -242,7 +266,6 @@ void ei_draw_polygon(ei_surface_t surface,
     	uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(n_surface);
 
         /* Initialisation */
-        const int width = pt_max.x - pt_min.x + 1;
         const int TC_size = pt_max.y - pt_min.y + 1;
         struct polygon_side* TC[TC_size];
         for(int i = 0; i < TC_size; i++) TC[i] = NULL;
@@ -273,7 +296,7 @@ void ei_draw_polygon(ei_surface_t surface,
             /* Remplissage (par paire)*/
             for(struct polygon_side *s = TCA; s != NULL && s->next != NULL; s = s->next->next) {
                 for(int x = floor(s->x_ymin); x < s->next->x_ymin; x++) {
-                    *((uint32_t*)n_buff + (x - pt_min.x) + width * y_scanline) = col;
+                    n_buff[x - pt_min.x + box.width * y_scanline] = col;
                 }
             }
             /* Passage à la scanline suivante */
@@ -500,19 +523,20 @@ int	ei_copy_surface(ei_surface_t destination,
 }
 
 /* Dessin de boutons en relief */
-ei_linked_point_t* convert_arc(const ei_point_t center,
-                               const int radius,
-                               const float first_angle,
-                               const float last_angle) {
+ei_linked_point_t* arc(ei_linked_point_t** first_point,
+                       const ei_point_t center,
+                       const int radius,
+                       const float first_angle,
+                       const float last_angle) {
     int step_nbr = radius; // a reflechir
     float angle_step = (last_angle - first_angle) / step_nbr;
 
-    ei_linked_point_t* first_point = malloc(sizeof(ei_linked_point_t));
-    assert(first_point != NULL);
-    first_point->point.x = center.x + radius * cos(first_angle);
-    first_point->point.y = center.y - radius * sin(first_angle);
-    first_point->next = NULL;
-    ei_linked_point_t* last_point = first_point;
+    *first_point = malloc(sizeof(ei_linked_point_t));
+    assert(*first_point != NULL);
+    (*first_point)->point.x = center.x + radius * cos(first_angle);
+    (*first_point)->point.y = center.y - radius * sin(first_angle);
+    (*first_point)->next = NULL;
+    ei_linked_point_t* last_point = *first_point;
     for(float angle = (first_angle + angle_step); angle < last_angle; angle += angle_step) {
         ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
         assert(point != NULL);
@@ -521,13 +545,38 @@ ei_linked_point_t* convert_arc(const ei_point_t center,
         last_point->next = point;
         last_point = last_point->next;
     }
-    // if (first_angle == fmod(last_angle, 2 * acos(-1))) {
-        /* cas du cercle -> a traiter dans le test pas ici */
-        ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
-        point->point.x = first_point->point.x;
-        point->point.y = first_point->point.y;
-        last_point->next = point;
-        point->next = NULL;
-    // }
-    return first_point;
+    last_point->next = NULL;
+    return last_point;
+}
+
+ei_linked_point_t* rounded_frame(ei_rect_t frame,
+                                 int radius) {
+    /* top left */
+    ei_point_t center = {frame.top_left.x + radius, frame.top_left.y + radius};
+    ei_linked_point_t* first_top_left = NULL;
+    ei_linked_point_t* last_top_left = arc(&first_top_left, center, radius, M_PI / 2, M_PI);
+    /* bottom left */
+    center.y += frame.size.height - 2 * radius;
+    ei_linked_point_t* first_bottom_left = NULL;
+    ei_linked_point_t* last_bottom_left = arc(&first_bottom_left, center, radius, M_PI, 3 * M_PI / 2);
+    last_top_left->next = first_bottom_left;
+    /* bottom right */
+    center.x += frame.size.width - 2 * radius;
+    ei_linked_point_t* first_bottom_right = NULL;
+    ei_linked_point_t* last_bottom_right = arc(&first_bottom_right, center, radius, 3 * M_PI / 2, 2 * M_PI);
+    last_bottom_left->next = first_bottom_right;
+    /* top right */
+    center.y -= frame.size.height - 2 * radius;
+    ei_linked_point_t* first_top_right = NULL;
+    ei_linked_point_t* last_top_right = arc(&first_top_right, center, radius, 0, M_PI / 2);
+    last_bottom_right->next = first_top_right;
+    /* final link */
+    ei_linked_point_t* last_point = malloc(sizeof(ei_linked_point_t));
+    assert(last_point != NULL);
+    last_point->point.x = first_top_left->point.x;
+    last_point->point.y = first_top_left->point.y;
+    last_top_right->next = last_point;
+    last_point->next = NULL;
+
+    return first_top_left;
 }

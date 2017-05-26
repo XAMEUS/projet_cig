@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 #include "hw_interface.h"
 #include "ei_utils.h"
@@ -150,11 +151,15 @@ void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 {
 	ei_color_t		color		= { 0, 0, 255, 255 };
 	ei_point_t	center = { 400, 300 };
-	ei_linked_point_t* pts = convert_arc(center, 200, 0, 2 * acos(-1));
+	ei_linked_point_t* pts = NULL;
+	ei_linked_point_t* last_point = arc(&pts, center, 200, 0, 2 * acos(-1));
 
-	for(ei_linked_point_t* p = pts; p != NULL; p = p->next) {
-		fprintf(stderr, "%d %d\n", p->point.x, p->point.y);
-	}
+	ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
+	assert(point != NULL);
+	point->point.x = pts->point.x;
+	point->point.y = pts->point.y;
+	last_point->next = point;
+	point->next = NULL;
 
 	ei_draw_polygon(surface, pts, color, clipper);
 
@@ -165,6 +170,20 @@ void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 	}
 }
 
+void test_rounded_frame(ei_surface_t surface, ei_rect_t* clipper) {
+	ei_color_t		color		= { 254, 153, 204, 255 };
+	ei_rect_t		frame 		= {{100, 100}, {300, 200}};
+	int				radius		= 50;
+	ei_linked_point_t* pts 		= rounded_frame(frame, radius);
+
+	ei_draw_polygon(surface, pts, color, clipper);
+
+	while(pts != NULL) {
+		ei_linked_point_t* p = pts;
+		pts = pts->next;
+		free(p);
+	}
+}
 
 /*
  * ei_main --
@@ -195,7 +214,8 @@ int ei_main(int argc, char** argv)
 	// test_line	(main_window, clipper_ptr);
 	// test_dot	(main_window, clipper_ptr);
 	// test_copy	(main_window, clipper_ptr);
-	test_circle (main_window, clipper_ptr);
+	// test_circle (main_window, clipper_ptr);
+	test_rounded_frame (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);
