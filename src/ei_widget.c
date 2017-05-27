@@ -22,6 +22,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     widget->wclass = class;
     widget->parent = parent;
     widget->wclass->setdefaultsfunc(widget);
+    widget->content_rect = &widget->screen_location;
     return widget;
 }
 
