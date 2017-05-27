@@ -47,7 +47,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
  *		(ie. calls \ref hw_quit).
  */
 void ei_app_free() {
-    // ROOT_WIDGET->wclass->releasefunc(ROOT_WIDGET); //TO_FINISH
+    ROOT_WIDGET->wclass->releasefunc(ROOT_WIDGET);
     free(ROOT_WIDGET);
     hw_surface_free(ROOT_SURFACE);
     hw_quit();
