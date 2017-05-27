@@ -19,6 +19,8 @@
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* parent) {
     ei_widgetclass_t* class = ei_widgetclass_from_name(class_name);
     ei_widget_t *widget = class->allocfunc();
+    widget->wclass = class;
+    widget->parent = parent;
     return widget;
 }
 
@@ -97,8 +99,6 @@ void ei_frame_configure (ei_widget_t* widget,
                             ei_surface_t* img,
                             ei_rect_t** img_rect,
                             ei_anchor_t* img_anchor) {
-    if(widget->wclass == NULL)
-        widget->wclass = ei_widgetclass_from_name("frame");
     return;
     if(requested_size)
         widget->requested_size = *requested_size;
