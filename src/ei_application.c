@@ -45,7 +45,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
  *		(ie. calls \ref hw_quit).
  */
 void ei_app_free() {
-    return;
+    hw_quit();
 }
 
 /**

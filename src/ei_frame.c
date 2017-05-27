@@ -37,7 +37,11 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    return;
+	// ei_rect_t		frame 		= {{100, 100}, {300, 200}};
+	// int				radius		= 50;
+	// ei_linked_point_t* pts 		= rounded_frame(widget->requested_size, radius);
+	// ei_draw_polygon(surface, pts, color, clipper);
+	// return;
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {

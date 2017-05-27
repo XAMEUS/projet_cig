@@ -1,5 +1,8 @@
 #include "ei_widget.h"
+#include "ei_frame.h"
+#include "ei_types.h"
 #include <stdlib.h>
+#include <assert.h>
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -92,7 +95,53 @@ void ei_frame_configure (ei_widget_t* widget,
                             ei_surface_t* img,
                             ei_rect_t** img_rect,
                             ei_anchor_t* img_anchor) {
-    return;
+    if(requested_size)
+        widget->requested_size = *requested_size;
+    else if(widget->requested_size.width == 0 && widget->requested_size.height == 0)
+        return; //TODO
+
+    if(color)
+        ((ei_frame_t*) widget)->bg_color = *color;
+    else if(((ei_frame_t*) widget)->bg_color.red == 0 &&
+            ((ei_frame_t*) widget)->bg_color.green == 0 &&
+            ((ei_frame_t*) widget)->bg_color.blue == 0 &&
+            ((ei_frame_t*) widget)->bg_color.alpha == 0)
+        ((ei_frame_t*) widget)->bg_color = ei_default_background_color;
+    if(border_width)
+        ((ei_frame_t*) widget)->border_width = *border_width;
+
+    if(relief)
+        ((ei_frame_t*) widget)->relief = *relief;
+    else if(((ei_frame_t*) widget)->relief == 0)
+        ((ei_frame_t*) widget)->relief = ei_relief_none;
+
+    if(text)
+        ((ei_frame_t*) widget)->text = *text;
+    if(text_font)
+        ((ei_frame_t*) widget)->font = *text_font;
+    else if(((ei_frame_t*) widget)->font == NULL)
+        ((ei_frame_t*) widget)->font = ei_default_font;
+    if(text_color)
+        ((ei_frame_t*) widget)->text_color = *text_color;
+    else if(((ei_frame_t*) widget)->text_color.red == 0 &&
+            ((ei_frame_t*) widget)->text_color.green == 0 &&
+            ((ei_frame_t*) widget)->text_color.blue == 0 &&
+            ((ei_frame_t*) widget)->text_color.alpha == 0)
+        ((ei_frame_t*) widget)->text_color = ei_font_default_color;
+    if(text_anchor)
+        ((ei_frame_t*) widget)->text_anchor = *text_anchor;
+    else if(((ei_frame_t*) widget)->text_anchor == 0)
+        ((ei_frame_t*) widget)->text_anchor = ei_anc_center;
+
+    if(img)
+        ((ei_frame_t*) widget)->img = *img;
+    if(img_rect)
+        ((ei_frame_t*) widget)->img_rect = *img_rect;
+    if(img_anchor)
+        ((ei_frame_t*) widget)->img_anchor = *img_anchor;
+    else if(((ei_frame_t*) widget)->img_anchor == 0)
+        ((ei_frame_t*) widget)->img_anchor = ei_anc_center;
+    assert(!((((ei_frame_t*) widget)->img != NULL) && (((ei_frame_t*) widget)->text != NULL)));
 }
 
 /**

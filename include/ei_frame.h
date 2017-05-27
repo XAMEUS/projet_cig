@@ -12,6 +12,8 @@
 typedef struct ei_frame_t {
     ei_widget_t widget;
     ei_relief_t relief;
+    ei_color_t bg_color;
+    int border_width;
     /* Optionnal text */
     char* text;
     ei_font_t font;
