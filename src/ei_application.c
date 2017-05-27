@@ -5,8 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
-static ei_widget_t *ROOT_WIDGET = NULL;
-static ei_surface_t ROOT_SURFACE = 0;
+static ei_widget_t *ROOT_WIDGET;
+static ei_surface_t ROOT_SURFACE;
 
 /**
  * \brief	Creates an application.
@@ -59,6 +59,23 @@ void ei_app_free() {
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run() {
+    ei_widget_t *w = ROOT_WIDGET;
+    while(1) {
+        printf("Test");
+        w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
+        if(w->children_head != NULL)
+            w = w->children_head;
+        else if(w->next_sibling != NULL)
+            w = w->next_sibling;
+        else {
+            while(w->parent != NULL && w->parent->next_sibling == NULL)
+                w = w->parent;
+            if(w->parent != NULL)
+                w = w->parent->next_sibling;
+            else
+                break;
+        }
+    }
     sleep(5);
 }
 
