@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 
+static ei_widget_t *ROOT_WIDGET = NULL;
+static ei_surface_t ROOT_SURFACE = 0;
+
 /**
  * \brief	Creates an application.
  *		<ul>
@@ -29,15 +32,14 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_frame_register_class();
     ei_toplevel_register_class();
     ei_button_register_class();
-    /* création du widget racine de la classe frame,*/
-    // ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
-
+    //TODO geometry managers.
     /* création d’une surface offscreen pour la gestion du picking :*/
     // surface=hw_surface_create(const ei_surface_t root, const ei_size_t* size, 0);
-
-    //Des trucs après?
-    hw_create_window(main_window_size, fullscreen);
-    return;
+    /* Root window */
+    ROOT_SURFACE = hw_create_window(main_window_size, fullscreen);
+    /* Root widget */
+    ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
+    ROOT_WIDGET = frame->allocfunc();
 }
 
 /**
@@ -45,6 +47,9 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
  *		(ie. calls \ref hw_quit).
  */
 void ei_app_free() {
+    // ROOT_WIDGET->wclass->releasefunc(ROOT_WIDGET); //TO_FINISH
+    free(ROOT_WIDGET);
+    hw_surface_free(ROOT_SURFACE);
     hw_quit();
 }
 
@@ -82,7 +87,7 @@ void ei_app_quit_request() {
  * @return 			The root widget.
  */
 ei_widget_t* ei_app_root_widget() {
-    return NULL;
+    return ROOT_WIDGET;
 }
 
 /**
@@ -92,5 +97,5 @@ ei_widget_t* ei_app_root_widget() {
  * @return 			The surface of the root window.
  */
 ei_surface_t ei_app_root_surface() {
-    return NULL;
+    return ROOT_SURFACE;
 }
