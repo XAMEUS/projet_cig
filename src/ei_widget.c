@@ -21,6 +21,10 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     ei_widget_t *widget = class->allocfunc();
     widget->wclass = class;
     widget->parent = parent;
+    if(parent->children_head == NULL)
+        parent->children_head = parent->children_tail = widget;
+    else
+        parent->children_tail = parent->children_tail->next_sibling = widget;
     widget->wclass->setdefaultsfunc(widget);
     widget->content_rect = &widget->screen_location;
     return widget;
