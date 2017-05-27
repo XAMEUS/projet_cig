@@ -21,6 +21,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     ei_widget_t *widget = class->allocfunc();
     widget->wclass = class;
     widget->parent = parent;
+    widget->wclass->setdefaultsfunc(widget);
     return widget;
 }
 
