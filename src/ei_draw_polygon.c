@@ -1,9 +1,10 @@
-#include "ei_draw.h"
-#include "ei_draw_ex.h"
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "ei_draw.h"
+
 
 struct polygon_side{
     int y_max;
@@ -46,41 +47,6 @@ void extremum_pts(const ei_linked_point_t* first_point,
     }
 }
 
-struct polygon_side* insert_in_TC(struct polygon_side* head,
-                                  struct polygon_side* side) {
-    if (head == NULL) {
-          head = side;
-          side->next = NULL;
-    } else if (side->y_max < head->y_max || (side->y_max == head->y_max && side->x_ymin < head->x_ymin)) {
-          side->next = head;
-          head = side;
-    } else {
-        struct polygon_side* prec = head, * curr = head->next;
-        while (curr != NULL) {
-            if (side->y_max < curr->y_max) {
-                prec->next = side;
-                side->next = curr;
-                break;
-            } else {
-                while (curr != NULL && side->y_max == curr->y_max) {
-                    if (side->x_ymin < curr->x_ymin) {
-                        prec->next = side;
-                        side->next = curr;
-                        return head;
-                    }
-                    prec = curr;
-                    curr = curr->next;
-                }
-                prec->next = side;
-                side->next = NULL;
-            }
-        }
-    prec->next = side;
-    side->next = NULL;
-    }
-    return head;
-}
-
 struct polygon_side* insert_in_TCA(struct polygon_side* head,
                                    struct polygon_side* side) {
     if (head == NULL) {
@@ -116,11 +82,13 @@ void init_polygon_side(struct polygon_side* TC[],
       if (curr->point.y >= next->point.y) {
             side->y_max = curr->point.y;
             side->x_ymin = next->point.x;
-            TC[next->point.y - offset] = insert_in_TC(TC[next->point.y - offset], side);
+            side->next = TC[next->point.y - offset];
+            TC[next->point.y - offset] = side;
       } else {
             side->y_max = next->point.y;
             side->x_ymin = curr->point.x;
-            TC[curr->point.y - offset] = insert_in_TC(TC[curr->point.y - offset], side);
+            side->next = TC[curr->point.y - offset];
+            TC[curr->point.y - offset] = side;
       }
 }
 

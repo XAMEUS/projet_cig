@@ -174,15 +174,29 @@ void test_rounded_frame(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 254, 153, 204, 255 };
 	ei_rect_t		frame 		= {{100, 100}, {300, 200}};
 	int				radius		= 50;
-	ei_linked_point_t* pts 		= rounded_frame(frame, radius);
+	int				h 			= frame.size.height/ 2;
+	ei_linked_point_t* pts 		= up_rounded_frame(frame, radius, h);
+
+	ei_color_t		color_bis		= { 255, 204, 229, 255 };
+	ei_linked_point_t* pts_bis		= down_rounded_frame(frame, radius, h);
 
 	ei_draw_polygon(surface, pts, color, clipper);
+	ei_draw_polygon(surface, pts_bis, color_bis, clipper);
 
 	while(pts != NULL) {
 		ei_linked_point_t* p = pts;
 		pts = pts->next;
 		free(p);
 	}
+}
+
+void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
+	ei_color_t		color		= { 0, 128, 255, 255 };
+	ei_rect_t		frame 		= {{100, 100}, {300, 200}};
+	int				radius		= 50;
+	int				h 			= frame.size.height/ 2;
+	ei_bool_t		push		= EI_FALSE;
+	ei_draw_button(surface, clipper, frame, radius, h, color, push);
 }
 
 /*
@@ -201,7 +215,7 @@ int ei_main(int argc, char** argv)
 
 	hw_init();
 
-	main_window = hw_create_window(&win_size, EI_FALSE);
+	main_window = hw_create_window(&win_size, EI_TRUE);
 
 	/* Lock the drawing surface, paint it white. */
 	hw_surface_lock	(main_window);
@@ -216,6 +230,7 @@ int ei_main(int argc, char** argv)
 	// test_copy	(main_window, clipper_ptr);
 	// test_circle (main_window, clipper_ptr);
 	test_rounded_frame (main_window, clipper_ptr);
+	// test_draw_button (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);
