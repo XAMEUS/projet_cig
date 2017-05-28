@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ei_frame.h"
+#include "ei_draw_ex.h"
 
 static void* ei_frame_alloc();
 static void ei_frame_release_func(struct ei_widget_t* widget);
@@ -42,6 +43,13 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	// ei_linked_point_t* pts 		= rounded_frame(widget->requested_size, radius);
 	// ei_draw_polygon(surface, pts, color, clipper);
 	// return;
+
+	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
+	hw_surface_lock	(surface);
+	ei_fill		(surface, &(((ei_frame_t*) widget)->bg_color), NULL);
+	hw_surface_unlock(surface);
+	hw_surface_update_rects(surface, NULL);
+
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {

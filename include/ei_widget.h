@@ -2,7 +2,7 @@
  * @file	ei_widget.h
  *
  * @brief 	API for widgets management: creation, configuration, hierarchy, redisplay.
- * 
+ *
  *  Created by François Bérard on 30.12.11.
  *  Copyright 2011 Ensimag. All rights reserved.
  */
@@ -11,6 +11,7 @@
 #define EI_WIDGET_H
 
 #include "ei_draw.h"
+#include "ei_draw_ex.h"
 #include "ei_widgetclass.h"
 #include "ei_placer.h"
 
@@ -20,7 +21,7 @@ struct ei_placer_params_t;
 
 /**
  * \brief	Fields common to all types of widget. Every widget classes specializes this base
- *		class by adding its own fields. 
+ *		class by adding its own fields.
  */
 typedef struct ei_widget_t {
 	ei_widgetclass_t*	wclass;		///< The class of widget of this widget. Avoid the field name "class" which is a keyword in C++.
@@ -118,7 +119,7 @@ ei_widget_t*		ei_widget_pick			(ei_point_t*		where);
  *				parameter "text" and "img" should be used (i.e. non-NULL). Defaults
  *				to NULL.
  * @param	text_font	The font used to display the text. Defaults to \ref ei_default_font.
- * @param	text_color	The color used to display the text. Defaults to 
+ * @param	text_color	The color used to display the text. Defaults to
  *				\ref ei_font_default_color.
  * @param	text_anchor	The anchor of the text, i.e. where it is placed whithin the widget
  *				when the size of the widget is bigger than the size of the text.

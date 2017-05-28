@@ -1,5 +1,7 @@
 #ifndef EI_DRAW_EX_H
 #define EI_DRAW_EX_H
+#include "ei_types.h"
+#include "hw_interface.h"
 
 #define M_PI    acos(-1)
 
