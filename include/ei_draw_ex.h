@@ -1,7 +1,5 @@
 #ifndef EI_DRAW_EX_H
 #define EI_DRAW_EX_H
-#include "ei_types.h"
-#include "hw_interface.h"
 
 #define M_PI    acos(-1)
 
@@ -14,6 +12,21 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
 ei_linked_point_t* rounded_frame(ei_rect_t frame,
                                 int radius);
 
+ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
+                                    int radius,
+                                    int h);
+
+ei_linked_point_t* down_rounded_frame(ei_rect_t frame,
+                                      int radius,
+                                      int h);
+
+void ei_draw_button(ei_surface_t surface,
+                  ei_rect_t* clipper,
+                  ei_rect_t frame,
+                  int radius,
+                  int h,
+                  ei_color_t color,
+                  ei_bool_t push);
 
 
 #endif
