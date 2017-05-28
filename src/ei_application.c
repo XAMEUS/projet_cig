@@ -61,7 +61,8 @@ void ei_app_free() {
 void ei_app_run() {
     ei_widget_t *w = ROOT_WIDGET;
     while(1) {
-        w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
+        if(w->placer_params || w == ROOT_WIDGET)
+            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
         if(w->children_head != NULL)
             w = w->children_head;
         else if(w->next_sibling != NULL)
