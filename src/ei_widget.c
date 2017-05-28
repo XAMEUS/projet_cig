@@ -105,11 +105,6 @@ void ei_frame_configure (ei_widget_t* widget,
                             ei_surface_t* img,
                             ei_rect_t** img_rect,
                             ei_anchor_t* img_anchor) {
-    if(requested_size)
-        widget->requested_size = *requested_size;
-    else if(widget->requested_size.width == 0 && widget->requested_size.height == 0)
-        return; //TODO
-
     if(color)
         ((ei_frame_t*) widget)->bg_color = *color;
     else if(((ei_frame_t*) widget)->bg_color.red == 0 &&
@@ -152,6 +147,22 @@ void ei_frame_configure (ei_widget_t* widget,
     else if(((ei_frame_t*) widget)->img_anchor == 0)
         ((ei_frame_t*) widget)->img_anchor = ei_anc_center;
     assert(!((((ei_frame_t*) widget)->img != NULL) && (((ei_frame_t*) widget)->text != NULL)));
+
+    if(requested_size)
+        widget->requested_size = *requested_size;
+    else if(widget->requested_size.width == 0 && widget->requested_size.height == 0) {
+            if(((ei_frame_t*) widget)->text)
+            hw_text_compute_size(((ei_frame_t*) widget)->text,
+                                 ((ei_frame_t*) widget)->font,
+                                 &widget->requested_size.width,
+                                 &widget->requested_size.height);
+        widget->requested_size.width += ((ei_frame_t*) widget)->border_width * 2;
+        widget->requested_size.height += ((ei_frame_t*) widget)->border_width * 2;
+        if(((ei_frame_t*) widget)->img) {
+            widget->requested_size.width += ((ei_frame_t*) widget)->img_rect->size.width;
+            widget->requested_size.height += ((ei_frame_t*) widget)->img_rect->size.height;
+        }
+    }
 }
 
 /**
