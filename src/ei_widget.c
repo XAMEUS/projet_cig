@@ -28,7 +28,6 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     else
         parent->children_tail = parent->children_tail->next_sibling = widget;
     widget->wclass->setdefaultsfunc(widget);
-    widget->content_rect = &(widget->screen_location);
     return widget;
 }
 
@@ -109,18 +108,11 @@ void ei_frame_configure (ei_widget_t* widget,
                             ei_anchor_t* img_anchor) {
     if(color)
         ((ei_frame_t*) widget)->bg_color = *color;
-    else if(((ei_frame_t*) widget)->bg_color.red == 0 &&
-            ((ei_frame_t*) widget)->bg_color.green == 0 &&
-            ((ei_frame_t*) widget)->bg_color.blue == 0 &&
-            ((ei_frame_t*) widget)->bg_color.alpha == 0)
-        ((ei_frame_t*) widget)->bg_color = ei_default_background_color;
     if(border_width)
         ((ei_frame_t*) widget)->border_width = *border_width;
 
     if(relief)
         ((ei_frame_t*) widget)->relief = *relief;
-    else if(((ei_frame_t*) widget)->relief == 0)
-        ((ei_frame_t*) widget)->relief = ei_relief_none;
     assert(!(text || img));
     if(text) {
         if((((ei_frame_t*) widget)->opt_type != TEXT)) {
