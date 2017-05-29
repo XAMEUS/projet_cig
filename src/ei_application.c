@@ -84,10 +84,12 @@ void ei_app_run() {
     }
     struct ei_event_t* event = malloc(sizeof(struct ei_event_t*));
     while(SHALL_WE_CONTINUE) {
+        //TODO redessin des zones 3.7
         hw_event_wait_next(event);
-        //TODO Analyse event voir 3.8.2
+        //TODO Analyse event voir 3.6
+        sleep(5);
+        SHALL_WE_CONTINUE = EI_FALSE;
     }
-    sleep(5);
 }
 
 /**
