@@ -44,45 +44,24 @@ void ei_place(struct ei_widget_t* widget,
     if (!(widget->placer_params)) /* init */
         widget->placer_params = calloc(1, sizeof(ei_placer_params_t));
     /* update */
-    if (anchor) {
-        widget->placer_params->anchor = anchor;
-        widget->placer_params->anchor_data = *anchor;
-    }
-    if (x) {
-        widget->placer_params->x = x;
-        widget->placer_params->x_data = *x;
-    }
-    if (y) {
-        widget->placer_params->y = y;
-        widget->placer_params->y_data = *y;
-    }
-    if (width) {
-        widget->placer_params->w = width;
-        widget->placer_params->w_data = *width;
-    }
-    if (height) {
-        widget->placer_params->h = height;
-        widget->placer_params->h_data = *height;
-    }
-    if (rel_x) {
-        widget->placer_params->rx = rel_x;
-        widget->placer_params->rx_data = *rel_x;
-    }
-    if (rel_y) {
-        widget->placer_params->ry = rel_y;
-        widget->placer_params->ry_data = *rel_y;
-    }
-    if (rel_width) {
-        widget->placer_params->rw = rel_width;
-        widget->placer_params->rw_data = *rel_width;
-    }
-    if (rel_height) {
-        widget->placer_params->rh = rel_height;
-        widget->placer_params->rh_data = *rel_height;
-    }
-    // ei_rect_t* screen_location = calloc(1, sizeof(ei_rect_t));
-    // widget->screen_location = *screen_location;
-    // widget->content_rect = screen_location;
+    if (anchor)
+        widget->placer_params->anchor_data = *(widget->placer_params->anchor = anchor);
+    if (x)
+        widget->placer_params->x_data = *(widget->placer_params->x = x);
+    if (y)
+        widget->placer_params->y_data = *(widget->placer_params->y = y);
+    if (width)
+        widget->placer_params->w_data = *(widget->placer_params->w = width);
+    if (height)
+        widget->placer_params->h_data = *(widget->placer_params->h = height);
+    if (rel_x)
+        widget->placer_params->rx_data = *(widget->placer_params->rx = rel_x);
+    if (rel_y)
+        widget->placer_params->ry_data = *(widget->placer_params->ry = rel_y);
+    if (rel_width)
+        widget->placer_params->rw_data = *(widget->placer_params->rw = rel_width);
+    if (rel_height)
+        widget->placer_params->rh_data = *(widget->placer_params->rh = rel_height);
     ei_placer_run(widget);
 }
 
