@@ -42,27 +42,54 @@ void ei_place(struct ei_widget_t* widget,
                 float* rel_width,
                 float* rel_height) {
     if (widget->placer_params) { // update
-        if (anchor)
+        if (anchor) {
+            widget->placer_params->anchor = anchor;
             widget->placer_params->anchor_data = *anchor;
-        if (x)
+        }
+        if (x) {
+            widget->placer_params->x = x;
             widget->placer_params->x_data = *x;
-        if (y)
+        }
+        if (y) {
+            widget->placer_params->y = y;
             widget->placer_params->y_data = *y;
-        if (width)
+        }
+        if (width) {
+            widget->placer_params->w = width;
             widget->placer_params->w_data = *width;
-        if (height)
+        }
+        if (height) {
+            widget->placer_params->h = height;
             widget->placer_params->h_data = *height;
-        if (rel_x)
+        }
+        if (rel_x) {
+            widget->placer_params->rx = rel_x;
             widget->placer_params->rx_data = *rel_x;
-        if (rel_y)
+        }
+        if (rel_y) {
+            widget->placer_params->ry = rel_y;
             widget->placer_params->ry_data = *rel_y;
-        if (rel_width)
+        }
+        if (rel_width) {
+            widget->placer_params->rw = rel_width;
             widget->placer_params->rw_data = *rel_width;
-        if (rel_height)
+        }
+        if (rel_height) {
+            widget->placer_params->rh = rel_height;
             widget->placer_params->rh_data = *rel_height;
+        }
     }
     else { // init
         ei_placer_params_t* params = malloc(sizeof(ei_placer_params_t));
+        params->anchor = anchor;
+        params->x = x;
+        params->y = y;
+        params->w = width;
+        params->h = height;
+        params->rx = rel_x;
+        params->ry = rel_y;
+        params->rw = rel_width;
+        params->rh = rel_height;
         if (anchor)
             params->anchor_data = *anchor;
         else
@@ -104,9 +131,9 @@ void ei_place(struct ei_widget_t* widget,
         else
             params->rh_data = 0.0;
         widget->placer_params = params;
-        ei_rect_t* screen_location = calloc(1, sizeof(ei_rect_t));
-        widget->screen_location = *screen_location;
-        widget->content_rect = screen_location;
+        // ei_rect_t* screen_location = calloc(1, sizeof(ei_rect_t));
+        // widget->screen_location = *screen_location;
+        // widget->content_rect = screen_location;
     }
     ei_placer_run(widget);
 }
@@ -123,6 +150,54 @@ void ei_place(struct ei_widget_t* widget,
  * @param	widget		The widget which geometry must be re-computed.
  */
 void ei_placer_run(struct ei_widget_t* widget) {
+
+    printf("widget %s\n", widget->wclass);
+    ei_placer_params_t* params = widget->placer_params;
+    printf("%*s %s %d\n", 20, "params->anchor :", params->anchor? "T":"F", params->anchor_data);
+    printf("%*s %s %d\n", 20, "params->x :", params->x? "T":"F", params->x_data);
+    printf("%*s %s %d\n", 20, "params->y :", params->y? "T":"F", params->y_data);
+    printf("%*s %s %d\n", 20, "params->w :", params->w? "T":"F", params->w_data);
+    printf("%*s %s %d\n", 20, "params->h :", params->h? "T":"F", params->h_data);
+    printf("%*s %s %f\n", 20, "params->rx :", params->rx? "T":"F", params->rx_data);
+    printf("%*s %s %f\n", 20, "params->ry :", params->ry? "T":"F", params->ry_data);
+    printf("%*s %s %f\n", 20, "params->rw :", params->rw? "T":"F", params->rw_data);
+    printf("%*s %s %f\n", 20, "params->rh :", params->rh? "T":"F", params->rh_data);
+    widget->screen_location.top_left.x = widget->placer_params->x_data +
+            widget->placer_params->rx_data * widget->parent->content_rect->size.width;
+    widget->screen_location.top_left.y = widget->placer_params->y_data +
+            widget->placer_params->ry_data * widget->parent->content_rect->size.height;
+    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
+    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
+
+    if (widget->placer_params->rw)
+        widget->screen_location.size.width = widget->placer_params->rw_data * widget->parent->content_rect->size.width;
+    else
+        widget->screen_location.size.width = widget->placer_params->w_data;
+    if (widget->placer_params->rh)
+        widget->screen_location.size.height = widget->placer_params->rh_data * widget->parent->content_rect->size.height;
+    else
+        widget->screen_location.size.height = widget->placer_params->h_data;
+
+    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
+    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
+    switch (widget->placer_params->anchor_data) {
+        case ei_anc_east:
+        case ei_anc_northeast:
+            widget->screen_location.top_left.x -= widget->screen_location.size.width;
+            break;
+        case ei_anc_south:
+        case ei_anc_southwest:
+            widget->screen_location.top_left.y -= widget->screen_location.size.height;
+            break;
+        case ei_anc_southeast:
+            widget->screen_location.top_left.x -= widget->screen_location.size.width;
+            widget->screen_location.top_left.y -= widget->screen_location.size.height;
+            break;
+        default:
+            break;
+    }
+    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
+    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
     return;
 }
 
