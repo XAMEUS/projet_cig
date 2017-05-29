@@ -115,17 +115,29 @@ void ei_placer_run(struct ei_widget_t* widget) {
         widget->screen_location.size.height = widget->placer_params->h_data;
 
     switch (widget->placer_params->anchor_data) {
+        case ei_anc_center:
+            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
+            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
+            break;
+        case ei_anc_west:
+            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
+            break;
         case ei_anc_east:
+            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
         case ei_anc_northeast:
             widget->screen_location.top_left.x -= widget->screen_location.size.width;
             break;
         case ei_anc_south:
+            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
         case ei_anc_southwest:
             widget->screen_location.top_left.y -= widget->screen_location.size.height;
             break;
         case ei_anc_southeast:
             widget->screen_location.top_left.x -= widget->screen_location.size.width;
             widget->screen_location.top_left.y -= widget->screen_location.size.height;
+            break;
+        case ei_anc_north:
+            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
             break;
         default:
             break;
