@@ -30,8 +30,10 @@ static void* ei_frame_alloc() {
 }
 
 static void ei_frame_release_func(struct ei_widget_t* widget) {
-    if(((ei_frame_t*) widget)->text) free(((ei_frame_t*) widget)->text);
-    if(((ei_frame_t*) widget)->img_rect) free(((ei_frame_t*) widget)->img_rect);
+	if(((ei_frame_t*) widget)->opt_type == TEXT)
+		free(((ei_frame_t*) widget)->opt.txt.text);
+	else if (((ei_frame_t*) widget)->opt_type == IMAGE)
+		free(((ei_frame_t*) widget)->opt.img.img_rect);
 }
 
 static void ei_frame_drawfunc(struct ei_widget_t*	widget,
@@ -49,11 +51,5 @@ static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_frame_t*) widget)->bg_color = ei_default_background_color;
 	((ei_frame_t*) widget)->border_width = 0;
 	((ei_frame_t*) widget)->relief = ei_relief_none;
-	((ei_frame_t*) widget)->text = NULL;
-	((ei_frame_t*) widget)->font = ei_default_font;
-	((ei_frame_t*) widget)->text_color = ei_font_default_color;
-	((ei_frame_t*) widget)->text_anchor = ei_anc_center;
-	((ei_frame_t*) widget)->img = NULL;
-	((ei_frame_t*) widget)->img_rect = NULL;
-	((ei_frame_t*) widget)->img_anchor = ei_anc_center;
+	((ei_frame_t*) widget)->opt_type = NONE;
 }
