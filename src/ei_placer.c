@@ -1,4 +1,7 @@
+#include <stdlib.h>
 #include "ei_placer.h"
+#include "ei_widget.h"
+
 /**
  * \brief	Configures the geometry of a widget using the "placer" geometry manager.
  * 		If the widget was already managed by another geometry manager, then it is first
@@ -28,7 +31,7 @@
  * @param	rel_height	The relative height of the widget: 0.0 corresponds to a height of 0,
  *				1.0 to the height of the master (defaults to 0.0).
  */
-void ei_place (struct ei_widget_t* widget,
+void ei_place(struct ei_widget_t* widget,
                 ei_anchor_t* anchor,
                 int* x,
                 int* y,
@@ -38,7 +41,58 @@ void ei_place (struct ei_widget_t* widget,
                 float* rel_y,
                 float* rel_width,
                 float* rel_height) {
-    return;
+    if (widget->placer_params) { // update
+        if (anchor)
+            widget->placer_params->anchor_data = *anchor;
+        if (x)
+            widget->placer_params->x_data = *x;
+        if (y)
+            widget->placer_params->y_data = *y;
+        if (width)
+            widget->placer_params->w_data = *width;
+        if (height)
+            widget->placer_params->h_data = *height;
+        if (rel_x)
+            widget->placer_params->rx_data = *rel_x;
+        if (rel_y)
+            widget->placer_params->ry_data = *rel_y;
+        if (rel_width)
+            widget->placer_params->rw_data = *rel_width;
+        if (rel_height)
+            widget->placer_params->rh_data = *rel_height;
+    }
+    else { // init
+        ei_placer_params_t params = {
+            anchor, ei_anc_none,
+            x, 0,
+            y, 0,
+            width, widget->requested_size.width,
+            height, widget->requested_size.height,
+            rel_x, 0.0,
+            rel_y, 0.0,
+            rel_width, 0.0,
+            rel_height, 0.0
+        };
+        if (anchor)
+        params.anchor_data = *anchor;
+        if (x)
+        params.x_data = *x;
+        if (y)
+        params.y_data = *y;
+        if (width)
+        params.w_data = *width;
+        if (height)
+        params.h_data = *height;
+        if (rel_x)
+        params.rx_data = *rel_x;
+        if (rel_y)
+        params.ry_data = *rel_y;
+        if (rel_width)
+        params.rw_data = *rel_width;
+        if (rel_height)
+        params.rh_data = *rel_height;
+        widget->placer_params = &params;
+    }
 }
 
 
