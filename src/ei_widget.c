@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <stdio.h>
+
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
  *		an existing widget.
@@ -113,7 +115,7 @@ void ei_frame_configure (ei_widget_t* widget,
 
     if(relief)
         ((ei_frame_t*) widget)->relief = *relief;
-    assert(!(text || img));
+    assert(!(text && img));
     if(text) {
         if((((ei_frame_t*) widget)->opt_type != TEXT)) {
             ((ei_frame_t*) widget)->opt_type = TEXT;
@@ -189,15 +191,14 @@ void ei_button_configure(ei_widget_t* widget,
                             ei_anchor_t* img_anchor,
                             ei_callback_t* callback,
                             void** user_param) {
-    // ei_frame_configure(widget, requested_size, color, border_width, relief,
-            // text_font, text_color, text_anchor, img, img_rect, img_anchor);
-    // if (corner_radius)
-    //     ((ei_button_t*) widget)->corner_radius = *corner_radius;
-    // else ((ei_button_t*) widget)->corner_radius = k_default_button_corner_radius;
-    // if (callback)
-    //     ((ei_button_t*) widget)->callback = *callback;
-    // if (user_param)
-    //     ((ei_button_t*) widget)->user_param = *user_param;
+    ei_frame_configure(widget, requested_size, color, border_width, relief,
+            text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
+    if (corner_radius)
+        ((ei_button_t*) widget)->corner_radius = *corner_radius;
+    if (callback)
+        ((ei_button_t*) widget)->callback = *callback;
+    if (user_param)
+        ((ei_button_t*) widget)->user_param = *user_param;
 
     return;
 }
