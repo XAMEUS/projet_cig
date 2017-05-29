@@ -41,6 +41,9 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
     ROOT_WIDGET = frame->allocfunc();
     ROOT_WIDGET->wclass = frame;
+    ROOT_WIDGET->requested_size = hw_surface_get_size(ROOT_SURFACE);
+    ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
+    ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
 }
 
 /**
@@ -61,7 +64,9 @@ void ei_app_free() {
 void ei_app_run() {
     ei_widget_t *w = ROOT_WIDGET;
     while(1) {
-        if(w->placer_params || w == ROOT_WIDGET)
+        if(w->placer_params)
+            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, w->parent->content_rect);
+        else if(w == ROOT_WIDGET)
             w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
         if(w->children_head != NULL)
             w = w->children_head;
