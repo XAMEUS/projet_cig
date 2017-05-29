@@ -62,36 +62,48 @@ void ei_place(struct ei_widget_t* widget,
             widget->placer_params->rh_data = *rel_height;
     }
     else { // init
-        ei_placer_params_t params = {
-            anchor, ei_anc_none,
-            x, 0,
-            y, 0,
-            width, widget->requested_size.width,
-            height, widget->requested_size.height,
-            rel_x, 0.0,
-            rel_y, 0.0,
-            rel_width, 0.0,
-            rel_height, 0.0
-        };
+        ei_placer_params_t* params = calloc(1, sizeof(ei_placer_params_t));
         if (anchor)
-        params.anchor_data = *anchor;
+            params->anchor_data = *anchor;
+        else
+            params->anchor_data = ei_anc_northwest;
         if (x)
-        params.x_data = *x;
+            params->x_data = *x;
+        else
+            params->x_data = 0;
         if (y)
-        params.y_data = *y;
+            params->y_data = *y;
+        else
+            params->y_data = 0;
         if (width)
-        params.w_data = *width;
+            params->w_data = *width;
+        else if (!rel_width)
+            params->w_data = widget->requested_size.width;
+        else
+            params->w_data = 0;
         if (height)
-        params.h_data = *height;
+            params->h_data = *height;
+        else if (!rel_height)
+            params->h_data = widget->requested_size.height;
+        else
+            params->w_data = 0;
         if (rel_x)
-        params.rx_data = *rel_x;
+            params->rx_data = *rel_x;
+        else
+            params->rx_data = 0.0;
         if (rel_y)
-        params.ry_data = *rel_y;
+            params->ry_data = *rel_y;
+        else
+            params->ry_data = 0.0;
         if (rel_width)
-        params.rw_data = *rel_width;
+            params->rw_data = *rel_width;
+        else
+            params->rw_data = 0.0;
         if (rel_height)
-        params.rh_data = *rel_height;
-        widget->placer_params = &params;
+            params->rh_data = *rel_height;
+        else
+            params->rh_data = 0.0;
+        widget->placer_params = params;
     }
 }
 
