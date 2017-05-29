@@ -257,7 +257,7 @@ int	ei_copy_surface(ei_surface_t destination,
 						dst_buff[d_pos + r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
 						dst_buff[d_pos + g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
 						dst_buff[d_pos + b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
-						dst_buff[d_pos + a] = 255;
+                        if(a >= 0) dst_buff[d_pos + a] = 255;
 					}
 				}
 			}

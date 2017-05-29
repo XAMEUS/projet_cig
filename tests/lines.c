@@ -229,8 +229,8 @@ int ei_main(int argc, char** argv)
 	// test_dot	(main_window, clipper_ptr);
 	// test_copy	(main_window, clipper_ptr);
 	// test_circle (main_window, clipper_ptr);
-	test_rounded_frame (main_window, clipper_ptr);
-	// test_draw_button (main_window, clipper_ptr);
+	// test_rounded_frame (main_window, clipper_ptr);
+	test_draw_button (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);
