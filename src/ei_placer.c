@@ -151,23 +151,11 @@ void ei_place(struct ei_widget_t* widget,
  */
 void ei_placer_run(struct ei_widget_t* widget) {
 
-    printf("widget %s\n", widget->wclass);
     ei_placer_params_t* params = widget->placer_params;
-    printf("%*s %s %d\n", 20, "params->anchor :", params->anchor? "T":"F", params->anchor_data);
-    printf("%*s %s %d\n", 20, "params->x :", params->x? "T":"F", params->x_data);
-    printf("%*s %s %d\n", 20, "params->y :", params->y? "T":"F", params->y_data);
-    printf("%*s %s %d\n", 20, "params->w :", params->w? "T":"F", params->w_data);
-    printf("%*s %s %d\n", 20, "params->h :", params->h? "T":"F", params->h_data);
-    printf("%*s %s %f\n", 20, "params->rx :", params->rx? "T":"F", params->rx_data);
-    printf("%*s %s %f\n", 20, "params->ry :", params->ry? "T":"F", params->ry_data);
-    printf("%*s %s %f\n", 20, "params->rw :", params->rw? "T":"F", params->rw_data);
-    printf("%*s %s %f\n", 20, "params->rh :", params->rh? "T":"F", params->rh_data);
     widget->screen_location.top_left.x = widget->placer_params->x_data +
             widget->placer_params->rx_data * widget->parent->content_rect->size.width;
     widget->screen_location.top_left.y = widget->placer_params->y_data +
             widget->placer_params->ry_data * widget->parent->content_rect->size.height;
-    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
-    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
 
     if (widget->placer_params->rw)
         widget->screen_location.size.width = widget->placer_params->rw_data * widget->parent->content_rect->size.width;
@@ -178,8 +166,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
     else
         widget->screen_location.size.height = widget->placer_params->h_data;
 
-    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
-    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
     switch (widget->placer_params->anchor_data) {
         case ei_anc_east:
         case ei_anc_northeast:
@@ -196,9 +182,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
         default:
             break;
     }
-    printf("screen_location.top_left : %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y);
-    printf("screen_location.size : %d %d\n", widget->screen_location.size.width, widget->screen_location.size.height);
-    return;
 }
 
 
