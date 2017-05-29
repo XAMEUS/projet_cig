@@ -429,14 +429,14 @@ void ei_draw_button(ei_surface_t surface,
     ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
     ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
 
-    float shade_factor = 0.05, tint_factor = 0.95;
-    ei_color_t shade = {color.red * (1 - shade_factor),
-                        color.green * (1 - shade_factor),
-                        color.blue * (1 - shade_factor),
+    float factor = 0.1;
+    ei_color_t shade = {color.red * (1 - factor),
+                        color.green * (1 - factor),
+                        color.blue * (1 - factor),
                         color.alpha};
-    ei_color_t tint = {color.red + (255 - color.red) * tint_factor,
-                       color.green + (255 - color.green) * tint_factor,
-                       color.blue + (255 - color.blue) * tint_factor,
+    ei_color_t tint = {color.red + (255 - color.red) * factor,
+                       color.green + (255 - color.green) * factor,
+                       color.blue + (255 - color.blue) * factor,
                        color.alpha};
     if (border) {
         if (push) {

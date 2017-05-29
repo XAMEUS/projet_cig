@@ -182,6 +182,10 @@ void ei_placer_run(struct ei_widget_t* widget) {
         default:
             break;
     }
+    if (widget->parent) {
+        widget->screen_location.top_left.x += widget->parent->screen_location.top_left.x;
+        widget->screen_location.top_left.y += widget->parent->screen_location.top_left.y;
+    }
 }
 
 
