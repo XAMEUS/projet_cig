@@ -7,6 +7,7 @@
 
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE;
+static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
 
 /**
  * \brief	Creates an application.
@@ -81,6 +82,11 @@ void ei_app_run() {
                 break;
         }
     }
+    struct ei_event_t* event = malloc(sizeof(struct ei_event_t*));
+    while(SHALL_WE_CONTINUE) {
+        hw_event_wait_next(event);
+        //TODO Analyse event voir 3.8.2
+    }
     sleep(5);
 }
 
@@ -100,7 +106,7 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
  *		when pressing the "Escape" key).
  */
 void ei_app_quit_request() {
-    return;
+    SHALL_WE_CONTINUE = EI_FALSE;
 }
 
 /**
