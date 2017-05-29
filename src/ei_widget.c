@@ -120,48 +120,47 @@ void ei_frame_configure (ei_widget_t* widget,
         ((ei_frame_t*) widget)->relief = *relief;
     else if(((ei_frame_t*) widget)->relief == 0)
         ((ei_frame_t*) widget)->relief = ei_relief_none;
-
-    if(text)
-        ((ei_frame_t*) widget)->text = *text;
-    if(text_font)
-        ((ei_frame_t*) widget)->font = *text_font;
-    else if(((ei_frame_t*) widget)->font == NULL)
-        ((ei_frame_t*) widget)->font = ei_default_font;
-    if(text_color)
-        ((ei_frame_t*) widget)->text_color = *text_color;
-    else if(((ei_frame_t*) widget)->text_color.red == 0 &&
-            ((ei_frame_t*) widget)->text_color.green == 0 &&
-            ((ei_frame_t*) widget)->text_color.blue == 0 &&
-            ((ei_frame_t*) widget)->text_color.alpha == 0)
-        ((ei_frame_t*) widget)->text_color = ei_font_default_color;
-    if(text_anchor)
-        ((ei_frame_t*) widget)->text_anchor = *text_anchor;
-    else if(((ei_frame_t*) widget)->text_anchor == 0)
-        ((ei_frame_t*) widget)->text_anchor = ei_anc_center;
-
-    if(img)
-        ((ei_frame_t*) widget)->img = *img;
-    if(img_rect)
-        ((ei_frame_t*) widget)->img_rect = *img_rect;
-    if(img_anchor)
-        ((ei_frame_t*) widget)->img_anchor = *img_anchor;
-    else if(((ei_frame_t*) widget)->img_anchor == 0)
-        ((ei_frame_t*) widget)->img_anchor = ei_anc_center;
-    assert(!((((ei_frame_t*) widget)->img != NULL) && (((ei_frame_t*) widget)->text != NULL)));
-
+    assert(!(text || img));
+    if(text) {
+        if((((ei_frame_t*) widget)->opt_type != TEXT)) {
+            ((ei_frame_t*) widget)->opt_type = TEXT;
+            ((ei_frame_t*) widget)->opt.txt.font = ei_default_font;
+            ((ei_frame_t*) widget)->opt.txt.text_color = ei_font_default_color;
+            ((ei_frame_t*) widget)->opt.txt.text_anchor = ei_anc_center;
+        }
+        ((ei_frame_t*) widget)->opt.txt.text = *text;
+        if(text_font)
+            ((ei_frame_t*) widget)->opt.txt.font = *text_font;
+        if(text_color)
+            ((ei_frame_t*) widget)->opt.txt.text_color = *text_color;
+        if(text_anchor)
+            ((ei_frame_t*) widget)->opt.txt.text_anchor = *text_anchor;
+    }
+    else if(img) {
+        if((((ei_frame_t*) widget)->opt_type != IMAGE)) {
+            ((ei_frame_t*) widget)->opt_type = IMAGE;
+            ((ei_frame_t*) widget)->opt.img.img_rect = NULL;
+            ((ei_frame_t*) widget)->opt.img.img_anchor = ei_anc_center;
+        }
+        ((ei_frame_t*) widget)->opt.img.img = *img;
+        if(img_rect)
+            ((ei_frame_t*) widget)->opt.img.img_rect = *img_rect;
+        if(img_anchor)
+            ((ei_frame_t*) widget)->opt.img.img_anchor = *img_anchor;
+    }
     if(requested_size)
         widget->requested_size = *requested_size;
     else if(widget->requested_size.width == 0 && widget->requested_size.height == 0) {
-            if(((ei_frame_t*) widget)->text)
-            hw_text_compute_size(((ei_frame_t*) widget)->text,
-                                 ((ei_frame_t*) widget)->font,
+            if(((ei_frame_t*) widget)->opt_type == TEXT)
+            hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text,
+                                 ((ei_frame_t*) widget)->opt.txt.font,
                                  &widget->requested_size.width,
                                  &widget->requested_size.height);
         widget->requested_size.width += ((ei_frame_t*) widget)->border_width * 2;
         widget->requested_size.height += ((ei_frame_t*) widget)->border_width * 2;
-        if(((ei_frame_t*) widget)->img) {
-            widget->requested_size.width += ((ei_frame_t*) widget)->img_rect->size.width;
-            widget->requested_size.height += ((ei_frame_t*) widget)->img_rect->size.height;
+        if(((ei_frame_t*) widget)->opt_type == IMAGE) {
+            widget->requested_size.width += ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
+            widget->requested_size.height += ((ei_frame_t*) widget)->opt.img.img_rect->size.height;
         }
     }
 }
