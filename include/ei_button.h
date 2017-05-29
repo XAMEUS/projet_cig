@@ -15,6 +15,7 @@ typedef struct ei_button_t {
     int corner_radius;
     ei_callback_t callback;
 	void* user_param;
+    ei_bool_t push;
 } ei_button_t;
 
 
