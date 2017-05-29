@@ -52,4 +52,5 @@ static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_frame_t*) widget)->border_width = 0;
 	((ei_frame_t*) widget)->relief = ei_relief_none;
 	((ei_frame_t*) widget)->opt_type = NONE;
+	widget->content_rect = &(widget->screen_location);
 }
