@@ -194,9 +194,9 @@ void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 0, 128, 255, 255 };
 	ei_rect_t		frame 		= {{100, 100}, {300, 200}};
 	int				radius		= 50;
-	int				h 			= frame.size.height/ 2;
+	int				border		= 10;
 	ei_bool_t		push		= EI_FALSE;
-	ei_draw_button(surface, clipper, frame, radius, h, color, push);
+	ei_draw_button(surface, clipper, frame, radius, border, color, push);
 }
 
 /*
@@ -229,8 +229,8 @@ int ei_main(int argc, char** argv)
 	// test_dot	(main_window, clipper_ptr);
 	// test_copy	(main_window, clipper_ptr);
 	// test_circle (main_window, clipper_ptr);
-	test_rounded_frame (main_window, clipper_ptr);
-	// test_draw_button (main_window, clipper_ptr);
+	// test_rounded_frame (main_window, clipper_ptr);
+	test_draw_button (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);

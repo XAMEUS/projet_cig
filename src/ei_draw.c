@@ -257,7 +257,7 @@ int	ei_copy_surface(ei_surface_t destination,
 						dst_buff[d_pos + r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
 						dst_buff[d_pos + g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
 						dst_buff[d_pos + b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
-						dst_buff[d_pos + a] = 255;
+                        if(a >= 0) dst_buff[d_pos + a] = 255;
 					}
 				}
 			}
@@ -421,11 +421,13 @@ void ei_draw_button(ei_surface_t surface,
                     ei_rect_t* clipper,
                     ei_rect_t frame,
                     int radius,
-                    int h,
+                    int border,
                     ei_color_t color,
                     ei_bool_t push){
-    ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, h);
-    ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, h);
+    int min = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
+    assert(border >= 0 && border <= min);
+    ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
+    ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
 
     float shade_factor = 0.05, tint_factor = 0.95;
     ei_color_t shade = {color.red * (1 - shade_factor),
@@ -436,20 +438,20 @@ void ei_draw_button(ei_surface_t surface,
                        color.green + (255 - color.green) * tint_factor,
                        color.blue + (255 - color.blue) * tint_factor,
                        color.alpha};
-    if (push) {
-        ei_draw_polygon(surface, up_pts, shade, clipper);
-        ei_draw_polygon(surface, down_pts, tint, clipper);
-    } else {
-        ei_draw_polygon(surface, up_pts, shade, clipper);
-        ei_draw_polygon(surface, down_pts, tint, clipper);
+    if (border) {
+        if (push) {
+            ei_draw_polygon(surface, up_pts, shade, clipper);
+            ei_draw_polygon(surface, down_pts, tint, clipper);
+        } else {
+            ei_draw_polygon(surface, up_pts, tint, clipper);
+            ei_draw_polygon(surface, down_pts, shade, clipper);
+        }
     }
-    //int width_offset = 0.01 * frame.size.width;
-    // int height_offset = 0.01 * frame.size.height;
-    int width_offset = 10, height_offset = 10;
-    frame.size.width -= 2 * width_offset;
-    frame.size.height -= 2 * height_offset;
-    frame.top_left.x +=  width_offset;
-    frame.top_left.y += height_offset;
+
+    frame.size.width -= 2 * border;
+    frame.size.height -= 2 * border;
+    frame.top_left.x +=  border;
+    frame.top_left.y += border;
     ei_linked_point_t* all_pts = rounded_frame(frame, radius);
     ei_draw_polygon(surface, all_pts, color, clipper);
     // ei_draw_text inside
