@@ -105,8 +105,8 @@ void ei_place(struct ei_widget_t* widget,
             params->rh_data = 0.0;
         widget->placer_params = params;
         ei_rect_t* screen_location = malloc(sizeof(ei_rect_t));
-        widget->screen_location = screen_location;
-        widget->content_rect = &screen_location;
+        widget->screen_location = *screen_location;
+        widget->content_rect = screen_location;
     }
     ei_placer_run(widget);
 }
