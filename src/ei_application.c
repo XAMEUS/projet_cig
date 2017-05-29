@@ -41,6 +41,9 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
     ROOT_WIDGET = frame->allocfunc();
     ROOT_WIDGET->wclass = frame;
+    ROOT_WIDGET->requested_size = hw_surface_get_size(ROOT_SURFACE);
+    ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
+    ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
 }
 
 /**

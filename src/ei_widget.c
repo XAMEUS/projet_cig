@@ -17,6 +17,7 @@
  * @return			The newly created widget, or NULL if there was an error.
  */
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* parent) {
+    assert(parent);
     ei_widgetclass_t* class = ei_widgetclass_from_name(class_name);
     ei_widget_t *widget = class->allocfunc();
     widget->wclass = class;
@@ -26,7 +27,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     else
         parent->children_tail = parent->children_tail->next_sibling = widget;
     widget->wclass->setdefaultsfunc(widget);
-    widget->content_rect = &widget->screen_location;
+    widget->content_rect = &(widget->screen_location);
     return widget;
 }
 
