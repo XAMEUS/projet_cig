@@ -78,6 +78,29 @@ void ei_place(struct ei_widget_t* widget,
  */
 void ei_placer_run(struct ei_widget_t* widget) {
 
+    if (!(widget->placer_params->anchor))
+        widget->placer_params->anchor_data = ei_anc_northwest;
+    if (!(widget->placer_params->x))
+        widget->placer_params->x_data = 0;
+    if (!(widget->placer_params->y))
+        widget->placer_params->y_data = 0;
+    if (!(widget->placer_params->w) && widget->placer_params->rw)
+        widget->placer_params->w_data = widget->requested_size.width;
+    else if (!(widget->placer_params->w))
+        widget->placer_params->w_data = 0;
+    if (!(widget->placer_params->h) && widget->placer_params->rh)
+        widget->placer_params->h_data = widget->requested_size.height;
+    else if (!(widget->placer_params->h))
+        widget->placer_params->h_data = 0;
+    if (!(widget->placer_params->rx))
+        widget->placer_params->rx_data = 0.0;
+    if (!(widget->placer_params->ry))
+        widget->placer_params->ry_data = 0.0;
+    if (!(widget->placer_params->rw))
+        widget->placer_params->rw_data = 0.0;
+    if (!(widget->placer_params->rh))
+        widget->placer_params->rh_data = 0.0;
+
     ei_placer_params_t* params = widget->placer_params;
     widget->screen_location.top_left.x = widget->placer_params->x_data +
             widget->placer_params->rx_data * widget->parent->content_rect->size.width;
