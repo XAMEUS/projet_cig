@@ -42,7 +42,12 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_frame_t*) widget)->border_width, ((ei_frame_t*) widget)->bg_color, EI_FALSE);
 	hw_surface_unlock(surface);
 	hw_surface_update_rects(surface, NULL);
-
+	hw_surface_lock	(pick_surface);
+	ei_draw_polygon(pick_surface,
+					rounded_frame(widget->screen_location, 0),
+					((ei_frame_t*) widget)->bg_color,
+					clipper);
+	hw_surface_unlock(pick_surface);
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {

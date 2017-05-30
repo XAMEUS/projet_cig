@@ -2,9 +2,11 @@
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
 #include "ei_picking.h"
+#include "ei_event.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "ei_button.h"
 
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
@@ -81,12 +83,15 @@ void ei_app_run() {
                 break;
         }
     }
-    struct ei_event_t* event = malloc(sizeof(struct ei_event_t*));
+    struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
     while(SHALL_WE_CONTINUE) {
         //TODO redessin des zones 3.7
         hw_event_wait_next(event);
-        //TODO Analyse event voir 3.6
-        ei_app_quit_request();
+        if(event->type == ei_ev_keydown)
+            ei_app_quit_request();
+        else if(event->type == ei_ev_mouse_buttondown) {
+            ((ei_button_t*) ei_widget_pick(&(event->param.mouse.where)))->callback(NULL, NULL, NULL);
+        }
     }
 }
 
