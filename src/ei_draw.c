@@ -416,7 +416,15 @@ ei_linked_point_t* down_rounded_frame(ei_rect_t frame,
     return first_bottom_right;
 }
 
-/* experimental / a ajuster aux params de widget button */
+void free_linked_point(ei_linked_point_t* first_point) {
+    ei_linked_point_t* next_point;
+    while (first_point != NULL) {
+        next_point = first_point->next;
+        free(first_point);
+        first_point = next_point;
+    }
+}
+
 void ei_draw_button(ei_surface_t surface,
                     ei_rect_t* clipper,
                     ei_rect_t frame,
@@ -424,11 +432,6 @@ void ei_draw_button(ei_surface_t surface,
                     int border,
                     ei_color_t color,
                     ei_bool_t push){
-    int min = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
-    assert(border >= 0 && border <= min);
-    ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
-    ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
-
     float factor = 0.1;
     ei_color_t shade = {color.red * (1 - factor),
                         color.green * (1 - factor),
@@ -438,7 +441,12 @@ void ei_draw_button(ei_surface_t surface,
                        color.green + (255 - color.green) * factor,
                        color.blue + (255 - color.blue) * factor,
                        color.alpha};
+
     if (border) {
+        int min = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
+        assert(border <= min);
+        ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
+        ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
         if (push) {
             ei_draw_polygon(surface, up_pts, shade, clipper);
             ei_draw_polygon(surface, down_pts, tint, clipper);
@@ -446,6 +454,8 @@ void ei_draw_button(ei_surface_t surface,
             ei_draw_polygon(surface, up_pts, tint, clipper);
             ei_draw_polygon(surface, down_pts, shade, clipper);
         }
+        free_linked_point(up_pts);
+        free_linked_point(down_pts);
     }
 
     frame.size.width -= 2 * border;
@@ -454,5 +464,5 @@ void ei_draw_button(ei_surface_t surface,
     frame.top_left.y += border;
     ei_linked_point_t* all_pts = rounded_frame(frame, radius);
     ei_draw_polygon(surface, all_pts, color, clipper);
-    // ei_draw_text inside
+    free_linked_point(all_pts);
 }
