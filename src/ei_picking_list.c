@@ -7,7 +7,8 @@ list_picking create_picker() {
     list_picking list = {0, 1, data, NULL};
     return list;
 }
-void add_picker(list_picking list, ei_widget_t* new_widget) {
+void add_picker(list_picking *ptr_list, ei_widget_t* new_widget) {
+    list_picking list = *ptr_list;
     uint32_t indice;
     if(list.to_add) {
         indice = list.to_add->nb;
@@ -18,15 +19,15 @@ void add_picker(list_picking list, ei_widget_t* new_widget) {
             list.alloc_size <<= 1;
             list.data = realloc(list.data, list.alloc_size);
         }
-        indice = ++list.len;
-
+        indice = list.len++;
     }
     list.data[indice] = new_widget;
     new_widget->pick_id = indice;
     new_widget->pick_color = (ei_color_t *) &(new_widget->pick_id);
 }
 
-void del_picker(list_picking list, uint32_t pick_id) {
+void del_picker(list_picking *ptr_list, uint32_t pick_id) {
+    list_picking list = *ptr_list;
     assert(pick_id <= list.len && list.data[pick_id] != NULL);
     list.data[pick_id]->pick_color = NULL;
     if(pick_id == list.len) list.len--;

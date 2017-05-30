@@ -65,9 +65,9 @@ void ei_app_run() {
     ei_widget_t *w = ROOT_WIDGET;
     while(1) {
         if(w->placer_params)
-            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, w->parent->content_rect);
+            w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
         else if(w == ROOT_WIDGET)
-            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
+            w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
         if(w->children_head != NULL)
             w = w->children_head;
         else if(w->next_sibling != NULL)
@@ -110,6 +110,6 @@ ei_surface_t ei_app_picking_object() {
     return PICKING;
 }
 
-list_picking ei_app_picking_list() {
-    return LIST_PICKING;
+list_picking* ei_app_picking_list() {
+    return &LIST_PICKING;
 }

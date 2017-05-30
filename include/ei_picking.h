@@ -34,12 +34,12 @@ typedef struct list_picking {
  * \brief	Returns the "picking list" of the application.
  * @return 			The picking list.
  */
-list_picking ei_app_picking_list();
+list_picking* ei_app_picking_list();
 
 
 list_picking create_picker();
-void add_picker(list_picking list, ei_widget_t* new_widget);
-void del_picker(list_picking list, uint32_t pick_id);
+void add_picker(list_picking *ptr_list, ei_widget_t* new_widget);
+void del_picker(list_picking *ptr_list, uint32_t pick_id);
 ei_widget_t* take_picker(list_picking list, uint32_t pick_id);
 void remove_picker(list_picking list);
 
