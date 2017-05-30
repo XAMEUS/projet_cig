@@ -1,7 +1,7 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
-#include "ei_debug.h"
+// #include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
 #include <stdlib.h>
@@ -51,6 +51,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->requested_size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
+    add_picker(LIST_PICKING, ROOT_WIDGET);
 }
 
 /**
@@ -96,7 +97,9 @@ void ei_app_run() {
             if(event->type == ei_ev_keydown)
                 ei_app_quit_request();
             else if(event->type == ei_ev_mouse_buttondown) {
-                ((ei_button_t*) ei_widget_pick(&(event->param.mouse.where)))->callback(NULL, NULL, NULL);
+                ((ei_button_t*) ei_widget_pick(
+                    &(event->param.mouse.where)))
+                ->callback(NULL, NULL, NULL);
             }
         }
     #ifdef DEBUG

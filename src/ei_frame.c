@@ -45,7 +45,7 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	hw_surface_lock	(pick_surface);
 	ei_draw_polygon(pick_surface,
 					rounded_frame(widget->screen_location, 0),
-					((ei_frame_t*) widget)->bg_color,
+					*(widget->pick_color),
 					clipper);
 	hw_surface_unlock(pick_surface);
 }

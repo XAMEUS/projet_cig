@@ -56,12 +56,10 @@ void ei_widget_destroy (ei_widget_t* widget) {
 ei_widget_t* ei_widget_pick(ei_point_t* where) {
     ei_surface_t pick_surface = ei_app_picking_object();
     ei_size_t pick_size = hw_surface_get_size(pick_surface);
-    uint32_t number = pick_size.width
-                    *    where->y
-                     + where->x;
+    uint32_t number = pick_size.width * where->y + where->x;
     hw_surface_lock(pick_surface);
     uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(pick_surface);
-    ei_widget_t * result = take_picker(*ei_app_picking_list(), n_buff[number]);
+    ei_widget_t * result = take_picker(ei_app_picking_list(), n_buff[number]);
     hw_surface_unlock(pick_surface);
     return result;
 }
