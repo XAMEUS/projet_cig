@@ -1,6 +1,7 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
+#include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
 #include <stdlib.h>
@@ -64,35 +65,44 @@ void ei_app_free() {
 }
 
 void ei_app_run() {
-    ei_widget_t *w = ROOT_WIDGET;
+    #ifdef DEBUG
+    frequency_counter_t* fc = malloc(sizeof(frequency_counter_t));
+    frequency_init(fc);
     while(1) {
-        if(w->placer_params)
-            w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
-        else if(w == ROOT_WIDGET)
-            w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
-        if(w->children_head != NULL)
-            w = w->children_head;
-        else if(w->next_sibling != NULL)
-            w = w->next_sibling;
-        else {
-            while(w->parent != NULL && w->parent->next_sibling == NULL)
-                w = w->parent;
-            if(w->parent != NULL)
-                w = w->parent->next_sibling;
-            else
-                break;
+    #endif
+        ei_widget_t *w = ROOT_WIDGET;
+        while(1) {
+            if(w->placer_params)
+                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
+            else if(w == ROOT_WIDGET)
+                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
+            if(w->children_head != NULL)
+                w = w->children_head;
+            else if(w->next_sibling != NULL)
+                w = w->next_sibling;
+            else {
+                while(w->parent != NULL && w->parent->next_sibling == NULL)
+                    w = w->parent;
+                if(w->parent != NULL)
+                    w = w->parent->next_sibling;
+                else
+                    break;
+            }
         }
-    }
-    struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
-    while(SHALL_WE_CONTINUE) {
-        //TODO redessin des zones 3.7
-        hw_event_wait_next(event);
-        if(event->type == ei_ev_keydown)
-            ei_app_quit_request();
-        else if(event->type == ei_ev_mouse_buttondown) {
-            ((ei_button_t*) ei_widget_pick(&(event->param.mouse.where)))->callback(NULL, NULL, NULL);
+        struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
+        while(SHALL_WE_CONTINUE) {
+            //TODO redessin des zones 3.7
+            hw_event_wait_next(event);
+            if(event->type == ei_ev_keydown)
+                ei_app_quit_request();
+            else if(event->type == ei_ev_mouse_buttondown) {
+                ((ei_button_t*) ei_widget_pick(&(event->param.mouse.where)))->callback(NULL, NULL, NULL);
+            }
         }
+    #ifdef DEBUG
+        frequency_tick(fc);
     }
+    #endif
 }
 
 void ei_app_invalidate_rect(ei_rect_t* rect) {
