@@ -54,7 +54,6 @@ void ei_widget_destroy (ei_widget_t* widget) {
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick(ei_point_t* where) {
-    printf("%d %d\n", where->x, where->y);
     ei_surface_t pick_surface = ei_app_picking_object();
     ei_size_t pick_size = hw_surface_get_size(pick_surface);
     uint32_t number = pick_size.width

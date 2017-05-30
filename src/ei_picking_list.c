@@ -2,50 +2,53 @@
 #include <assert.h>
 #include <stdlib.h>
 
-list_picking create_picker() {
-    ei_widget_t **data = malloc(sizeof(ei_widget_t *));
-    list_picking list = {0, 1, data, NULL};
+list_picking *create_picker() {
+    ei_widget_t **data = calloc(1, sizeof(ei_widget_t *));
+    list_picking *list = calloc(1, sizeof(list_picking));
+    list->alloc_size = 1;
+    list->data = data;
     return list;
 }
 void add_picker(list_picking *ptr_list, ei_widget_t* new_widget) {
-    list_picking list = *ptr_list;
     uint32_t indice;
-    if(list.to_add) {
-        indice = list.to_add->nb;
-        list.to_add = list.to_add->next;
+    if(ptr_list->to_add) {
+        indice = ptr_list->to_add->nb;
+        ptr_list->to_add = ptr_list->to_add->next;
     }
     else {
-        if(list.len == list.alloc_size) {
-            list.alloc_size <<= 1;
-            list.data = realloc(list.data, list.alloc_size);
+        if(ptr_list->len == ptr_list->alloc_size) {
+            ptr_list->alloc_size <<= 1;
+            ptr_list->data = realloc(ptr_list->data, ptr_list->alloc_size);
         }
-        indice = list.len++;
+        indice = ptr_list->len++;
     }
-    list.data[indice] = new_widget;
+    ptr_list->data[indice] = new_widget;
     new_widget->pick_id = indice;
     new_widget->pick_color = (ei_color_t *) &(new_widget->pick_id);
 }
 
 void del_picker(list_picking *ptr_list, uint32_t pick_id) {
-    list_picking list = *ptr_list;
-    assert(pick_id <= list.len && list.data[pick_id] != NULL);
-    list.data[pick_id]->pick_color = NULL;
-    if(pick_id == list.len) list.len--;
+    assert(pick_id <= ptr_list->len && ptr_list->data[pick_id] != NULL);
+    ptr_list->data[pick_id]->pick_color = NULL;
+    if(pick_id == ptr_list->len) ptr_list->len--;
     else {
         chained_numbers *n_num = malloc(sizeof(chained_numbers));
-        n_num->next = list.to_add;
+        n_num->next = ptr_list->to_add;
         n_num->nb = pick_id;
-        list.to_add = n_num;
+        ptr_list->to_add = n_num;
     }
-    list.data[pick_id] = NULL;
+    ptr_list->data[pick_id] = NULL;
 }
 
 ei_widget_t* take_picker(list_picking list, uint32_t pick_id) {
+    printf("%u %u\n", pick_id, list.len);
+    print_picker(ei_app_picking_list());
     assert(pick_id <= list.len);
     return(list.data[pick_id]);
 }
 
-void remove_picker(list_picking list) {
+void remove_picker(list_picking *ptr_list) {
+    list_picking list = *ptr_list;
     while(list.to_add) {
         chained_numbers *tmp = list.to_add;
         list.to_add = list.to_add->next;
@@ -54,4 +57,20 @@ void remove_picker(list_picking list) {
     free(list.data);
     list.len = 0;
     list.alloc_size = 0;
+}
+
+void print_picker(list_picking *ptr_list) {
+    assert(ptr_list != NULL);
+    printf("Len: %u \n", ptr_list->len);
+    printf("alloc_size: %u \n", ptr_list->alloc_size);
+    for (size_t i = 0; i < ptr_list->alloc_size; i++) {
+        printf("?> %u: %u\n", i, (ptr_list->data)[i]);
+    }
+    printf("[");
+    chained_numbers *tmp = ptr_list->to_add;
+    while(tmp) {
+        printf("%u ", tmp->nb);
+        tmp = tmp->next;
+    }
+    printf("]\n");
 }
