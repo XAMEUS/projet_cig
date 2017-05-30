@@ -23,8 +23,6 @@ void ei_frame_register_class() {
     ei_widgetclass_register(widget);
 }
 
-//TODO: add functions linked to the class here (with static!)
-
 static void* ei_frame_alloc() {
     return calloc(1, sizeof(ei_frame_t));
 }

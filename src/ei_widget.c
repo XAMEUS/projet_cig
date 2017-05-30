@@ -2,9 +2,9 @@
 #include "ei_frame.h"
 #include "ei_types.h"
 #include "ei_button.h"
+#include "ei_picking.h"
 #include <stdlib.h>
 #include <assert.h>
-
 #include <stdio.h>
 
 /**
@@ -30,6 +30,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     else
         parent->children_tail = parent->children_tail->next_sibling = widget;
     widget->wclass->setdefaultsfunc(widget);
+    add_picker(ei_app_picking_list(), widget);
     return widget;
 }
 
@@ -53,7 +54,14 @@ void ei_widget_destroy (ei_widget_t* widget) {
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick(ei_point_t* where) {
-    return NULL;
+    ei_surface_t pick_surface = ei_app_picking_object();
+    ei_size_t pick_size = hw_surface_get_size(pick_surface);
+    uint32_t number = pick_size.width * where->y + where->x;
+    hw_surface_lock(pick_surface);
+    uint32_t *n_buff = (uint32_t *) hw_surface_get_buffer(pick_surface);
+    ei_widget_t * result = take_picker(ei_app_picking_list(), n_buff[number]);
+    hw_surface_unlock(pick_surface);
+    return result;
 }
 
 
@@ -199,8 +207,6 @@ void ei_button_configure(ei_widget_t* widget,
         ((ei_button_t*) widget)->callback = *callback;
     if (user_param)
         ((ei_button_t*) widget)->user_param = *user_param;
-
-    return;
 }
 
 /**
