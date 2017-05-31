@@ -201,7 +201,7 @@ void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 
 void test_top_level(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_size_t bg_size = {300, 200};
-	ei_color_t bg_color = { 0, 0, 255, 255 };
+	ei_color_t bg_color = {0x88, 0x88, 0x88, 0xff};
 	int border_width = 20;
 	draw_toplevel(surface, clipper, bg_size, bg_color, border_width);
 }

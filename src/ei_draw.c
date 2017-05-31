@@ -286,30 +286,6 @@ int	ei_copy_surface(ei_surface_t destination,
 
 }
 
-ei_linked_point_t* rectangle(ei_rect_t frame) {
-    ei_linked_point_t* top_left = malloc(sizeof(ei_linked_point_t));
-    top_left->point.x = frame.top_left.x;
-    top_left->point.y = frame.top_left.y;
-    ei_linked_point_t* bottom_left = malloc(sizeof(ei_linked_point_t));
-    bottom_left->point.x = frame.top_left.x;
-    bottom_left->point.y = frame.top_left.y + frame.size.height;
-    top_left->next = bottom_left;
-    ei_linked_point_t* bottom_right = malloc(sizeof(ei_linked_point_t));
-    bottom_right->point.x = frame.top_left.x + frame.size.width;
-    bottom_right->point.y = bottom_left->point.y;
-    bottom_left->next = bottom_right;
-    ei_linked_point_t* top_right = malloc(sizeof(ei_linked_point_t));
-    top_right->point.x = bottom_right->point.x;
-    top_right->point.y = frame.top_left.y;
-    bottom_right->next = top_right;
-    ei_linked_point_t* last_point = malloc(sizeof(ei_linked_point_t));
-    last_point->point.x = top_left->point.x;
-    last_point->point.y = top_left->point.y;
-    top_right->next = last_point;
-    last_point->next = NULL;
-    return top_left;
-}
-
 /* draw button */
 ei_linked_point_t* arc(ei_linked_point_t** first_point,
                        const ei_point_t center,
@@ -324,7 +300,7 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
     (*first_point)->point.x = center.x + radius * cos(first_angle);
     (*first_point)->point.y = center.y - radius * sin(first_angle);
     (*first_point)->next = NULL;
-    int i = 0;
+    // int i = 0;
     // fprintf(stderr, "point n°%d : %d %d \n", i, (*first_point)->point.x, (*first_point)->point.y);
     ei_linked_point_t* last_point = *first_point;
     for(float angle = (first_angle + angle_step); radius != 0 && angle < last_angle; angle += angle_step) {
@@ -334,7 +310,7 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
         point->point.y = center.y - radius * sin(angle);
         last_point->next = point;
         last_point = last_point->next;
-        i++;
+        // i++;
         // fprintf(stderr, "point n°%d : %d %d %f\n", i, point->point.x, point->point.y, angle);
     }
     last_point->next = NULL;
@@ -504,9 +480,11 @@ void ei_draw_button(ei_surface_t surface,
     frame.size.height -= 2 * border;
     frame.top_left.x +=  border;
     frame.top_left.y += border;
-    ei_linked_point_t* all_pts = (radius) ? rounded_frame(frame, radius) : rectangle(frame);
-    ei_draw_polygon(surface, all_pts, color, clipper);
-    free_linked_point(all_pts);
+    if (radius) {
+        ei_linked_point_t* all_pts = rounded_frame(frame, radius);
+        ei_draw_polygon(surface, all_pts, color, clipper);
+        free_linked_point(all_pts);
+    } else ei_fill(surface, &color, &frame);
 }
 
 /* draw toplevel */
@@ -527,6 +505,7 @@ ei_linked_point_t* toplevel_frame(ei_rect_t frame) {
     bottom_right->point.y = bottom_left->point.y;
     bottom_left->next = bottom_right;
     /* top right */
+    center.x = bottom_right->point.x - radius;
     center.y = bottom_left->point.y - radius;
     ei_linked_point_t* first_top_right;
     ei_linked_point_t* last_top_right = arc(&first_top_right, center, radius, 0, M_PI/2);
@@ -546,20 +525,20 @@ void draw_toplevel(ei_surface_t surface,
                     ei_size_t bg_size,
                     ei_color_t bg_color,
                     int border_width) {
-    int little_border = 5;
-    ei_rect_t frame = {{0, 0}, {bg_size.width + 2*little_border, bg_size.height + border_width + 2*little_border}};
-    float factor = 0.1;
+    int little_border = 3;
+    ei_rect_t border_frame = {{0, 0}, {bg_size.width + 2 * little_border, border_width}};
+    float factor = 0.3;
     ei_color_t shade = {bg_color.red * (1 - factor),
                         bg_color.green * (1 - factor),
                         bg_color.blue * (1 - factor),
                         bg_color.alpha};
-    ei_linked_point_t* pts = toplevel_frame(frame);
+    ei_linked_point_t* pts = toplevel_frame(border_frame);
     ei_draw_polygon(surface, pts, shade, clipper);
     free_linked_point(pts);
+    ei_rect_t frame = {{0, border_width}, {bg_size.width + 2 * little_border, bg_size.height + 2 * little_border}};
+    ei_fill(surface, &shade, &frame);
 
-    // ei_rect_t bg_frame = {{little_border, border_width + little_border},
-    //                       bg_size};
-    // ei_linked_point_t* bg_pts = rectangle(bg_frame);
-    // ei_draw_polygon(surface, pts, bg_color, &frame);
-    // free_linked_point(bg_pts);
+    ei_rect_t bg_frame = {{little_border, border_width + little_border},
+                          bg_size};
+    ei_fill(surface, &bg_color, &bg_frame);
 }

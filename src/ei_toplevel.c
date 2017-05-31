@@ -40,7 +40,6 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
     							 ei_rect_t*		clipper) {
 	draw_toplevel(surface, clipper, widget->requested_size,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
-
 }
 
 static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
