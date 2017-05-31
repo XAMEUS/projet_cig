@@ -122,7 +122,6 @@ void ei_app_run() {
                 INVALIDATE_RECT = new_invalidate;
 
             }
-            //TODO redessin des zones 3.7
             hw_event_wait_next(event);
             widget_event = ei_event_get_active_widget();
             if(!(widget_event) && event->type <= 6 && event->type >= 4)
@@ -130,7 +129,7 @@ void ei_app_run() {
 
             if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event)) {
                 printf("Handlefunc: échec\n");
-                if(!ei_event_get_default_handle_func()(event))
+                if(ei_event_get_default_handle_func() && !ei_event_get_default_handle_func()(event))
                     printf("Defaultfunc: échec\n");
             }
         }
@@ -146,6 +145,22 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
     n_rect->rect = *rect;
     n_rect->next = INVALIDATE_RECT;
     INVALIDATE_RECT = n_rect;
+    ei_linked_rect_t *lk = INVALIDATE_RECT;
+    while(lk != NULL && lk->next != NULL) {
+        ei_rect_t *n_rect = ei_rect_pack(&lk->rect, &lk->next->rect);
+        if(n_rect->size.width * n_rect->size.height <=
+            lk->rect.size.width * lk->rect.size.height +
+                lk->next->rect.size.width * lk->next->rect.size.height) {
+            ei_linked_rect_t *tmp = lk->next;
+            lk->next = lk->next->next;
+            lk->rect = *n_rect;
+            free(n_rect);
+            free(tmp);
+            printf("OK\n");
+        }
+        else
+            lk = lk->next;
+    }
 }
 
 void ei_app_quit_request() {

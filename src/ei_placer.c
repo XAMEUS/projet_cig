@@ -56,7 +56,7 @@ void ei_place(struct ei_widget_t* widget,
 
 
 void ei_placer_run(struct ei_widget_t* widget) {
-
+    ei_rect_t new_screen_location = widget->screen_location;
     if (!(widget->placer_params->anchor))
         widget->placer_params->anchor_data = ei_anc_northwest;
     if (!(widget->placer_params->x))
@@ -80,52 +80,57 @@ void ei_placer_run(struct ei_widget_t* widget) {
     if (!(widget->placer_params->rh))
         widget->placer_params->rh_data = 0.0;
 
-    widget->screen_location.top_left.x = widget->placer_params->x_data +
+    new_screen_location.top_left.x = widget->placer_params->x_data +
             widget->placer_params->rx_data * widget->parent->content_rect->size.width;
-    widget->screen_location.top_left.y = widget->placer_params->y_data +
+    new_screen_location.top_left.y = widget->placer_params->y_data +
             widget->placer_params->ry_data * widget->parent->content_rect->size.height;
 
     if (widget->placer_params->rw)
-        widget->screen_location.size.width = widget->placer_params->rw_data * widget->parent->content_rect->size.width;
+        new_screen_location.size.width = widget->placer_params->rw_data * widget->parent->content_rect->size.width;
     else
-        widget->screen_location.size.width = widget->placer_params->w_data;
+        new_screen_location.size.width = widget->placer_params->w_data;
     if (widget->placer_params->rh)
-        widget->screen_location.size.height = widget->placer_params->rh_data * widget->parent->content_rect->size.height;
+        new_screen_location.size.height = widget->placer_params->rh_data * widget->parent->content_rect->size.height;
     else
-        widget->screen_location.size.height = widget->placer_params->h_data;
+        new_screen_location.size.height = widget->placer_params->h_data;
 
     switch (widget->placer_params->anchor_data) {
         case ei_anc_center:
-            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
-            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
             break;
         case ei_anc_west:
-            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
             break;
         case ei_anc_east:
-            widget->screen_location.top_left.y -= widget->screen_location.size.height/2;
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
         case ei_anc_northeast:
-            widget->screen_location.top_left.x -= widget->screen_location.size.width;
+            new_screen_location.top_left.x -= new_screen_location.size.width;
             break;
         case ei_anc_south:
-            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
         case ei_anc_southwest:
-            widget->screen_location.top_left.y -= widget->screen_location.size.height;
+            new_screen_location.top_left.y -= new_screen_location.size.height;
             break;
         case ei_anc_southeast:
-            widget->screen_location.top_left.x -= widget->screen_location.size.width;
-            widget->screen_location.top_left.y -= widget->screen_location.size.height;
+            new_screen_location.top_left.x -= new_screen_location.size.width;
+            new_screen_location.top_left.y -= new_screen_location.size.height;
             break;
         case ei_anc_north:
-            widget->screen_location.top_left.x -= widget->screen_location.size.width/2;
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
             break;
         default:
             break;
     }
     if (widget->parent) {
-        widget->screen_location.top_left.x += widget->parent->screen_location.top_left.x;
-        widget->screen_location.top_left.y += widget->parent->screen_location.top_left.y;
+        new_screen_location.top_left.x += widget->parent->screen_location.top_left.x;
+        new_screen_location.top_left.y += widget->parent->screen_location.top_left.y;
     }
+    if(new_screen_location.top_left.x != new_screen_location.top_left.x ||
+       new_screen_location.top_left.y != new_screen_location.top_left.y ||
+       new_screen_location.size.width == new_screen_location.size.width ||
+       new_screen_location.size.height == new_screen_location.size.height)
+           widget->wclass->geomnotifyfunc(widget, new_screen_location);
 }
 
 
