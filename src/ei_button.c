@@ -35,12 +35,17 @@ static void* ei_button_alloc() {
 
 static ei_bool_t ei_button_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-	if (event->type == ei_ev_mouse_buttondown)
+	if (event->type == ei_ev_mouse_buttondown) {
 		((ei_button_t*) widget)->push = EI_TRUE;
+		ei_app_invalidate_rect(&widget->screen_location);
+
+	}
 	else if (event->type == ei_ev_mouse_buttonup) {
 		((ei_button_t*) widget)->push = EI_FALSE;
-		if (((ei_button_t*) widget)->callback)
+		ei_app_invalidate_rect(&widget->screen_location);
+		if (((ei_button_t*) widget)->callback) {
 			((ei_button_t*) widget)->callback(widget, event, ((ei_button_t*) widget)->user_param);
+		}
 	}
 	else return EI_FALSE;
 	return EI_TRUE;
