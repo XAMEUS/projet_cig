@@ -130,11 +130,11 @@ void draw_image(struct ei_widget_t*	widget,
 	img_clipper.size.width -= 2 * offset; img_clipper.size.height -= 2 * offset;
 	ei_point_t where = {0, 0};
 	int img_width, img_height;
-	if (((ei_button_t*) widget)->frame.opt.img.img_rect) {
-		img_width = ((ei_button_t*) widget)->frame.opt.img.img_rect->size.width;
-		img_height = ((ei_button_t*) widget)->frame.opt.img.img_rect->size.height;
+	if (((ei_frame_t*) widget)->opt.img.img_rect) {
+		img_width = ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
+		img_height = ((ei_frame_t*) widget)->opt.img.img_rect->size.height;
 	} else {
-		ei_size_t img_size = hw_surface_get_size(((ei_button_t*) widget)->frame.opt.img.img);
+		ei_size_t img_size = hw_surface_get_size(((ei_frame_t*) widget)->opt.img.img);
 		img_width = img_size.width; img_height = img_size.height;
 	}
 	if (img_width > img_clipper.size.width)
@@ -146,8 +146,8 @@ void draw_image(struct ei_widget_t*	widget,
 	where.x += img_clipper.top_left.x;
 	where.y += img_clipper.top_left.y;
 	ei_rect_t dst_rect = {where, {img_width, img_height}};
-	ei_rect_t src_rect = {((ei_button_t*) widget)->frame.opt.img.img_rect->top_left, {img_width, img_height}};
-	int copy = ei_copy_surface(surface, &dst_rect, ((ei_button_t*) widget)->frame.opt.img.img, &src_rect, EI_FALSE);
+	ei_rect_t src_rect = {((ei_frame_t*) widget)->opt.img.img_rect->top_left, {img_width, img_height}};
+	int copy = ei_copy_surface(surface, &dst_rect, ((ei_frame_t*) widget)->opt.img.img, &src_rect, EI_FALSE);
 	if (copy) fprintf(stderr, "Error: image copy failed.");
 }
 

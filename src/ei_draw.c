@@ -466,11 +466,11 @@ void ei_draw_button(ei_surface_t surface,
         ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
         ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
         if (push) {
-            ei_draw_polygon(surface, up_pts, tint, clipper);
-            ei_draw_polygon(surface, down_pts, shade, clipper);
-        } else {
             ei_draw_polygon(surface, up_pts, shade, clipper);
             ei_draw_polygon(surface, down_pts, tint, clipper);
+        } else {
+            ei_draw_polygon(surface, up_pts, tint, clipper);
+            ei_draw_polygon(surface, down_pts, shade, clipper);
         }
         free_linked_point(up_pts);
         free_linked_point(down_pts);
