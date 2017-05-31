@@ -1,7 +1,7 @@
 #include "ei_event.h"
 #include <stdlib.h>
 
-static ei_widget* ACTIVE_WIDGET = NULL;
+static ei_widget_t* ACTIVE_WIDGET = NULL;
 static ei_default_handle_func_t DEFAULT_HANDLE_FUNCT = NULL;
 
 /**
