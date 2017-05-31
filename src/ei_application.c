@@ -95,18 +95,14 @@ void ei_app_run() {
         ei_widget_t *widget;
         while(SHALL_WE_CONTINUE) {
             //TODO redessin des zones 3.7
-            // Interacteur actif
-            // Situé?
-            // Si pas situé ou pas traité: traitant par défaut
-            // ei_event_get_default_handle_func();
             hw_event_wait_next(event);
-            if(!(widget = ei_event_get_active_widget()) && 1)
+            widget = ei_event_get_active_widget();
+            if(!(widget) && event->type <= 6 && event->type >= 4)
                 widget = ei_widget_pick(&(event->param.mouse.where));
             //We execute event
-            printf("aaaaaaaaaa%u \n", widget);
             if(!widget || !widget->wclass->handlefunc(widget, event)) {
                 printf("Handlefunc: échec\n");
-                if(!ei_event_get_default_handle_func(event))
+                if(!ei_event_get_default_handle_func()(event))
                     printf("Defaultfunc: échec\n");
             }
         }
