@@ -48,7 +48,7 @@ int ei_main(int argc, char** argv)
 
 	ei_widget_t*	button;
 	ei_size_t	button_size		= {300,200};
-	int		button_corner_radius	= 100;
+	int		button_corner_radius	= 20;
 	int		button_x		= 150;
 	int		button_y		= 200;
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
