@@ -54,7 +54,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
     add_picker(LIST_PICKING, ROOT_WIDGET);
     ei_event_set_active_widget(NULL);
-    ei_app_invalidate_rect(&ROOT_WIDGET->requested_size);
+    ei_rect_t screen_rect = {0, 0, ROOT_WIDGET->requested_size};
+    ei_app_invalidate_rect(&screen_rect);
 }
 
 /**
@@ -81,18 +82,25 @@ void ei_app_run() {
     #endif
         while(SHALL_WE_CONTINUE) {
             while(INVALIDATE_RECT) {
+                printf("%u %u %u %u\n", INVALIDATE_RECT->rect.top_left.x,
+                                        INVALIDATE_RECT->rect.top_left.y,
+                                        INVALIDATE_RECT->rect.size.width,
+                                        INVALIDATE_RECT->rect.size.height);
                 hw_surface_lock(ROOT_SURFACE);
                 hw_surface_lock(PICKING);
                 w = ROOT_WIDGET;
                 while(1) {
                     if(w->placer_params &&
-                        !(rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                        (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
                                          &INVALIDATE_RECT->rect))) {
+                                             printf("Allez \n");
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     }
-                    else if(w == ROOT_WIDGET)
+                    else if(w == ROOT_WIDGET) {
+                    printf("Allez root\n");
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
+                    }
                     if(w->children_head != NULL)
                         w = w->children_head;
                     else if(w->next_sibling != NULL)
@@ -108,7 +116,7 @@ void ei_app_run() {
                 }
                 hw_surface_unlock(ROOT_SURFACE);
                 hw_surface_unlock(PICKING);
-                hw_surface_update_rects(ROOT_SURFACE, INVALIDATE_RECT);
+                hw_surface_update_rects(ROOT_SURFACE, NULL);
                 new_invalidate = INVALIDATE_RECT->next;
                 free(INVALIDATE_RECT);
                 INVALIDATE_RECT = new_invalidate;
