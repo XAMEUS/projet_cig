@@ -43,10 +43,7 @@ void del_picker(list_picking *ptr_list, uint32_t pick_id) {
 }
 
 ei_widget_t* take_picker(list_picking *ptr_list, uint32_t pick_id) {
-    print_picker(ei_app_picking_list());
-    printf("take_picker %u %u\n", pick_id, ptr_list->len);
     ((ei_color_t*) (&pick_id))->alpha = 0;
-    printf("take_picker %u %u\n", pick_id, ptr_list->len);
     assert(pick_id <= ptr_list->len);
     return((ptr_list->data)[pick_id]);
 }

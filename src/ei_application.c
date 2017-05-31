@@ -82,10 +82,6 @@ void ei_app_run() {
     #endif
         while(SHALL_WE_CONTINUE) {
             while(INVALIDATE_RECT) {
-                printf("%u %u %u %u\n", INVALIDATE_RECT->rect.top_left.x,
-                                        INVALIDATE_RECT->rect.top_left.y,
-                                        INVALIDATE_RECT->rect.size.width,
-                                        INVALIDATE_RECT->rect.size.height);
                 hw_surface_lock(ROOT_SURFACE);
                 hw_surface_lock(PICKING);
                 w = ROOT_WIDGET;
@@ -93,14 +89,12 @@ void ei_app_run() {
                     if(w->placer_params &&
                         (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
                                          &INVALIDATE_RECT->rect))) {
-                                             printf("Allez \n");
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     }
-                    else if(w == ROOT_WIDGET) {
-                    printf("Allez root\n");
+                    else if(w == ROOT_WIDGET)
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
-                    }
+
                     if(w->children_head != NULL)
                         w = w->children_head;
                     else if(w->next_sibling != NULL)
@@ -127,11 +121,8 @@ void ei_app_run() {
             if(!(widget_event) && event->type <= 6 && event->type >= 4)
                 widget_event = ei_widget_pick(&(event->param.mouse.where));
 
-            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event)) {
-                printf("Handlefunc: échec\n");
-                if(ei_event_get_default_handle_func() && !ei_event_get_default_handle_func()(event))
-                    printf("Defaultfunc: échec\n");
-            }
+            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
+                (ei_event_get_default_handle_func() && !ei_event_get_default_handle_func()(event));
         }
     #ifdef DEBUG
         frequency_tick(fc);
@@ -156,7 +147,6 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
             lk->rect = *n_rect;
             free(n_rect);
             free(tmp);
-            printf("OK\n");
         }
         else
             lk = lk->next;

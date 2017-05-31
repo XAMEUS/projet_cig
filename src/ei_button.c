@@ -184,10 +184,6 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 								 ((ei_button_t*) widget)->corner_radius),
 					*(widget->pick_color),
 					clipper);
-	printf("%u %u %u %u\n", widget->pick_color->red,
-							widget->pick_color->green,
-						widget->pick_color->blue,
-					widget->pick_color->alpha);
 	// hw_surface_unlock(pick_surface);
 }
 
