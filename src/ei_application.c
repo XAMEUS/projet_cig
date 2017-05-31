@@ -13,6 +13,7 @@ static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
 static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
 static list_picking *LIST_PICKING;
+static ei_linked_rect_t *INVALIDATE_RECT = NULL;
 
 /**
  * \brief	Creates an application.
@@ -73,6 +74,8 @@ void ei_app_run() {
     while(1) {
     #endif
         ei_widget_t *w = ROOT_WIDGET;
+        hw_surface_lock(ROOT_SURFACE);
+        hw_surface_lock(PICKING);
         while(1) {
             if(w->placer_params)
                 w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
@@ -91,6 +94,9 @@ void ei_app_run() {
                     break;
             }
         }
+        hw_surface_unlock(ROOT_SURFACE);
+        hw_surface_unlock(PICKING);
+        hw_surface_update_rects(ROOT_SURFACE, NULL); // TODO: not NULL but specific rect
         struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
         ei_widget_t *widget;
         while(SHALL_WE_CONTINUE) {
@@ -113,7 +119,9 @@ void ei_app_run() {
 }
 
 void ei_app_invalidate_rect(ei_rect_t* rect) {
-    return;
+    ei_linked_rect_t *n_rect = malloc(sizeof(ei_linked_rect_t));
+    n_rect->rect = *rect;
+    n_rect->next = INVALIDATE_RECT;
 }
 
 void ei_app_quit_request() {
