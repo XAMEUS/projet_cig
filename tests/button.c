@@ -70,6 +70,7 @@ int ei_main(int argc, char** argv)
 	ei_button_configure	(button, &button_size, &button_color,
 				 &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color,
 				 &button_text_anchor, NULL, NULL, NULL, &button_callback, NULL);
+	fprintf(stderr, "%d %d %d\n", button->requested_size.width, button->requested_size.height);
 	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* image */

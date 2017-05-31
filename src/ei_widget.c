@@ -214,11 +214,9 @@ void ei_button_configure(ei_widget_t* widget,
         if (*corner_radius * 2 > min_size)
             ((ei_button_t*) widget)->corner_radius = min_size/2;
         else ((ei_button_t*) widget)->corner_radius = *corner_radius;
-        if (!requested_size) {
-            int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
-            widget->requested_size.width += offset;
-            widget->requested_size.height += offset;
-        }
+        int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
+        widget->requested_size.width += offset;
+        widget->requested_size.height += offset;
     }
     if (callback)
         ((ei_button_t*) widget)->callback = *callback;
