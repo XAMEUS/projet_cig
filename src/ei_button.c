@@ -119,8 +119,15 @@ void draw_text (struct ei_widget_t*	widget,
 				ei_rect_t*		clipper,
 				int offset) {
 	ei_rect_t text_clipper = widget->screen_location;
-	text_clipper.top_left.x += offset; text_clipper.top_left.y += offset;
-	text_clipper.size.width -= 2 * offset; text_clipper.size.height -= 2 * offset;
+	text_clipper.top_left.x += offset;
+	text_clipper.top_left.y += offset;
+	if(strncmp(widget->wclass->name, "button", 20) == 0 &&
+		((ei_button_t*) widget)->push) {
+		text_clipper.top_left.x += 2;
+		text_clipper.top_left.y += 2;
+	}
+	text_clipper.size.width -= 2 * offset;
+	text_clipper.size.height -= 2 * offset;
 	ei_point_t where = {text_clipper.top_left.x,
 						text_clipper.top_left.y};
 	ei_size_t text_size;
@@ -137,8 +144,15 @@ void draw_image(struct ei_widget_t*	widget,
 				ei_rect_t*		clipper,
 				int offset) {
 	ei_rect_t img_clipper = widget->screen_location;
-	img_clipper.top_left.x += offset; img_clipper.top_left.y += offset;
-	img_clipper.size.width -= 2 * offset; img_clipper.size.height -= 2 * offset;
+	img_clipper.top_left.x += offset;
+	img_clipper.top_left.y += offset;
+	if(strncmp(widget->wclass->name, "button", 20) == 0 &&
+		((ei_button_t*) widget)->push) {
+		text_clipper.top_left.x += 2;
+		text_clipper.top_left.y += 2;
+	}
+	img_clipper.size.width -= 2 * offset;
+	img_clipper.size.height -= 2 * offset;
 	ei_point_t where = {0, 0}; ei_size_t img_size = {0, 0};
 	if (((ei_frame_t*) widget)->opt.img.img_rect) {
 		img_size.width = ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
