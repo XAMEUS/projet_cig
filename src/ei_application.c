@@ -4,10 +4,11 @@
 //#include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
+#include "ei_button.h"
+#include "ei_tools.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "ei_button.h"
 
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
@@ -54,7 +55,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
     add_picker(LIST_PICKING, ROOT_WIDGET);
     ei_event_set_active_widget(NULL);
-    ei_rect_t screen_rect = {0, 0, ROOT_WIDGET->requested_size};
+    ei_rect_t screen_rect = {{0, 0}, ROOT_WIDGET->requested_size};
     ei_app_invalidate_rect(&screen_rect);
 }
 
@@ -122,7 +123,8 @@ void ei_app_run() {
                 widget_event = ei_widget_pick(&(event->param.mouse.where));
 
             if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
-                (ei_event_get_default_handle_func() && !ei_event_get_default_handle_func()(event));
+                if(ei_event_get_default_handle_func())
+                    ei_event_get_default_handle_func()(event);
         }
     #ifdef DEBUG
         frequency_tick(fc);

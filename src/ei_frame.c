@@ -2,6 +2,7 @@
 #include <string.h>
 #include "ei_frame.h"
 #include "ei_draw_ex.h"
+#include "ei_application.h"
 
 static void* ei_frame_alloc();
 static void ei_frame_release_func(struct ei_widget_t* widget);

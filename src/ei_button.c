@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
 #include "ei_button.h"
 #include "ei_event.h"
-
+#include "ei_application.h"
+#include <string.h>
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 

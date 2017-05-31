@@ -1,6 +1,7 @@
 #include "ei_picking.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 list_picking *create_picker() {
     ei_widget_t **data = calloc(1, sizeof(ei_widget_t *));
@@ -65,7 +66,7 @@ void print_picker(list_picking *ptr_list) {
     printf("Len: %u \n", ptr_list->len);
     printf("alloc_size: %u \n", ptr_list->alloc_size);
     for (uint32_t i = 0; i < ptr_list->alloc_size; i++) {
-        printf("=> %u: %u\n", i, (ptr_list->data)[i]);
+        printf("=> %u: %lu\n", i, (size_t) (ptr_list->data)[i]);
     }
     printf("[");
     chained_numbers *tmp = ptr_list->to_add;
