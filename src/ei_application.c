@@ -137,6 +137,7 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
     ei_linked_rect_t *n_rect = malloc(sizeof(ei_linked_rect_t));
     n_rect->rect = *rect;
     n_rect->next = INVALIDATE_RECT;
+    INVALIDATE_RECT = n_rect;
 }
 
 void ei_app_quit_request() {
