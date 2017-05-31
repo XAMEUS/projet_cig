@@ -29,5 +29,6 @@ void ei_draw_button(ei_surface_t surface,
                   ei_relief_t relief,
                   ei_bool_t push);
 
+ei_linked_point_t* toplevel_frame(ei_rect_t frame);
 
 #endif

@@ -1,5 +1,6 @@
 #include "ei_widget.h"
 #include "ei_frame.h"
+#include "ei_toplevel.h"
 #include "ei_types.h"
 #include "ei_button.h"
 #include "ei_picking.h"
@@ -253,5 +254,18 @@ void ei_toplevel_configure (ei_widget_t* widget,
 							 ei_bool_t* closable,
 							 ei_axis_set_t* resizable,
 						 	 ei_size_t** min_size) {
-    return;
+    if (requested_size)
+        widget->requested_size = *requested_size;
+    if (color)
+        ((ei_toplevel_t*) widget)->bg_color = *color;
+    if (border_width)
+        ((ei_toplevel_t*) widget)->border_width = *border_width;
+    if (title)
+        ((ei_toplevel_t*) widget)->title = *title;
+    if (closable)
+        ((ei_toplevel_t*) widget)->closable = *closable;
+    if (resizable)
+        ((ei_toplevel_t*) widget)->resizable = *resizable;
+    if (min_size)
+        ((ei_toplevel_t*) widget)->min_size = *min_size;
 }
