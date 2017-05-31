@@ -52,6 +52,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
     add_picker(LIST_PICKING, ROOT_WIDGET);
+    ei_event_set_active_widget(NULL);
 }
 
 /**
@@ -91,7 +92,6 @@ void ei_app_run() {
             }
         }
         struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
-        ei_event_set_active_widget(NULL);
         ei_widget_t *widget;
         while(SHALL_WE_CONTINUE) {
             //TODO redessin des zones 3.7
@@ -100,9 +100,10 @@ void ei_app_run() {
             // Si pas situé ou pas traité: traitant par défaut
             // ei_event_get_default_handle_func();
             hw_event_wait_next(event);
-            if(!(widget = ei_event_get_active_widget()))
+            if(!(widget = ei_event_get_active_widget()) && 1)
                 widget = ei_widget_pick(&(event->param.mouse.where));
             //We execute event
+            printf("aaaaaaaaaa%u \n", widget);
             if(!widget || !widget->wclass->handlefunc(widget, event)) {
                 printf("Handlefunc: échec\n");
                 if(!ei_event_get_default_handle_func(event))
