@@ -148,8 +148,8 @@ void draw_image(struct ei_widget_t*	widget,
 	img_clipper.top_left.y += offset;
 	if(strncmp(widget->wclass->name, "button", 20) == 0 &&
 		((ei_button_t*) widget)->push) {
-		text_clipper.top_left.x += 2;
-		text_clipper.top_left.y += 2;
+		img_clipper.top_left.x += 2;
+		img_clipper.top_left.y += 2;
 	}
 	img_clipper.size.width -= 2 * offset;
 	img_clipper.size.height -= 2 * offset;
