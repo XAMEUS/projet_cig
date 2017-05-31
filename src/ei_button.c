@@ -157,7 +157,6 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    // hw_surface_lock	(surface);
     ei_draw_button(surface, clipper,
         widget->screen_location,
         ((ei_button_t*) widget)->corner_radius,
@@ -172,15 +171,11 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 		int offset = ((ei_button_t*) widget)->frame.border_width + ((ei_button_t*) widget)->corner_radius * (1 - sqrt(2)/2);
 		draw_image(widget, surface, pick_surface, clipper, offset);
 	}
-    // hw_surface_unlock(surface);
-	// hw_surface_update_rects(surface, NULL);
-	// hw_surface_lock(pick_surface);
 	ei_draw_polygon(pick_surface,
 					rounded_frame(widget->screen_location,
 								 ((ei_button_t*) widget)->corner_radius),
 					*(widget->pick_color),
 					clipper);
-	// hw_surface_unlock(pick_surface);
 }
 
 static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
