@@ -104,7 +104,7 @@ void ei_app_run() {
             hw_event_wait_next(event);
             widget = ei_event_get_active_widget();
             if(!(widget) && event->type <= 6 && event->type >= 4)
-                widget = !ei_widget_pick(&(event->param.mouse.where));
+                widget = ei_widget_pick(&(event->param.mouse.where));
             //We execute event
             if(!widget || !widget->wclass->handlefunc(widget, event)) {
                 printf("Handlefunc: échec\n");
