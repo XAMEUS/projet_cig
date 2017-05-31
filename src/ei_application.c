@@ -93,11 +93,13 @@ void ei_app_run() {
         struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
         while(SHALL_WE_CONTINUE) {
             //TODO redessin des zones 3.7
-            hw_event_wait_next(event);
+            // Interacteur actif
+            // Situé?
+            // Si pas situé ou pas traité: traitant par défaut
+
             if(event->type == ei_ev_keydown)
                 ei_app_quit_request();
             else if(event->type == ei_ev_mouse_buttondown) {
-                printf("souris %u %u\n", event->param.mouse.where.x, event->param.mouse.where.y);
                 ((ei_button_t*) ei_widget_pick(
                     &(event->param.mouse.where)))
                 ->callback(NULL, NULL, NULL);
