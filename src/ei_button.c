@@ -81,7 +81,7 @@ void place_content(ei_point_t* where,
 			break;
 		case ei_anc_south:
 			where->x += widget_size.width/2 - content_width/2;
-			where->y += widget_size.height - content_height - content_width;
+			where->y += widget_size.height - content_height;
 			break;
 		case ei_anc_southeast:
 			where->x += widget_size.width - content_width;
@@ -128,8 +128,7 @@ void draw_image(struct ei_widget_t*	widget,
 	ei_rect_t img_clipper = widget->screen_location;
 	img_clipper.top_left.x += offset; img_clipper.top_left.y += offset;
 	img_clipper.size.width -= 2 * offset; img_clipper.size.height -= 2 * offset;
-	ei_point_t where = {img_clipper.top_left.x,
-						img_clipper.top_left.y};
+	ei_point_t where = {0, 0};
 	int img_width, img_height;
 	if (((ei_button_t*) widget)->frame.opt.img.img_rect) {
 		img_width = ((ei_button_t*) widget)->frame.opt.img.img_rect->size.width;
@@ -139,16 +138,17 @@ void draw_image(struct ei_widget_t*	widget,
 		img_width = img_size.width; img_height = img_size.height;
 	}
 	if (img_width > img_clipper.size.width)
-	 	img_width = img_width < img_clipper.size.width;
+	 	img_width = img_clipper.size.width;
 	 if (img_height > img_clipper.size.height)
 	 	img_height = img_clipper.size.height;
 	if (img_width != img_clipper.size.width || img_height != img_clipper.size.height)
-		place_content(&where, img_clipper.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, img_width, img_height);
+		place_content(&where, img_clipper.size, ((ei_frame_t*) widget)->opt.img.img_anchor, img_width, img_height);
+	where.x += img_clipper.top_left.x;
+	where.y += img_clipper.top_left.y;
 	ei_rect_t dst_rect = {where, {img_width, img_height}};
 	ei_rect_t src_rect = {((ei_button_t*) widget)->frame.opt.img.img_rect->top_left, {img_width, img_height}};
-	fprintf(stderr, "print img\n");
 	int copy = ei_copy_surface(surface, &dst_rect, ((ei_button_t*) widget)->frame.opt.img.img, &src_rect, EI_FALSE);
-	fprintf(stderr, "copy result = %d\n", copy);
+	if (copy) fprintf(stderr, "Error: image copy failed.");
 }
 
 static void ei_button_drawfunc(struct ei_widget_t*	widget,
@@ -168,7 +168,7 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 		draw_text(widget, surface, pick_surface, clipper, offset);
 	} else if (((ei_button_t*) widget)->frame.opt_type == IMAGE) {
 		int offset = ((ei_button_t*) widget)->frame.border_width + ((ei_button_t*) widget)->corner_radius * (1 - sqrt(2)/2);
-		// draw_image(widget, surface, pick_surface, clipper, offset);
+		draw_image(widget, surface, pick_surface, clipper, offset);
 	}
     // hw_surface_unlock(surface);
 	// hw_surface_update_rects(surface, NULL);
