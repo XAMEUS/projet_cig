@@ -6,6 +6,8 @@
 #include "hw_interface.h"
 #include "ei_widget.h"
 
+#include "ei_button.h"
+
 
 /*
  * button_press --
@@ -46,15 +48,17 @@ int ei_main(int argc, char** argv)
 
 	ei_widget_t*	button;
 	ei_size_t	button_size		= {300,200};
-	int		button_corner_radius	= 40;
+	int		button_corner_radius	= 100;
 	int		button_x		= 150;
 	int		button_y		= 200;
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
-	char*		button_title		= "Mon premier Bouton !";
+	char*		button_title		= "Mon petit Bouton";
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
 	ei_relief_t	button_relief		= ei_relief_raised;
 	int		button_border_width	= 6;
 	ei_callback_t	button_callback 	= button_press;
+
+	ei_anchor_t button_text_anchor = ei_anc_center;
 
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
@@ -64,9 +68,28 @@ int ei_main(int argc, char** argv)
 	/* Create, configure and place the button on screen. */
 	button = ei_widget_create("button", ei_app_root_widget());
 	ei_button_configure	(button, &button_size, &button_color,
-				 &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
-				 NULL, NULL, NULL, &button_callback, NULL);
+				 &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color,
+				 &button_text_anchor, NULL, NULL, NULL, &button_callback, NULL);
 	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
+
+	/* image */
+	if (argc > 1) {
+		ei_surface_t image		= hw_image_load(argv[1], ei_app_root_surface());
+		ei_size_t image_size	= hw_surface_get_size(image);
+		ei_rect_t* image_rect = malloc(sizeof(ei_rect_t));
+		image_rect->top_left.x = 0;
+		image_rect->top_left.y = 0;
+		image_rect->size.width = 20;
+		image_rect->size.height = 20;
+		ei_anchor_t	image_anchor;
+		ei_button_configure	(button, &button_size, &button_color,
+   			 &button_border_width, &button_corner_radius, &button_relief, NULL, NULL, NULL, NULL,
+   			 &image, &image_rect, &image_anchor, &button_callback, NULL);
+	 	 fprintf(stderr, "%d %d\n", button->requested_size.width, button->requested_size.height);
+		ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
+		hw_surface_free(image);
+		free(image_rect);
+	}
 
 	/* Hook the keypress callback to the event. */
 	ei_frame_configure(ei_app_root_widget(), NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);

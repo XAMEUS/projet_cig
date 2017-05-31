@@ -4,8 +4,7 @@
 #include "ei_button.h"
 #include <stdlib.h>
 #include <assert.h>
-
-#include <stdio.h>
+#include <math.h>
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -147,10 +146,10 @@ void ei_frame_configure (ei_widget_t* widget,
         widget->requested_size = *requested_size;
     else if(widget->requested_size.width == 0 && widget->requested_size.height == 0) {
             if(((ei_frame_t*) widget)->opt_type == TEXT)
-            hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text,
-                                 ((ei_frame_t*) widget)->opt.txt.font,
-                                 &widget->requested_size.width,
-                                 &widget->requested_size.height);
+                hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text,
+                                     ((ei_frame_t*) widget)->opt.txt.font,
+                                     &widget->requested_size.width,
+                                     &widget->requested_size.height);
         widget->requested_size.width += ((ei_frame_t*) widget)->border_width * 2;
         widget->requested_size.height += ((ei_frame_t*) widget)->border_width * 2;
         if(((ei_frame_t*) widget)->opt_type == IMAGE) {
@@ -193,8 +192,18 @@ void ei_button_configure(ei_widget_t* widget,
                             void** user_param) {
     ei_frame_configure(widget, requested_size, color, border_width, relief,
             text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
-    if (corner_radius)
-        ((ei_button_t*) widget)->corner_radius = *corner_radius;
+    if (corner_radius) {
+        int min_size = (widget->requested_size.height < widget->requested_size.width) ?
+                        widget->requested_size.height : widget->requested_size.width;
+        if (*corner_radius * 2 > min_size)
+            ((ei_button_t*) widget)->corner_radius = min_size/2;
+        else ((ei_button_t*) widget)->corner_radius = *corner_radius;
+        if (!requested_size) {
+            int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
+            widget->requested_size.width += offset;
+            widget->requested_size.height += offset;
+        }
+    }
     if (callback)
         ((ei_button_t*) widget)->callback = *callback;
     if (user_param)

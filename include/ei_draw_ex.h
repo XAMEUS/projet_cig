@@ -24,8 +24,9 @@ void ei_draw_button(ei_surface_t surface,
                   ei_rect_t* clipper,
                   ei_rect_t frame,
                   int radius,
-                  int h,
+                  int border,
                   ei_color_t color,
+                  ei_relief_t relief,
                   ei_bool_t push);
 
 

@@ -116,6 +116,7 @@ void ei_draw_text(ei_surface_t	surface,
     ei_rect_t dst_rect = {pt_dst, draw_box};
     ei_rect_t src_rect = {pt_src, draw_box};
     ei_copy_surface(surface, &dst_rect, text_surface, &src_rect, EI_TRUE);
+    hw_surface_free(text_surface);
 }
 
 void ei_fill(ei_surface_t surface,
@@ -158,6 +159,14 @@ void ei_fill(ei_surface_t surface,
 			p += dx; y++;
 		}
 	}
+}
+
+void print_linked_point(ei_linked_point_t* first_point) {
+    int i = 0;
+    for (ei_linked_point_t* p = first_point; p != NULL; p = p->next) {
+        fprintf(stderr, "point n°%d : %d %d \n", i, p->point.x, p->point.y);
+        i++;
+    }
 }
 
 int	ei_copy_surface(ei_surface_t destination,
@@ -234,6 +243,7 @@ int	ei_copy_surface(ei_surface_t destination,
 
 		if (clipper_size.width > 0 && clipper_size.height > 0) {
 			// We can copy now
+            fprintf(stderr, "we can print now\n");
 			int src_offset = src_clipper_pt.y * src_size.width + src_clipper_pt.x;
 			int dst_offset = dst_clipper_pt.y * dst_size.width + dst_clipper_pt.x;
 			if (alpha) {
@@ -291,14 +301,18 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
     (*first_point)->point.x = center.x + radius * cos(first_angle);
     (*first_point)->point.y = center.y - radius * sin(first_angle);
     (*first_point)->next = NULL;
+    int i = 0;
+    // fprintf(stderr, "point n°%d : %d %d \n", i, (*first_point)->point.x, (*first_point)->point.y);
     ei_linked_point_t* last_point = *first_point;
-    for(float angle = (first_angle + angle_step); angle < last_angle; angle += angle_step) {
+    for(float angle = (first_angle + angle_step); radius != 0 && angle < last_angle; angle += angle_step) {
         ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
         assert(point != NULL);
         point->point.x = center.x + radius * cos(angle);
         point->point.y = center.y - radius * sin(angle);
         last_point->next = point;
         last_point = last_point->next;
+        i++;
+        // fprintf(stderr, "point n°%d : %d %d %f\n", i, point->point.x, point->point.y, angle);
     }
     last_point->next = NULL;
     return last_point;
@@ -431,28 +445,33 @@ void ei_draw_button(ei_surface_t surface,
                     int radius,
                     int border,
                     ei_color_t color,
+                    ei_relief_t relief,
                     ei_bool_t push){
-    float factor = 0.1;
-    ei_color_t shade = {color.red * (1 - factor),
-                        color.green * (1 - factor),
-                        color.blue * (1 - factor),
-                        color.alpha};
-    ei_color_t tint = {color.red + (255 - color.red) * factor,
-                       color.green + (255 - color.green) * factor,
-                       color.blue + (255 - color.blue) * factor,
-                       color.alpha};
-
-    if (border) {
+    if (border && relief != ei_relief_none) {
         int min = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
         assert(border <= min);
+        float factor = 0.1;
+        ei_color_t shade = {color.red * (1 - factor),
+                            color.green * (1 - factor),
+                            color.blue * (1 - factor),
+                            color.alpha};
+        ei_color_t tint = {color.red + (255 - color.red) * factor,
+                           color.green + (255 - color.green) * factor,
+                           color.blue + (255 - color.blue) * factor,
+                           color.alpha};
+        if (relief == ei_relief_sunken) {
+            ei_color_t tmp = shade;
+            shade = tint;
+            tint = tmp;
+        }
         ei_linked_point_t* up_pts = up_rounded_frame(frame, radius, frame.size.height/2);
         ei_linked_point_t* down_pts = down_rounded_frame(frame, radius, frame.size.height/2);
         if (push) {
-            ei_draw_polygon(surface, up_pts, shade, clipper);
-            ei_draw_polygon(surface, down_pts, tint, clipper);
-        } else {
             ei_draw_polygon(surface, up_pts, tint, clipper);
             ei_draw_polygon(surface, down_pts, shade, clipper);
+        } else {
+            ei_draw_polygon(surface, up_pts, shade, clipper);
+            ei_draw_polygon(surface, down_pts, tint, clipper);
         }
         free_linked_point(up_pts);
         free_linked_point(down_pts);

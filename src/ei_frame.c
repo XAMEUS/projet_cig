@@ -41,7 +41,8 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
 	hw_surface_lock	(surface);
-	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_frame_t*) widget)->border_width, ((ei_frame_t*) widget)->bg_color, EI_FALSE);
+	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_frame_t*) widget)->border_width,
+						((ei_frame_t*) widget)->bg_color, ((ei_frame_t*) widget)->relief, EI_FALSE);
 	hw_surface_unlock(surface);
 	hw_surface_update_rects(surface, NULL);
 
