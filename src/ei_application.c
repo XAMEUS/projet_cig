@@ -4,10 +4,11 @@
 //#include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
+#include "ei_button.h"
+#include "ei_tools.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "ei_button.h"
 
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
@@ -54,7 +55,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
     add_picker(LIST_PICKING, ROOT_WIDGET);
     ei_event_set_active_widget(NULL);
-    ei_app_invalidate_rect(&ROOT_WIDGET->requested_size);
+    ei_rect_t screen_rect = {{0, 0}, ROOT_WIDGET->requested_size};
+    ei_app_invalidate_rect(&screen_rect);
 }
 
 /**
@@ -86,14 +88,14 @@ void ei_app_run() {
                 w = ROOT_WIDGET;
                 while(1) {
                     if(w->placer_params &&
-                        !ei_rect_intrsct(w->parent->content_rect,
-                                         &INVALIDATE_RECT->rect,
-                                         rect_clipping)) {
+                        (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                                         &INVALIDATE_RECT->rect))) {
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     }
                     else if(w == ROOT_WIDGET)
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
+
                     if(w->children_head != NULL)
                         w = w->children_head;
                     else if(w->next_sibling != NULL)
@@ -109,23 +111,20 @@ void ei_app_run() {
                 }
                 hw_surface_unlock(ROOT_SURFACE);
                 hw_surface_unlock(PICKING);
-                hw_surface_update_rects(ROOT_SURFACE, INVALIDATE_RECT);
+                hw_surface_update_rects(ROOT_SURFACE, NULL);
                 new_invalidate = INVALIDATE_RECT->next;
                 free(INVALIDATE_RECT);
                 INVALIDATE_RECT = new_invalidate;
 
             }
-            //TODO redessin des zones 3.7
             hw_event_wait_next(event);
             widget_event = ei_event_get_active_widget();
             if(!(widget_event) && event->type <= 6 && event->type >= 4)
                 widget_event = ei_widget_pick(&(event->param.mouse.where));
 
-            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event)) {
-                printf("Handlefunc: échec\n");
-                if(!ei_event_get_default_handle_func()(event))
-                    printf("Defaultfunc: échec\n");
-            }
+            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
+                if(ei_event_get_default_handle_func())
+                    ei_event_get_default_handle_func()(event);
         }
     #ifdef DEBUG
         frequency_tick(fc);
@@ -138,6 +137,22 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
     ei_linked_rect_t *n_rect = malloc(sizeof(ei_linked_rect_t));
     n_rect->rect = *rect;
     n_rect->next = INVALIDATE_RECT;
+    INVALIDATE_RECT = n_rect;
+    ei_linked_rect_t *lk = INVALIDATE_RECT;
+    while(lk != NULL && lk->next != NULL) {
+        ei_rect_t *n_rect = ei_rect_pack(&lk->rect, &lk->next->rect);
+        if(n_rect->size.width * n_rect->size.height <=
+            lk->rect.size.width * lk->rect.size.height +
+                lk->next->rect.size.width * lk->next->rect.size.height) {
+            ei_linked_rect_t *tmp = lk->next;
+            lk->next = lk->next->next;
+            lk->rect = *n_rect;
+            free(n_rect);
+            free(tmp);
+        }
+        else
+            lk = lk->next;
+    }
 }
 
 void ei_app_quit_request() {

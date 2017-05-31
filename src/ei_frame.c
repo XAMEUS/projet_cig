@@ -2,6 +2,7 @@
 #include <string.h>
 #include "ei_frame.h"
 #include "ei_draw_ex.h"
+#include "ei_application.h"
 
 static void* ei_frame_alloc();
 static void ei_frame_release_func(struct ei_widget_t* widget);
@@ -12,6 +13,7 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget);
 static ei_bool_t ei_frame_handlefunc(struct ei_widget_t* widget,
 						 			 struct ei_event_t*	event);
+static void	ei_frame_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 void ei_frame_register_class() {
     ei_widgetclass_t *widget = malloc(sizeof(ei_widgetclass_t));
@@ -20,7 +22,7 @@ void ei_frame_register_class() {
     widget->releasefunc = &ei_frame_release_func;
     widget->drawfunc = &ei_frame_drawfunc;
     widget->setdefaultsfunc = &ei_frame_setdefaultsfunc;
-    widget->geomnotifyfunc = NULL;
+    widget->geomnotifyfunc = &ei_frame_geomnotifyfunc;
     widget->handlefunc = &ei_frame_handlefunc;
     ei_widgetclass_register(widget);
 }
@@ -64,4 +66,13 @@ static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
 static ei_bool_t ei_frame_handlefunc(struct ei_widget_t*	widget,
 						 			 struct ei_event_t*	event) {
 	return EI_FALSE;
+}
+
+static void	ei_frame_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
+	//TODO optim
+	ei_app_invalidate_rect(&widget->screen_location);
+	ei_app_invalidate_rect(&rect);
+	widget->screen_location = rect;
+	for (ei_widget_t *child = widget->children_head; child != NULL; child = child->next_sibling)
+		ei_placer_run(child);
 }

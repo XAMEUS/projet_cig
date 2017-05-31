@@ -61,12 +61,10 @@ ei_widget_t* ei_widget_pick(ei_point_t* where) {
     uint32_t number = pick_size.width * where->y + where->x;
     hw_surface_lock(pick_surface);
     uint8_t *n_buff = hw_surface_get_buffer(pick_surface);
-    printf("buff %u %u\n", n_buff[number*4], number);
     int r, g, b, a;
     hw_surface_get_channel_indices(pick_surface, &r, &g, &b, &a);
     n_buff += number * 4;
     ei_color_t color = {n_buff[r], n_buff[b], n_buff[g], 0x00};
-    printf("color: %u %u\n", *((uint32_t*) &color), *((uint32_t*) n_buff));
     ei_widget_t * result = take_picker(ei_app_picking_list(), *((uint32_t*) &color));
     hw_surface_unlock(pick_surface);
     return result;

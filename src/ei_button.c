@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
 #include "ei_button.h"
 #include "ei_event.h"
-
+#include "ei_application.h"
+#include <string.h>
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -15,6 +15,7 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
+static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 
 void ei_button_register_class() {
@@ -24,7 +25,7 @@ void ei_button_register_class() {
     widget->releasefunc = &ei_button_release_func;
     widget->drawfunc = &ei_button_drawfunc;
     widget->setdefaultsfunc = &ei_button_setdefaultsfunc;
-    widget->geomnotifyfunc = NULL;
+    widget->geomnotifyfunc = &ei_button_geomnotifyfunc;
     widget->handlefunc = &ei_button_handlefunc;
     ei_widgetclass_register(widget);
 }
@@ -35,12 +36,17 @@ static void* ei_button_alloc() {
 
 static ei_bool_t ei_button_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-	if (event->type == ei_ev_mouse_buttondown)
+	if (event->type == ei_ev_mouse_buttondown) {
 		((ei_button_t*) widget)->push = EI_TRUE;
+		ei_app_invalidate_rect(&widget->screen_location);
+
+	}
 	else if (event->type == ei_ev_mouse_buttonup) {
 		((ei_button_t*) widget)->push = EI_FALSE;
-		if (((ei_button_t*) widget)->callback)
+		ei_app_invalidate_rect(&widget->screen_location);
+		if (((ei_button_t*) widget)->callback) {
 			((ei_button_t*) widget)->callback(widget, event, ((ei_button_t*) widget)->user_param);
+		}
 	}
 	else return EI_FALSE;
 	return EI_TRUE;
@@ -174,9 +180,14 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 								 ((ei_button_t*) widget)->corner_radius),
 					*(widget->pick_color),
 					clipper);
-	printf("%u %u %u %u\n", widget->pick_color->red,
-							widget->pick_color->green,
-						widget->pick_color->blue,
-					widget->pick_color->alpha);
 	// hw_surface_unlock(pick_surface);
+}
+
+static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
+	//TODO optim
+	ei_app_invalidate_rect(&widget->screen_location);
+	ei_app_invalidate_rect(&rect);
+	widget->screen_location = rect;
+	for (ei_widget_t *child = widget->children_head; child != NULL; child = child->next_sibling)
+		ei_placer_run(child);
 }
