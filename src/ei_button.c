@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ei_button.h"
+#include "ei_event.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -8,6 +9,8 @@
 static void* ei_button_alloc();
 static void ei_button_release_func(struct ei_widget_t* widget);
 static void ei_button_setdefaultsfunc(struct ei_widget_t* widget);
+static ei_bool_t ei_button_handlefunc(struct ei_widget_t* widget,
+						 struct ei_event_t*	event);
 static void ei_button_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
@@ -22,12 +25,25 @@ void ei_button_register_class() {
     widget->drawfunc = &ei_button_drawfunc;
     widget->setdefaultsfunc = &ei_button_setdefaultsfunc;
     widget->geomnotifyfunc = NULL;
-    widget->handlefunc = NULL;
+    widget->handlefunc = &ei_button_handlefunc;
     ei_widgetclass_register(widget);
 }
 
 static void* ei_button_alloc() {
     return calloc(1, sizeof(ei_button_t));
+}
+
+static ei_bool_t ei_button_handlefunc(struct ei_widget_t*	widget,
+						 struct ei_event_t*	event) {
+	if (event->type == ei_ev_mouse_buttondown)
+		((ei_button_t*) widget)->push = EI_TRUE;
+	else if (event->type == ei_ev_mouse_buttonup) {
+		((ei_button_t*) widget)->push = EI_FALSE;
+		if (((ei_button_t*) widget)->callback)
+			((ei_button_t*) widget)->callback(widget, event, ((ei_button_t*) widget)->user_param);
+	}
+	else return EI_FALSE;
+	return EI_TRUE;
 }
 
 static void ei_button_release_func(struct ei_widget_t* widget) {
