@@ -243,7 +243,6 @@ int	ei_copy_surface(ei_surface_t destination,
 
 		if (clipper_size.width > 0 && clipper_size.height > 0) {
 			// We can copy now
-            fprintf(stderr, "we can print now\n");
 			int src_offset = src_clipper_pt.y * src_size.width + src_clipper_pt.x;
 			int dst_offset = dst_clipper_pt.y * dst_size.width + dst_clipper_pt.x;
 			if (alpha) {
