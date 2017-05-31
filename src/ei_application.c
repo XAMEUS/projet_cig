@@ -86,9 +86,8 @@ void ei_app_run() {
                 w = ROOT_WIDGET;
                 while(1) {
                     if(w->placer_params &&
-                        !ei_rect_intrsct(w->parent->content_rect,
-                                         &INVALIDATE_RECT->rect,
-                                         rect_clipping)) {
+                        !(rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                                         &INVALIDATE_RECT->rect))) {
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     }
