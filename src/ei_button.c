@@ -26,8 +26,6 @@ void ei_button_register_class() {
     ei_widgetclass_register(widget);
 }
 
-//TODO: add functions linked to the class here (with static!)
-
 static void* ei_button_alloc() {
     return calloc(1, sizeof(ei_button_t));
 }
@@ -158,5 +156,15 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 	}
     hw_surface_unlock(surface);
 	hw_surface_update_rects(surface, NULL);
-    // draw on pick_surface
+	hw_surface_lock(pick_surface);
+	ei_draw_polygon(pick_surface,
+					rounded_frame(widget->screen_location,
+								 ((ei_button_t*) widget)->corner_radius),
+					*(widget->pick_color),
+					clipper);
+	printf("%u %u %u %u\n", widget->pick_color->red,
+							widget->pick_color->green,
+						widget->pick_color->blue,
+					widget->pick_color->alpha);
+	hw_surface_unlock(pick_surface);
 }

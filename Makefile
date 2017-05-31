@@ -10,10 +10,14 @@ INCFLAGS	:= -I${INCLUDES} -I${TESTS}
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
+DEBUG := true
+
 # The list of objects to include in the library
-
-LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o
-
+ifeq ($(DEBUG),true)
+LIBEIOBJS	:= ./objs/freq_counter.o ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o
+else
+LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o
+endif
 
 
 # Platform specific definitions (OS X, Linux)
@@ -47,7 +51,9 @@ else
 
 endif
 
-
+ifeq ($(DEBUG),true)
+LDFLAGS := -pg ${LDFLAGS}
+endif
 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 

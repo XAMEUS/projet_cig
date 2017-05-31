@@ -1,13 +1,18 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
+//#include "ei_debug.h"
+#include "ei_picking.h"
+#include "ei_event.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "ei_button.h"
 
 static ei_widget_t *ROOT_WIDGET;
-static ei_surface_t ROOT_SURFACE;
+static ei_surface_t ROOT_SURFACE, PICKING;
 static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
+static list_picking *LIST_PICKING;
 
 /**
  * \brief	Creates an application.
@@ -33,11 +38,12 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_frame_register_class();
     ei_toplevel_register_class();
     ei_button_register_class();
-    //TODO geometry managers.
-    /* création d’une surface offscreen pour la gestion du picking :*/
-    // surface=hw_surface_create(const ei_surface_t root, const ei_size_t* size, 0);
     /* Root window */
     ROOT_SURFACE = hw_create_window(main_window_size, fullscreen);
+    ei_size_t first = hw_surface_get_size(ROOT_SURFACE);
+    /* Offscreen surface for the picking */
+    LIST_PICKING = create_picker();
+    PICKING = hw_surface_create(ROOT_SURFACE, &first, EI_FALSE);
     /* Root widget */
     ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
     ROOT_WIDGET = frame->allocfunc();
@@ -45,6 +51,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->requested_size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
+    add_picker(LIST_PICKING, ROOT_WIDGET);
+    ei_event_set_active_widget(NULL);
 }
 
 /**
@@ -58,75 +66,73 @@ void ei_app_free() {
     hw_quit();
 }
 
-/**
- * \brief	Runs the application: enters the main event loop. Exits when
- *		\ref ei_app_quit_request is called.
- */
 void ei_app_run() {
-    ei_widget_t *w = ROOT_WIDGET;
+    #ifdef DEBUG
+    frequency_counter_t* fc = malloc(sizeof(frequency_counter_t));
+    frequency_init(fc);
     while(1) {
-        if(w->placer_params)
-            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, w->parent->content_rect);
-        else if(w == ROOT_WIDGET)
-            w->wclass->drawfunc(w, ROOT_SURFACE, NULL, NULL);
-        if(w->children_head != NULL)
-            w = w->children_head;
-        else if(w->next_sibling != NULL)
-            w = w->next_sibling;
-        else {
-            while(w->parent != NULL && w->parent->next_sibling == NULL)
-                w = w->parent;
-            if(w->parent != NULL)
-                w = w->parent->next_sibling;
-            else
-                break;
+    #endif
+        ei_widget_t *w = ROOT_WIDGET;
+        while(1) {
+            if(w->placer_params)
+                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
+            else if(w == ROOT_WIDGET)
+                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
+            if(w->children_head != NULL)
+                w = w->children_head;
+            else if(w->next_sibling != NULL)
+                w = w->next_sibling;
+            else {
+                while(w->parent != NULL && w->parent->next_sibling == NULL)
+                    w = w->parent;
+                if(w->parent != NULL)
+                    w = w->parent->next_sibling;
+                else
+                    break;
+            }
         }
+        struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
+        ei_widget_t *widget;
+        while(SHALL_WE_CONTINUE) {
+            //TODO redessin des zones 3.7
+            hw_event_wait_next(event);
+            widget = ei_event_get_active_widget();
+            if(!(widget) && event->type <= 6 && event->type >= 4)
+                widget = ei_widget_pick(&(event->param.mouse.where));
+            //We execute event
+            printf("aaaaaaaaaa%u \n", widget);
+            if(!widget || !widget->wclass->handlefunc(widget, event)) {
+                printf("Handlefunc: échec\n");
+                if(!ei_event_get_default_handle_func(event))
+                    printf("Defaultfunc: échec\n");
+            }
+        }
+    #ifdef DEBUG
+        frequency_tick(fc);
     }
-    struct ei_event_t* event = malloc(sizeof(struct ei_event_t*));
-    while(SHALL_WE_CONTINUE) {
-        //TODO redessin des zones 3.7
-        hw_event_wait_next(event);
-        //TODO Analyse event voir 3.6
-        sleep(5);
-        SHALL_WE_CONTINUE = EI_FALSE;
-    }
+    #endif
 }
 
-/**
- * \brief	Adds a rectangle to the list of rectangles that must be updated on screen. The real
- *		update on the screen will be done at the right moment in the main loop.
- *
- * @param	rect		The rectangle to add, expressed in the root window coordinates.
- *				A copy is made, so it is safe to release the rectangle on return.
- */
 void ei_app_invalidate_rect(ei_rect_t* rect) {
     return;
 }
 
-/**
- * \brief	Tells the application to quite. Is usually called by an event handler (for example
- *		when pressing the "Escape" key).
- */
 void ei_app_quit_request() {
     SHALL_WE_CONTINUE = EI_FALSE;
 }
 
-/**
- * \brief	Returns the "root widget" of the application: a "frame" widget that encapsulate the
- *		root window.
- *
- * @return 			The root widget.
- */
 ei_widget_t* ei_app_root_widget() {
     return ROOT_WIDGET;
 }
 
-/**
- * \brief	Returns the surface of the root window. Used to create surfaces with similar r, g, b
- *		channels.
- *
- * @return 			The surface of the root window.
- */
 ei_surface_t ei_app_root_surface() {
     return ROOT_SURFACE;
+}
+
+ei_surface_t ei_app_picking_object() {
+    return PICKING;
+}
+
+list_picking* ei_app_picking_list() {
+    return LIST_PICKING;
 }

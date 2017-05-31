@@ -2,9 +2,11 @@
 #include "ei_frame.h"
 #include "ei_types.h"
 #include "ei_button.h"
+#include "ei_picking.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <stdio.h>
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -29,6 +31,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     else
         parent->children_tail = parent->children_tail->next_sibling = widget;
     widget->wclass->setdefaultsfunc(widget);
+    add_picker(ei_app_picking_list(), widget);
     return widget;
 }
 
@@ -52,7 +55,20 @@ void ei_widget_destroy (ei_widget_t* widget) {
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick(ei_point_t* where) {
-    return NULL;
+    ei_surface_t pick_surface = ei_app_picking_object();
+    ei_size_t pick_size = hw_surface_get_size(pick_surface);
+    uint32_t number = pick_size.width * where->y + where->x;
+    hw_surface_lock(pick_surface);
+    uint8_t *n_buff = hw_surface_get_buffer(pick_surface);
+    printf("buff %u %u\n", n_buff[number*4], number);
+    int r, g, b, a;
+    hw_surface_get_channel_indices(pick_surface, &r, &g, &b, &a);
+    n_buff += number * 4;
+    ei_color_t color = {n_buff[r], n_buff[b], n_buff[g], 0x00};
+    printf("color: %u %u\n", *((uint32_t*) &color), *((uint32_t*) n_buff));
+    ei_widget_t * result = take_picker(ei_app_picking_list(), *((uint32_t*) &color));
+    hw_surface_unlock(pick_surface);
+    return result;
 }
 
 
@@ -208,8 +224,6 @@ void ei_button_configure(ei_widget_t* widget,
         ((ei_button_t*) widget)->callback = *callback;
     if (user_param)
         ((ei_button_t*) widget)->user_param = *user_param;
-
-    return;
 }
 
 /**

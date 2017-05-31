@@ -80,7 +80,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
     if (!(widget->placer_params->rh))
         widget->placer_params->rh_data = 0.0;
 
-    ei_placer_params_t* params = widget->placer_params;
     widget->screen_location.top_left.x = widget->placer_params->x_data +
             widget->placer_params->rx_data * widget->parent->content_rect->size.width;
     widget->screen_location.top_left.y = widget->placer_params->y_data +

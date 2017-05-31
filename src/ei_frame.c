@@ -10,6 +10,8 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget);
+static ei_bool_t ei_frame_handlefunc(struct ei_widget_t* widget,
+						 			 struct ei_event_t*	event);
 
 void ei_frame_register_class() {
     ei_widgetclass_t *widget = malloc(sizeof(ei_widgetclass_t));
@@ -19,11 +21,9 @@ void ei_frame_register_class() {
     widget->drawfunc = &ei_frame_drawfunc;
     widget->setdefaultsfunc = &ei_frame_setdefaultsfunc;
     widget->geomnotifyfunc = NULL;
-    widget->handlefunc = NULL;
+    widget->handlefunc = &ei_frame_handlefunc;
     ei_widgetclass_register(widget);
 }
-
-//TODO: add functions linked to the class here (with static!)
 
 static void* ei_frame_alloc() {
     return calloc(1, sizeof(ei_frame_t));
@@ -45,7 +45,12 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 						((ei_frame_t*) widget)->bg_color, ((ei_frame_t*) widget)->relief, EI_FALSE);
 	hw_surface_unlock(surface);
 	hw_surface_update_rects(surface, NULL);
-
+	hw_surface_lock	(pick_surface);
+	ei_draw_polygon(pick_surface,
+					rounded_frame(widget->screen_location, 0),
+					*(widget->pick_color),
+					clipper);
+	hw_surface_unlock(pick_surface);
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
@@ -54,4 +59,9 @@ static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_frame_t*) widget)->relief = ei_relief_none;
 	((ei_frame_t*) widget)->opt_type = NONE;
 	widget->content_rect = &(widget->screen_location);
+}
+
+static ei_bool_t ei_frame_handlefunc(struct ei_widget_t*	widget,
+						 			 struct ei_event_t*	event) {
+	return EI_FALSE;
 }
