@@ -91,18 +91,22 @@ void ei_app_run() {
             }
         }
         struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
+        ei_event_set_active_widget(NULL);
+        ei_widget_t *widget;
         while(SHALL_WE_CONTINUE) {
             //TODO redessin des zones 3.7
             // Interacteur actif
             // Situé?
             // Si pas situé ou pas traité: traitant par défaut
-
-            if(event->type == ei_ev_keydown)
-                ei_app_quit_request();
-            else if(event->type == ei_ev_mouse_buttondown) {
-                ((ei_button_t*) ei_widget_pick(
-                    &(event->param.mouse.where)))
-                ->callback(NULL, NULL, NULL);
+            // ei_event_get_default_handle_func();
+            hw_event_wait_next(event);
+            if(!(widget = ei_event_get_active_widget()))
+                widget = ei_widget_pick(&(event->param.mouse.where));
+            //We execute event
+            if(!widget || !widget->handlefunc(widget, event)) {
+                printf("Handlefunc: échec\n");
+                if(!ei_event_get_default_handle_func(event))
+                    printf("Defaultfunc: échec\n");
             }
         }
     #ifdef DEBUG
