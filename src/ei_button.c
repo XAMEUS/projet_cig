@@ -56,10 +56,11 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
         ((ei_button_t*) widget)->push);
     hw_surface_unlock(surface);
 	hw_surface_update_rects(surface, NULL);
+	hw_surface_lock(pick_surface);
 	ei_draw_polygon(pick_surface,
 					rounded_frame(widget->screen_location,
 								 ((ei_button_t*) widget)->corner_radius),
-					((ei_frame_t*) widget)->bg_color,
+					*(widget->pick_color),
 					clipper);
 	hw_surface_unlock(pick_surface);
 }

@@ -37,10 +37,10 @@ typedef struct list_picking {
 list_picking* ei_app_picking_list();
 
 
-list_picking create_picker();
+list_picking *create_picker();
 void add_picker(list_picking *ptr_list, ei_widget_t* new_widget);
 void del_picker(list_picking *ptr_list, uint32_t pick_id);
 ei_widget_t* take_picker(list_picking list, uint32_t pick_id);
-void remove_picker(list_picking list);
-
+void remove_picker(list_picking *ptr_list);
+void print_picker(list_picking *ptr_list);
 #endif

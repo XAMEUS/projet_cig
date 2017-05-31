@@ -12,7 +12,7 @@
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
 static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
-static list_picking LIST_PICKING;
+static list_picking *LIST_PICKING;
 
 /**
  * \brief	Creates an application.
@@ -42,6 +42,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_SURFACE = hw_create_window(main_window_size, fullscreen);
     ei_size_t first = hw_surface_get_size(ROOT_SURFACE);
     /* Offscreen surface for the picking */
+    LIST_PICKING = create_picker();
     PICKING = hw_surface_create(ROOT_SURFACE, &first, EI_FALSE);
     /* Root widget */
     ei_widgetclass_t *frame = ei_widgetclass_from_name("frame");
@@ -50,7 +51,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ROOT_WIDGET->requested_size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->screen_location.size = hw_surface_get_size(ROOT_SURFACE);
     ROOT_WIDGET->content_rect = &(ROOT_WIDGET->screen_location);
-    LIST_PICKING = create_picker();
+    add_picker(LIST_PICKING, ROOT_WIDGET);
 }
 
 /**
@@ -96,7 +97,9 @@ void ei_app_run() {
             if(event->type == ei_ev_keydown)
                 ei_app_quit_request();
             else if(event->type == ei_ev_mouse_buttondown) {
-                ((ei_button_t*) ei_widget_pick(&(event->param.mouse.where)))->callback(NULL, NULL, NULL);
+                ((ei_button_t*) ei_widget_pick(
+                    &(event->param.mouse.where)))
+                ->callback(NULL, NULL, NULL);
             }
         }
     #ifdef DEBUG
@@ -126,5 +129,5 @@ ei_surface_t ei_app_picking_object() {
 }
 
 list_picking* ei_app_picking_list() {
-    return &LIST_PICKING;
+    return LIST_PICKING;
 }
