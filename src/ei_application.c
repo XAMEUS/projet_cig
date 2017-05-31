@@ -73,40 +73,42 @@ void ei_app_run() {
     frequency_init(fc);
     while(1) {
     #endif
-        ei_widget_t *w = ROOT_WIDGET;
-        hw_surface_lock(ROOT_SURFACE);
-        hw_surface_lock(PICKING);
-        while(1) {
-            if(w->placer_params)
-                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
-            else if(w == ROOT_WIDGET)
-                w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
-            if(w->children_head != NULL)
-                w = w->children_head;
-            else if(w->next_sibling != NULL)
-                w = w->next_sibling;
-            else {
-                while(w->parent != NULL && w->parent->next_sibling == NULL)
-                    w = w->parent;
-                if(w->parent != NULL)
-                    w = w->parent->next_sibling;
-                else
-                    break;
-            }
-        }
-        hw_surface_unlock(ROOT_SURFACE);
-        hw_surface_unlock(PICKING);
-        hw_surface_update_rects(ROOT_SURFACE, NULL); // TODO: not NULL but specific rect
-        struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
-        ei_widget_t *widget;
+        ei_widget_t *widget_event;
+        ei_widget_t *w;
         while(SHALL_WE_CONTINUE) {
+            hw_surface_lock(ROOT_SURFACE);
+            hw_surface_lock(PICKING);
+            w = ROOT_WIDGET;
+            while(1) {
+                if(w->placer_params)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
+                else if(w == ROOT_WIDGET)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
+                if(w->children_head != NULL)
+                    w = w->children_head;
+                else if(w->next_sibling != NULL)
+                    w = w->next_sibling;
+                else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                        w = w->parent;
+                    if(w->parent != NULL)
+                        w = w->parent->next_sibling;
+                    else
+                        break;
+                }
+            }
+            hw_surface_unlock(ROOT_SURFACE);
+            hw_surface_unlock(PICKING);
+            hw_surface_update_rects(ROOT_SURFACE, INVALIDATE_RECT);
+            struct ei_event_t* event = malloc(sizeof(struct ei_event_t));
+
             //TODO redessin des zones 3.7
             hw_event_wait_next(event);
-            widget = ei_event_get_active_widget();
-            if(!(widget) && event->type <= 6 && event->type >= 4)
-                widget = ei_widget_pick(&(event->param.mouse.where));
+            widget_event = ei_event_get_active_widget();
+            if(!(widget_event) && event->type <= 6 && event->type >= 4)
+                widget_event = ei_widget_pick(&(event->param.mouse.where));
             //We execute event
-            if(!widget || !widget->wclass->handlefunc(widget, event)) {
+            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event)) {
                 printf("Handlefunc: échec\n");
                 if(!ei_event_get_default_handle_func()(event))
                     printf("Defaultfunc: échec\n");
