@@ -51,7 +51,9 @@ else
 
 endif
 
-
+ifeq ($(DEBUG),true)
+LDFLAGS := -pg ${LDFLAGS}
+endif
 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
