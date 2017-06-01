@@ -13,29 +13,6 @@ struct polygon_side{
     struct polygon_side* next;
 };
 
-/* Affichage debug */
-void print_TC(struct polygon_side* TC[], const int TC_size) {
-  fprintf(stderr, "TC\n");
-  for (int i = 0; i < TC_size; i++) {
-    struct polygon_side* s = TC[i];
-    if (s != NULL) fprintf(stderr, "\t %d ", i);
-    while(s != NULL) {
-      fprintf(stderr, "[%d %f %f] --> ", s->y_max, s->x_ymin, s->rslope);
-      s = s->next;
-    }
-    if (TC[i] != NULL) fprintf(stderr, "\n");
-  }
-}
-
-void print_TCA(struct polygon_side* TCA) {
-  fprintf(stderr, "TCA --> ");
-  for (struct polygon_side* s = TCA; s != NULL; s = s->next) {
-    fprintf(stderr, "[%d %f %f] --> ", s->y_max, s->x_ymin, s->rslope);
-  }
-  fprintf(stderr, "\n");
-}
-/* fin Affichage debug */
-
 void extremum_pts(const ei_linked_point_t* first_point,
                   ei_point_t* pt_min,
                   ei_point_t* pt_max) {
@@ -69,7 +46,6 @@ struct polygon_side* insert_in_TCA(struct polygon_side* head,
     }
     return head;
 }
-
 
 void init_polygon_side(struct polygon_side* TC[],
                        const int offset,

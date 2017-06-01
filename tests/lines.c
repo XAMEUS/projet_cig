@@ -6,9 +6,9 @@
 #include "hw_interface.h"
 #include "ei_utils.h"
 #include "ei_draw.h"
+#include "ei_draw_button.h"
+#include "ei_draw_toplevel.h"
 #include "ei_types.h"
-
-#include "ei_draw_ex.h"
 
 /* test_text --
  */
