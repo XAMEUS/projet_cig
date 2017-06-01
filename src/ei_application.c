@@ -1,7 +1,8 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
-//#include "ei_debug.h"
+#include "ei_widgetclass_unregister.h"
+// #include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
 #include "ei_button.h"
@@ -16,24 +17,7 @@ static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
 static list_picking *LIST_PICKING;
 static ei_linked_rect_t *INVALIDATE_RECT = NULL;
 
-/**
- * \brief	Creates an application.
- *		<ul>
- *			<li> initializes the hardware (calls \ref hw_init), </li>
- *			<li> registers all classes of widget and all geometry managers, </li>
- *			<li> creates the root window (either in a system window, or the entire
- *				screen), </li>
- *			<li> creates the root widget to accress the root window. </li>
- *		</ul>
- *
- * @param	main_window_size	If "fullscreen is false, the size of the root window of the
- *					application.
- *					If "fullscreen" is true, the current monitor resolution is
- *					used as the size of the root window, this size is returned
- *					in this parameter.
- * @param	fullScreen		If true, the root window is the entire screen. Otherwise, it
- *					is a system window.
- */
+
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     hw_init();
     /* We register all classes */
@@ -59,14 +43,13 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_app_invalidate_rect(&screen_rect);
 }
 
-/**
- * \brief	Releases all the resources of the application, and releases the hardware
- *		(ie. calls \ref hw_quit).
- */
+
 void ei_app_free() {
-    ROOT_WIDGET->wclass->releasefunc(ROOT_WIDGET);
-    free(ROOT_WIDGET);
+    ei_widget_destroy(ROOT_WIDGET);
     hw_surface_free(ROOT_SURFACE);
+    hw_surface_free(PICKING);
+    remove_picker(LIST_PICKING);
+    ei_widgetclass_unregister();
     hw_quit();
 }
 
@@ -80,57 +63,81 @@ void ei_app_run() {
     frequency_counter_t* fc = malloc(sizeof(frequency_counter_t));
     frequency_init(fc);
     while(1) {
+    #else
+    while(SHALL_WE_CONTINUE) {
+        while(INVALIDATE_RECT) {
     #endif
-        while(SHALL_WE_CONTINUE) {
-            while(INVALIDATE_RECT) {
-                hw_surface_lock(ROOT_SURFACE);
-                hw_surface_lock(PICKING);
-                w = ROOT_WIDGET;
-                while(1) {
-                    if(w->placer_params &&
-                        (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
-                                         &INVALIDATE_RECT->rect))) {
-                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
-                        free(rect_clipping);
-                    }
-                    else if(w == ROOT_WIDGET)
-                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
-
-                    if(w->children_head != NULL)
-                        w = w->children_head;
-                    else if(w->next_sibling != NULL)
-                        w = w->next_sibling;
-                    else {
-                        while(w->parent != NULL && w->parent->next_sibling == NULL)
-                            w = w->parent;
-                        if(w->parent != NULL)
-                            w = w->parent->next_sibling;
-                        else
-                            break;
-                    }
+            hw_surface_lock(ROOT_SURFACE);
+            hw_surface_lock(PICKING);
+            w = ROOT_WIDGET;
+            while(1) {
+                #ifdef DEBUG
+                if(w->placer_params)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
+                else if(w == ROOT_WIDGET)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
+                if(w->children_head != NULL)
+                    w = w->children_head;
+                else if(w->next_sibling != NULL)
+                    w = w->next_sibling;
+                else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                        w = w->parent;
+                    if(w->parent != NULL)
+                        w = w->parent->next_sibling;
+                    else
+                        break;
                 }
-                hw_surface_unlock(ROOT_SURFACE);
-                hw_surface_unlock(PICKING);
-                hw_surface_update_rects(ROOT_SURFACE, NULL);
-                new_invalidate = INVALIDATE_RECT->next;
-                free(INVALIDATE_RECT);
-                INVALIDATE_RECT = new_invalidate;
+                #else
+                if(w->placer_params &&
+                    (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                                     &INVALIDATE_RECT->rect))) {
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
+                    free(rect_clipping);
+                }
+                else if(w == ROOT_WIDGET)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
 
+                if(w->children_head != NULL)
+                    w = w->children_head;
+                else if(w->next_sibling != NULL)
+                    w = w->next_sibling;
+                else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                        w = w->parent;
+                    if(w->parent != NULL)
+                        w = w->parent->next_sibling;
+                    else
+                        break;
+                }
+                #endif
             }
-            hw_event_wait_next(event);
-            widget_event = ei_event_get_active_widget();
-            if(!(widget_event) && event->type <= 6 && event->type >= 4)
-                widget_event = ei_widget_pick(&(event->param.mouse.where));
+            hw_surface_unlock(ROOT_SURFACE);
+            hw_surface_unlock(PICKING);
+            hw_surface_update_rects(ROOT_SURFACE, NULL);
+            #ifndef DEBUG
+            new_invalidate = INVALIDATE_RECT->next;
+            free(INVALIDATE_RECT);
+            INVALIDATE_RECT = new_invalidate;
+            #endif
 
-            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
-                if(ei_event_get_default_handle_func())
-                    ei_event_get_default_handle_func()(event);
+    #ifndef DEBUG
         }
-    #ifdef DEBUG
+        hw_event_wait_next(event);
+        widget_event = ei_event_get_active_widget();
+        if(!(widget_event) && event->type <= 6 && event->type >= 4)
+            widget_event = ei_widget_pick(&(event->param.mouse.where));
+
+        if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
+            if(ei_event_get_default_handle_func())
+                ei_event_get_default_handle_func()(event);
+    #else
         frequency_tick(fc);
-    }
     #endif
+    }
+    #ifndef DEBUG
     free(event);
+    #endif
 }
 
 void ei_app_invalidate_rect(ei_rect_t* rect) {

@@ -37,10 +37,15 @@ static void* ei_frame_alloc() {
 }
 
 static void ei_frame_release_func(struct ei_widget_t* widget) {
-	if(((ei_frame_t*) widget)->opt_type == TEXT)
-		free(((ei_frame_t*) widget)->opt.txt.text);
-	else if (((ei_frame_t*) widget)->opt_type == IMAGE)
-		free(((ei_frame_t*) widget)->opt.img.img_rect);
+	if(((ei_button_t*) widget)->frame.opt_type == TEXT &&
+		((ei_button_t*) widget)->frame.opt.txt.text)
+			free(((ei_button_t*) widget)->frame.opt.txt.text);
+	else if (((ei_button_t*) widget)->frame.opt_type == IMAGE) {
+		if(((ei_button_t*) widget)->frame.opt.img.img)
+			hw_surface_free(((ei_button_t*) widget)->frame.opt.img.img);
+		if(((ei_button_t*) widget)->frame.opt.img.img_rect)
+			free(((ei_button_t*) widget)->frame.opt.img.img_rect);
+	}
 }
 
 static void ei_frame_drawfunc(struct ei_widget_t*	widget,

@@ -90,6 +90,8 @@ int ei_main(int argc, char** argv)
    			 &button_border_width, &button_corner_radius, &button_relief, NULL, NULL, NULL, NULL,
    			 &image, &image_rect, &image_anchor, &button_callback, NULL);
 		ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL);
+		hw_surface_free(image);
+		free(image_rect);
 	}
 
 	/* Hook the keypress callback to the event. */
