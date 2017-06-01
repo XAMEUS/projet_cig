@@ -1,7 +1,7 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
-//#include "ei_debug.h"
+// #include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
 #include "ei_button.h"
@@ -80,57 +80,81 @@ void ei_app_run() {
     frequency_counter_t* fc = malloc(sizeof(frequency_counter_t));
     frequency_init(fc);
     while(1) {
+    #else
+    while(SHALL_WE_CONTINUE) {
+        while(INVALIDATE_RECT) {
     #endif
-        while(SHALL_WE_CONTINUE) {
-            while(INVALIDATE_RECT) {
-                hw_surface_lock(ROOT_SURFACE);
-                hw_surface_lock(PICKING);
-                w = ROOT_WIDGET;
-                while(1) {
-                    if(w->placer_params &&
-                        (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
-                                         &INVALIDATE_RECT->rect))) {
-                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
-                        free(rect_clipping);
-                    }
-                    else if(w == ROOT_WIDGET)
-                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
-
-                    if(w->children_head != NULL)
-                        w = w->children_head;
-                    else if(w->next_sibling != NULL)
-                        w = w->next_sibling;
-                    else {
-                        while(w->parent != NULL && w->parent->next_sibling == NULL)
-                            w = w->parent;
-                        if(w->parent != NULL)
-                            w = w->parent->next_sibling;
-                        else
-                            break;
-                    }
+            hw_surface_lock(ROOT_SURFACE);
+            hw_surface_lock(PICKING);
+            w = ROOT_WIDGET;
+            while(1) {
+                #ifdef DEBUG
+                if(w->placer_params)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
+                else if(w == ROOT_WIDGET)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
+                if(w->children_head != NULL)
+                    w = w->children_head;
+                else if(w->next_sibling != NULL)
+                    w = w->next_sibling;
+                else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                        w = w->parent;
+                    if(w->parent != NULL)
+                        w = w->parent->next_sibling;
+                    else
+                        break;
                 }
-                hw_surface_unlock(ROOT_SURFACE);
-                hw_surface_unlock(PICKING);
-                hw_surface_update_rects(ROOT_SURFACE, NULL);
-                new_invalidate = INVALIDATE_RECT->next;
-                free(INVALIDATE_RECT);
-                INVALIDATE_RECT = new_invalidate;
+                #else
+                if(w->placer_params &&
+                    (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                                     &INVALIDATE_RECT->rect))) {
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
+                    free(rect_clipping);
+                }
+                else if(w == ROOT_WIDGET)
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
 
+                if(w->children_head != NULL)
+                    w = w->children_head;
+                else if(w->next_sibling != NULL)
+                    w = w->next_sibling;
+                else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                        w = w->parent;
+                    if(w->parent != NULL)
+                        w = w->parent->next_sibling;
+                    else
+                        break;
+                }
+                #endif
             }
-            hw_event_wait_next(event);
-            widget_event = ei_event_get_active_widget();
-            if(!(widget_event) && event->type <= 6 && event->type >= 4)
-                widget_event = ei_widget_pick(&(event->param.mouse.where));
+            hw_surface_unlock(ROOT_SURFACE);
+            hw_surface_unlock(PICKING);
+            hw_surface_update_rects(ROOT_SURFACE, NULL);
+            #ifndef DEBUG
+            new_invalidate = INVALIDATE_RECT->next;
+            free(INVALIDATE_RECT);
+            INVALIDATE_RECT = new_invalidate;
+            #endif
 
-            if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
-                if(ei_event_get_default_handle_func())
-                    ei_event_get_default_handle_func()(event);
+    #ifndef DEBUG
         }
-    #ifdef DEBUG
+        hw_event_wait_next(event);
+        widget_event = ei_event_get_active_widget();
+        if(!(widget_event) && event->type <= 6 && event->type >= 4)
+            widget_event = ei_widget_pick(&(event->param.mouse.where));
+
+        if(!widget_event || !widget_event->wclass->handlefunc(widget_event, event))
+            if(ei_event_get_default_handle_func())
+                ei_event_get_default_handle_func()(event);
+    #else
         frequency_tick(fc);
-    }
     #endif
+    }
+    #ifndef DEBUG
     free(event);
+    #endif
 }
 
 void ei_app_invalidate_rect(ei_rect_t* rect) {
