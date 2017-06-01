@@ -66,8 +66,6 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
 void ei_app_free() {
     ei_widget_t *to_free = ROOT_WIDGET;
     ei_widget_t *tmp;
-    ei_widget_t *father;
-    ei_widget_t *next;
     while(to_free) {
         while(to_free->children_head)
             to_free = to_free->children_head;
@@ -81,6 +79,7 @@ void ei_app_free() {
 
         tmp = to_free;
         to_free = (to_free->next_sibling) ? to_free->next_sibling : to_free->parent;
+        tmp->wclass->releasefunc(tmp);
         free(tmp);
     }
     hw_surface_free(ROOT_SURFACE);

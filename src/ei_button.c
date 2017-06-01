@@ -61,9 +61,11 @@ static ei_bool_t ei_button_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void ei_button_release_func(struct ei_widget_t* widget) {
-	if(((ei_button_t*) widget)->frame.opt_type == TEXT)
-		free(((ei_button_t*) widget)->frame.opt.txt.text);
-	else if (((ei_button_t*) widget)->frame.opt_type == IMAGE)
+	if(((ei_button_t*) widget)->frame.opt_type == TEXT &&
+		((ei_button_t*) widget)->frame.opt.txt.text)
+			free(((ei_button_t*) widget)->frame.opt.txt.text);
+	else if (((ei_button_t*) widget)->frame.opt_type == IMAGE &&
+		((ei_button_t*) widget)->frame.opt.img.img_rect)
 		free(((ei_button_t*) widget)->frame.opt.img.img_rect);
 }
 
