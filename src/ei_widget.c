@@ -161,8 +161,10 @@ void ei_frame_configure (ei_widget_t* widget,
                                 *img,
                                 NULL,
                                 EI_FALSE) == 0);
-        if(img_rect)
-            ((ei_frame_t*) widget)->opt.img.img_rect = *img_rect;
+        if(img_rect) {
+            ((ei_frame_t*) widget)->opt.img.img_rect = malloc(sizeof(ei_rect_t));
+            *((ei_frame_t*) widget)->opt.img.img_rect = **img_rect;
+        }
         if(img_anchor)
             ((ei_frame_t*) widget)->opt.img.img_anchor = *img_anchor;
     }
