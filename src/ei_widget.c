@@ -10,18 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/**
- * @brief	Creates a new instance of a widget of some particular class, as a descendant of
- *		an existing widget.
- *
- *		The widget is not displayed on screen until it is managed by a geometry manager.
- *		The widget should be released by calling \ref ei_widget_destroy when no more needed.
- *
- * @param	class_name	The name of the class of the widget that is to be created.
- * @param	parent 		A pointer to the parent widget. Can not be NULL.
- *
- * @return			The newly created widget, or NULL if there was an error.
- */
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* parent) {
     assert(parent);
     ei_widgetclass_t* class = ei_widgetclass_from_name(class_name);
@@ -36,7 +24,6 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     add_picker(ei_app_picking_list(), widget);
     return widget;
 }
-
 /**
  * @brief	Destroys a widget. Removes it from screen if it is managed by a geometry manager.
  *		Destroys all its descendants.
@@ -44,18 +31,35 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
  * @param	widget		The widget that is to be destroyed.
  */
 void ei_widget_destroy (ei_widget_t* widget) {
-    return;
+    ei_widget_t *to_free = widget;
+    ei_widget_t *tmp;
+    while(to_free) {
+        while(to_free->children_head)
+            to_free = to_free->children_head;
+
+        if(to_free->parent) {
+            if(to_free->parent->children_head == to_free)
+                to_free->parent->children_head = to_free->next_sibling;
+            if(to_free->parent->children_tail == to_free)
+                to_free->parent->children_tail = NULL;
+        }
+
+        tmp = to_free;
+        if(tmp->placer_params)
+            free(tmp->placer_params);
+        if(tmp->content_rect && tmp->content_rect != &tmp->screen_location)
+            free(tmp->content_rect);
+        if(to_free->next_sibling)
+            to_free = to_free->next_sibling;
+        else if(to_free != widget)
+            to_free = to_free->parent;
+        else
+            to_free = NULL;
+        tmp->wclass->releasefunc(tmp);
+        free(tmp);
+    }
 }
 
-
-/**
- * @brief	Returns the widget that is at a given location on screen.
- *
- * @param	where		The location on screen, expressed in the root window coordinates.
- *
- * @return			The top-most widget at this location, or NULL if there is no widget
- *				at this location (except for the root widget).
- */
 ei_widget_t* ei_widget_pick(ei_point_t* where) {
     ei_surface_t pick_surface = ei_app_picking_object();
     ei_size_t pick_size = hw_surface_get_size(pick_surface);
@@ -71,46 +75,6 @@ ei_widget_t* ei_widget_pick(ei_point_t* where) {
     return result;
 }
 
-
-/**
- * @brief	Configures the attributes of widgets of the class "frame".
- *
- *		Parameters obey the "default" protocol: if a parameter is "NULL" and it has never
- *		been defined before, then a default value should be used (default values are
- *		specified for each parameter). If the parameter is "NULL" but was defined on a
- *		previous call, then its value must not be changed.
- *
- * @param	widget		The widget to configure.
- * @param	requested_size	The size requested for this widget, including borders.
- *				The geometry manager may override this size due to other constraints.
- *				Defaults to the "natural size" of the widget, ie. big enough to
- *				display the border and the text or the image. This may be (0, 0)
- *				if the widget has border_width=0, and no text and no image.
- * @param	color		The color of the background of the widget. Defaults to
- *				\ref ei_default_background_color.
- * @param	border_width	The width in pixel of the border decoration of the widget. The final
- *				appearance depends on the "relief" parameter. Defaults to 0.
- * @param	relief		Appearance of the border of the widget. Defaults to
- *				\ref ei_relief_none.
- * @param	text		The text to display in the widget, or NULL. Only one of the
- *				parameter "text" and "img" should be used (i.e. non-NULL). Defaults
- *				to NULL.
- * @param	text_font	The font used to display the text. Defaults to \ref ei_default_font.
- * @param	text_color	The color used to display the text. Defaults to
- *				\ref ei_font_default_color.
- * @param	text_anchor	The anchor of the text, i.e. where it is placed whithin the widget
- *				when the size of the widget is bigger than the size of the text.
- *				Defaults to \ref ei_anc_center.
- * @param	img		The image to display in the widget, or NULL. Any surface can be
- *				used, but usually a surface returned by \ref hw_image_load. Only one
- *				of the parameter "text" and "img" should be used (i.e. non-NULL).
- 				Defaults to NULL.
- * @param	img_rect	If not NULL, this rectangle defines a subpart of "img" to use as the
- *				image displayed in the widget. Defaults to NULL.
- * @param	img_anchor	The anchor of the image, i.e. where it is placed whithin the widget
- *				when the size of the widget is bigger than the size of the image.
- *				Defaults to \ref ei_anc_center.
- */
 void ei_frame_configure (ei_widget_t* widget,
                             ei_size_t* requested_size,
                             const ei_color_t* color,
@@ -185,22 +149,6 @@ void ei_frame_configure (ei_widget_t* widget,
     }
 }
 
-/**
- * @brief	Configures the attributes of widgets of the class "button".
- *
- * @param	widget, requested_size, color, border_width, relief,
- *		text, text_font, text_color, text_anchor,
- *		img, img_rect, img_anchor
- *				See the parameter definition of \ref ei_frame_configure. The only
- *				difference is that relief defaults to \ref ei_relief_raised
- *				and border_width defaults to \ref k_default_button_border_width.
- * @param	corner_radius	The radius (in pixels) of the rounded corners of the button.
- *				0 means straight corners. Defaults to \ref k_default_button_corner_radius.
- * @param	callback	The callback function to call when the user clicks on the button.
- *				Defaults to NULL (no callback).
- * @param	user_param	A programmer supplied parameter that will be passed to the callback
- *				when called. Defaults to NULL.
- */
 void ei_button_configure(ei_widget_t* widget,
                             ei_size_t* requested_size,
                             const ei_color_t* color,
@@ -234,27 +182,6 @@ void ei_button_configure(ei_widget_t* widget,
         ((ei_button_t*) widget)->user_param = *user_param;
 }
 
-/**
- * @brief	Configures the attributes of widgets of the class "toplevel".
- *
- * @param	widget		The widget to configure.
- * @param	requested_size	The content size requested for this widget, this does not include
- *				the decorations	(border, title bar). The geometry manager may
- *				override this size due to other constraints.
- *				Defaults to (320x240).
- * @param	color		The color of the background of the content of the widget. Defaults
- *				to \ref ei_default_background_color.
- * @param	border_width	The width in pixel of the border of the widget. Defaults to 4.
- * @param	title		The string title diplayed in the title bar. Defaults to "Toplevel".
- *				Uses the font \ref ei_default_font.
- * @param	closable	If true, the toplevel is closable by the user, the toplevel must
- *				show a close button in its title bar. Defaults to \ref EI_TRUE.
- * @param	resizable	Defines if the widget can be resized horizontally and/or vertically
- *				by the user. Defaults to \ref ei_axis_both.
- * @param	min_size	For resizable widgets, defines the minimum size. The default minimum
- *				size of a toplevel is (160, 120). If *min_size is NULL, this requires
- *				the toplevel to be configured to its default size.
- */
 void ei_toplevel_configure (ei_widget_t* widget,
 							 ei_size_t* requested_size,
 							 ei_color_t* color,

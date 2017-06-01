@@ -45,24 +45,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
 
 
 void ei_app_free() {
-    ei_widget_t *to_free = ROOT_WIDGET;
-    ei_widget_t *tmp;
-    while(to_free) {
-        while(to_free->children_head)
-            to_free = to_free->children_head;
-
-        if(to_free->parent) {
-            if(to_free->parent->children_head == to_free)
-                to_free->parent->children_head = to_free->next_sibling;
-            if(to_free->parent->children_tail == to_free)
-                to_free->parent->children_tail = NULL;
-        }
-
-        tmp = to_free;
-        to_free = (to_free->next_sibling) ? to_free->next_sibling : to_free->parent;
-        tmp->wclass->releasefunc(tmp);
-        free(tmp);
-    }
+    ei_widget_destroy(ROOT_WIDGET);
     hw_surface_free(ROOT_SURFACE);
     hw_surface_free(PICKING);
     remove_picker(LIST_PICKING);
