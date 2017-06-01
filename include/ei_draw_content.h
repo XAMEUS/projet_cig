@@ -3,13 +3,11 @@
 
 void draw_text (struct ei_widget_t*	widget,
 				ei_surface_t		surface,
-				ei_surface_t		pick_surface,
 				ei_rect_t*		clipper,
 				int offset);
 
 void draw_image(struct ei_widget_t*	widget,
 				ei_surface_t		surface,
-				ei_surface_t		pick_surface,
 				ei_rect_t*		clipper,
 				int offset);
 
