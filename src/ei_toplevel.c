@@ -27,7 +27,7 @@ void ei_toplevel_register_class() {
     widget->drawfunc = &ei_toplevel_drawfunc;
     widget->setdefaultsfunc = &ei_toplevel_setdefaultsfunc;
     widget->geomnotifyfunc = &ei_toplevel_geomnotifyfunc;
-    widget->handlefunc =  &ei_toplevel_handlefunc;
+    widget->handlefunc = &ei_toplevel_handlefunc;
     ei_widgetclass_register(widget);
 }
 
@@ -45,18 +45,13 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
 	draw_toplevel(surface, clipper, widget->screen_location,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
     fprintf(stderr, "screen location %d %d %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y, widget->screen_location.size.width, widget->screen_location.size.height);
-    ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y};
+    ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + 5};
     if (((ei_toplevel_t*) widget)->close_button) {
-        ei_point_t button_location = {widget->screen_location.top_left.x + 10, widget->screen_location.top_left.y + 10};
-        ei_place(((ei_toplevel_t*) widget)->close_button, NULL, &(button_location.x), &(button_location.y), NULL, NULL, NULL, NULL, NULL, NULL);
         ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, clipper);
-        text_where.x += ((ei_toplevel_t*) widget)->close_button->screen_location.size.width;
+        text_where.x += 3 * ((ei_toplevel_t*) widget)->close_button->screen_location.size.width;
     }
-    if (((ei_toplevel_t*) widget)->resize_button) {
-        ei_point_t button_location = {widget->screen_location.top_left.x + widget->screen_location.size.width - ((ei_toplevel_t*) widget)->resize_button->requested_size.width, widget->screen_location.top_left.y + widget->screen_location.size.height - ((ei_toplevel_t*) widget)->resize_button->requested_size.height};
-        ei_place(((ei_toplevel_t*) widget)->resize_button, NULL, &(button_location.x), &(button_location.y), NULL, NULL, NULL, NULL, NULL, NULL);
+    if (((ei_toplevel_t*) widget)->resize_button)
         ((ei_toplevel_t*) widget)->resize_button->wclass->drawfunc(((ei_toplevel_t*) widget)->resize_button, surface, pick_surface, clipper);
-    }
     ei_color_t text_color = {255, 255, 255, 255};
     ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, clipper);
 }
@@ -80,5 +75,24 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
-	widget->screen_location = rect;
+    widget->screen_location = rect;
+    if(((ei_toplevel_t*) widget)->close_button) {
+        ((ei_toplevel_t*) widget)->close_button->content_rect =
+            &((ei_toplevel_t*) widget)->close_button->screen_location;
+        ((ei_toplevel_t*) widget)->close_button->screen_location.top_left.x =
+            widget->screen_location.top_left.x + 10;
+        ((ei_toplevel_t*) widget)->close_button->screen_location.top_left.y =
+            widget->screen_location.top_left.y + 12;
+        ((ei_toplevel_t*) widget)->close_button->screen_location.size.width = 10;
+        ((ei_toplevel_t*) widget)->close_button->screen_location.size.height = 10;
+    }
+    if (((ei_toplevel_t*) widget)->resize_button) {
+        ((ei_toplevel_t*) widget)->resize_button->content_rect =
+            &((ei_toplevel_t*) widget)->resize_button->screen_location;
+            ((ei_toplevel_t*) widget)->resize_button->screen_location.size.width = 10;
+            ((ei_toplevel_t*) widget)->resize_button->screen_location.size.height = 10;
+        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width;
+        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height;
+    }
+
 }
