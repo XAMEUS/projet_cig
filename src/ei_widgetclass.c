@@ -1,4 +1,5 @@
 #include "ei_widgetclass.h"
+#include "ei_widgetclass_unregister.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -29,4 +30,13 @@ ei_widgetclass_t*  ei_widgetclass_from_name(ei_widgetclass_name_t name) {
         candidate = candidate->next;
     assert(candidate != NULL); //Maybe useless?
     return candidate;
+}
+
+void ei_widgetclass_unregister() {
+    ei_widgetclass_t *tmp;
+    while(Classes) {
+        tmp = Classes;
+        Classes = Classes->next;
+        free(tmp);
+    }
 }

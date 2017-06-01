@@ -1,6 +1,7 @@
 #include "ei_application.h"
 #include "ei_frame.h"
 #include "ei_widgetclass.h"
+#include "ei_widgetclass_unregister.h"
 // #include "ei_debug.h"
 #include "ei_picking.h"
 #include "ei_event.h"
@@ -85,6 +86,7 @@ void ei_app_free() {
     hw_surface_free(ROOT_SURFACE);
     hw_surface_free(PICKING);
     remove_picker(LIST_PICKING);
+    ei_widgetclass_unregister();
     hw_quit();
 }
 

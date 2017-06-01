@@ -57,8 +57,7 @@ void remove_picker(list_picking *ptr_list) {
         free(tmp);
     }
     free(list.data);
-    list.len = 0;
-    list.alloc_size = 0;
+    free(ptr_list);
 }
 
 void print_picker(list_picking *ptr_list) {
