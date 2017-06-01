@@ -255,9 +255,11 @@ int	ei_copy_surface(ei_surface_t destination,
 			    int r1, g1, b1, a1;
 			    hw_surface_get_channel_indices(source, &r1, &g1, &b1, &a1);
 				for (int i = 0; i < clipper_size.height; i++) {
+                    int s_i = i * src_size.width;
+                    int d_i = i * dst_size.width;
 					for (int j = 0; j < clipper_size.width; j++) {
-						uint8_t* s_pos = src_buff + (i*src_size.width + j + src_offset) * 4;
-						uint8_t* d_pos = dst_buff + (i*dst_size.width + j + dst_offset) * 4;
+						uint8_t* s_pos = src_buff + ((s_i + j + src_offset) * 4);
+						uint8_t* d_pos = dst_buff + ((d_i + j + dst_offset) * 4);
 						uint8_t s_r = s_pos[r1];
 						uint8_t s_g = s_pos[g1];
 						uint8_t s_b = s_pos[b1];
