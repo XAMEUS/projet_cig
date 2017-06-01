@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
+
 #include "ei_frame.h"
 #include "ei_button.h"
+#include "ei_draw.h"
 #include "ei_draw_button.h"
-#include "ei_draw_ex.h"
+#include "ei_draw_content.h"
+
 #include "ei_application.h"
 
 static void* ei_frame_alloc();
@@ -45,14 +48,13 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
 	// ((ei_frame_t*) widget)->bg_color.alpha = 0xFF;
-	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_frame_t*) widget)->border_width,
-						((ei_frame_t*) widget)->bg_color, ((ei_frame_t*) widget)->relief, EI_TRUE);
-	ei_linked_point_t* pts = rounded_frame(widget->screen_location, 0);
-	ei_draw_polygon(pick_surface,
-					pts,
-					*(widget->pick_color),
-					clipper);
-	free_linked_point(pts);
+	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_frame_t*) widget)->border_width, ((ei_frame_t*) widget)->bg_color, ((ei_frame_t*) widget)->relief, EI_TRUE);
+	if(((ei_button_t*) widget)->frame.opt_type == TEXT) {
+		draw_text(widget, surface, clipper, ((ei_button_t*) widget)->frame.border_width);
+	} else if (((ei_button_t*) widget)->frame.opt_type == IMAGE) {
+		draw_image(widget, surface, clipper, ((ei_button_t*) widget)->frame.border_width);
+	}
+	ei_fill(pick_surface, widget->pick_color, &(widget->screen_location));
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
