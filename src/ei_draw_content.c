@@ -48,7 +48,6 @@ void place_content(ei_point_t* where,
 
 void draw_text (struct ei_widget_t*	widget,
 				ei_surface_t		surface,
-				ei_surface_t		pick_surface,
 				ei_rect_t*		clipper,
 				int offset) {
 	ei_rect_t text_clipper = widget->screen_location;
@@ -73,7 +72,6 @@ void draw_text (struct ei_widget_t*	widget,
 
 void draw_image(struct ei_widget_t*	widget,
 				ei_surface_t		surface,
-				ei_surface_t		pick_surface,
 				ei_rect_t*		clipper,
 				int offset) {
 	ei_rect_t img_clipper = widget->screen_location;
