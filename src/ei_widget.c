@@ -24,12 +24,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
     add_picker(ei_app_picking_list(), widget);
     return widget;
 }
-/**
- * @brief	Destroys a widget. Removes it from screen if it is managed by a geometry manager.
- *		Destroys all its descendants.
- *
- * @param	widget		The widget that is to be destroyed.
- */
+
 void ei_widget_destroy (ei_widget_t* widget) {
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
