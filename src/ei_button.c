@@ -199,10 +199,5 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 }
 
 static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
-	//TODO optim
-	ei_app_invalidate_rect(&widget->screen_location);
-	ei_app_invalidate_rect(&rect);
 	widget->screen_location = rect;
-	for (ei_widget_t *child = widget->children_head; child != NULL; child = child->next_sibling)
-		ei_placer_run(child);
 }

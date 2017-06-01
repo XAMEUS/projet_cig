@@ -255,19 +255,19 @@ int	ei_copy_surface(ei_surface_t destination,
 			    hw_surface_get_channel_indices(source, &r1, &g1, &b1, &a1);
 				for (int i = 0; i < clipper_size.height; i++) {
 					for (int j = 0; j < clipper_size.width; j++) {
-						int s_pos = (i*src_size.width + j + src_offset) * 4;
-						int d_pos = (i*dst_size.width + j + dst_offset) * 4;
-						uint8_t s_r = src_buff[s_pos + r1];
-						uint8_t s_g = src_buff[s_pos + g1];
-						uint8_t s_b = src_buff[s_pos + b1];
-						uint8_t s_a = src_buff[s_pos + a1];
-						uint8_t d_r = dst_buff[d_pos + r];
-						uint8_t d_g = dst_buff[d_pos + g];
-						uint8_t d_b = dst_buff[d_pos + b];
-						dst_buff[d_pos + r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
-						dst_buff[d_pos + g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
-						dst_buff[d_pos + b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
-                        if(a >= 0) dst_buff[d_pos + a] = 255;
+						uint8_t* s_pos = src_buff + (i*src_size.width + j + src_offset) * 4;
+						uint8_t* d_pos = dst_buff + (i*dst_size.width + j + dst_offset) * 4;
+						uint8_t s_r = s_pos[r1];
+						uint8_t s_g = s_pos[g1];
+						uint8_t s_b = s_pos[b1];
+						uint8_t s_a = s_pos[a1];
+						uint8_t d_r = d_pos[r];
+						uint8_t d_g = d_pos[g];
+						uint8_t d_b = d_pos[b];
+						d_pos[r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+						d_pos[g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+						d_pos[b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+                        if(a >= 0) d_pos[a] = 255;
 					}
 				}
 			}
