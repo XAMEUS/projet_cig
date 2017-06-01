@@ -201,9 +201,6 @@ void ei_toplevel_configure (ei_widget_t* widget,
     if (min_size)
         ((ei_toplevel_t*) widget)->min_size = *min_size;
 
-    widget->screen_location.size.width = widget->requested_size.width + 2 * ((ei_toplevel_t*) widget)->border_width;
-    widget->screen_location.size.height = widget->requested_size.height + 2 * ((ei_toplevel_t*) widget)->border_width + BORDER;
-
     if(((ei_toplevel_t*) widget)->closable && !((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
         ei_size_t button_size = {10, 10};

@@ -46,7 +46,7 @@ void draw_toplevel(ei_surface_t surface,
                     ei_rect_t frame,
                     ei_color_t bg_color,
                     int border_width) {
-    ei_rect_t border_frame = {{frame.top_left.x, frame.top_left.y}, {frame.size.width + 2 * border_width, BORDER}};
+    ei_rect_t border_frame = {{frame.top_left.x, frame.top_left.y}, {frame.size.width, BORDER}};
     ei_color_t shade = {bg_color.red * 0.65,
                         bg_color.green * 0.65,
                         bg_color.blue * 0.65,
@@ -54,14 +54,14 @@ void draw_toplevel(ei_surface_t surface,
     ei_linked_point_t* pts = toplevel_frame(border_frame);
     ei_draw_polygon(surface, pts, shade, clipper);
     free_linked_point(pts);
-    ei_rect_t body_frame = {{frame.top_left.x, frame.top_left.y + BORDER}, {frame.size.width + 2 * border_width, frame.size.height + 2 * border_width}};
+    ei_rect_t body_frame = {{frame.top_left.x, frame.top_left.y + BORDER}, {frame.size.width, frame.size.height - BORDER}};
     ei_rect_t *drawing_wall = ei_rect_intrsct(&body_frame, clipper);
     if(drawing_wall)
         ei_fill(surface, &shade, drawing_wall);
     free(drawing_wall);
 
 
-    ei_rect_t bg_frame = {{frame.top_left.x + border_width, frame.top_left.y + BORDER + border_width}, frame.size};
+    ei_rect_t bg_frame = {{frame.top_left.x + border_width, frame.top_left.y + BORDER + border_width}, {frame.size.width - 2 * border_width, frame.size.height - BORDER - 2 * border_width}};
     drawing_wall = ei_rect_intrsct(&bg_frame, clipper);
     if(drawing_wall)
         ei_fill(surface, &bg_color, drawing_wall);

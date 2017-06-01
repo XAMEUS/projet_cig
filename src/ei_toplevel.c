@@ -90,8 +90,8 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
             &((ei_toplevel_t*) widget)->resize_button->screen_location;
             ((ei_toplevel_t*) widget)->resize_button->screen_location.size.width = 10;
             ((ei_toplevel_t*) widget)->resize_button->screen_location.size.height = 10;
-        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width;
-        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height;
+        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width - ((ei_toplevel_t*) widget)->resize_button->screen_location.size.width;
+        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height - ((ei_toplevel_t*) widget)->resize_button->screen_location.size.height;
     }
 
 }
