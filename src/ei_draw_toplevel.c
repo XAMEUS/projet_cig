@@ -55,8 +55,16 @@ void draw_toplevel(ei_surface_t surface,
     ei_draw_polygon(surface, pts, shade, clipper);
     free_linked_point(pts);
     ei_rect_t body_frame = {{frame.top_left.x, frame.top_left.y + BORDER}, {frame.size.width + 2 * border_width, frame.size.height + 2 * border_width}};
-    ei_fill(surface, &shade, &body_frame);
+    ei_rect_t *drawing_wall = ei_rect_intrsct(&body_frame, clipper);
+    if(drawing_wall)
+        ei_fill(surface, &shade, drawing_wall);
+    free(drawing_wall);
+
 
     ei_rect_t bg_frame = {{frame.top_left.x + border_width, frame.top_left.y + BORDER + border_width}, frame.size};
-    ei_fill(surface, &bg_color, &bg_frame);
+    drawing_wall = ei_rect_intrsct(&bg_frame, clipper);
+    if(drawing_wall)
+        ei_fill(surface, &bg_color, drawing_wall);
+    free(drawing_wall);
+
 }

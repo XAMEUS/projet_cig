@@ -44,7 +44,6 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
     							 ei_rect_t*		clipper) {
 	draw_toplevel(surface, clipper, widget->screen_location,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
-    fprintf(stderr, "screen location %d %d %d %d\n", widget->screen_location.top_left.x, widget->screen_location.top_left.y, widget->screen_location.size.width, widget->screen_location.size.height);
     ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + 5};
     if (((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, clipper);

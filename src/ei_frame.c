@@ -59,7 +59,10 @@ static void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	} else if (((ei_button_t*) widget)->frame.opt_type == IMAGE) {
 		draw_image(widget, surface, clipper, ((ei_button_t*) widget)->frame.border_width);
 	}
-	ei_fill(pick_surface, widget->pick_color, &(widget->screen_location));
+	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
+	if(drawing_wall)
+		ei_fill(pick_surface, widget->pick_color, drawing_wall);
+	free(drawing_wall);
 }
 
 static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
