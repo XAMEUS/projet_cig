@@ -155,8 +155,10 @@ void ei_draw_polygon(ei_surface_t surface,
             TCA = sort_TCA(TCA);
             /* Remplissage (par paire)*/
             for(struct polygon_side *s = TCA; s != NULL && s->next != NULL; s = s->next->next) {
-                for(int x = floor(s->x_ymin); x < s->next->x_ymin; x++) {
-                    n_buff[x - pt_min.x + box.width * y_scanline] = col;
+                int d = box.width * y_scanline - pt_min.x;
+                int m = s->next->x_ymin + d;
+                for(int x = floor(s->x_ymin) + d; x < m; x++) {
+                    n_buff[x] = col;
                 }
             }
             /* Passage à la scanline suivante */
