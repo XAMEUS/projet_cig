@@ -2,6 +2,8 @@
 #include "ei_placer.h"
 #include "ei_widget.h"
 #include "ei_application.h"
+
+
 void ei_place(struct ei_widget_t* widget,
                 ei_anchor_t* anchor,
                 int* x,
@@ -140,14 +142,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
        }
 }
 
-
-
-/**
- * \brief	Tells the placer to remove a widget from the screen and forget about it.
- *		Note: the widget is not destroyed and still exists in memory.
- *
- * @param	widget		The widget to remove from screen.
- */
 void ei_placer_forget(struct ei_widget_t* widget) {
     return;
 }
