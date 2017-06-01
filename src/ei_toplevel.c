@@ -12,6 +12,7 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
 static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget);
 static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 						 			 	struct ei_event_t*	event);
+static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 
 void ei_toplevel_register_class() {
@@ -55,4 +56,8 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 						 			 struct ei_event_t*	event) {
     return EI_FALSE;
+}
+
+static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
+	widget->screen_location = rect;
 }
