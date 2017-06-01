@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -137,7 +138,9 @@ void ei_frame_configure (ei_widget_t* widget,
             ((ei_frame_t*) widget)->opt.txt.text_color = ei_font_default_color;
             ((ei_frame_t*) widget)->opt.txt.text_anchor = ei_anc_center;
         }
-        ((ei_frame_t*) widget)->opt.txt.text = *text;
+
+        ((ei_frame_t*) widget)->opt.txt.text = malloc(strlen(*text) + 1);
+        strcpy(((ei_frame_t*) widget)->opt.txt.text, *text);
         if(text_font)
             ((ei_frame_t*) widget)->opt.txt.font = *text_font;
         if(text_color)
@@ -151,7 +154,13 @@ void ei_frame_configure (ei_widget_t* widget,
             ((ei_frame_t*) widget)->opt.img.img_rect = NULL;
             ((ei_frame_t*) widget)->opt.img.img_anchor = ei_anc_center;
         }
-        ((ei_frame_t*) widget)->opt.img.img = *img;
+        ei_size_t size = hw_surface_get_size(*img);
+        ((ei_frame_t*) widget)->opt.img.img = hw_surface_create(*img, &size, EI_FALSE);
+        assert(ei_copy_surface(((ei_frame_t*) widget)->opt.img.img,
+                                NULL,
+                                *img,
+                                NULL,
+                                EI_FALSE) == 0);
         if(img_rect)
             ((ei_frame_t*) widget)->opt.img.img_rect = *img_rect;
         if(img_anchor)

@@ -64,9 +64,12 @@ static void ei_button_release_func(struct ei_widget_t* widget) {
 	if(((ei_button_t*) widget)->frame.opt_type == TEXT &&
 		((ei_button_t*) widget)->frame.opt.txt.text)
 			free(((ei_button_t*) widget)->frame.opt.txt.text);
-	else if (((ei_button_t*) widget)->frame.opt_type == IMAGE &&
-		((ei_button_t*) widget)->frame.opt.img.img_rect)
-		free(((ei_button_t*) widget)->frame.opt.img.img_rect);
+	else if (((ei_button_t*) widget)->frame.opt_type == IMAGE) {
+		if(((ei_button_t*) widget)->frame.opt.img.img)
+			hw_surface_free(((ei_button_t*) widget)->frame.opt.img.img);
+		if(((ei_button_t*) widget)->frame.opt.img.img_rect)
+			free(((ei_button_t*) widget)->frame.opt.img.img_rect);
+	}
 }
 
 static void ei_button_setdefaultsfunc(struct ei_widget_t* widget) {
