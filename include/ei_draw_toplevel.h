@@ -7,4 +7,4 @@ void draw_toplevel(ei_surface_t surface,
                     ei_color_t bg_color,
                     int border_width)
 
-#ifndef
+#endif
