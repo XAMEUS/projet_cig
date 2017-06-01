@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "ei_draw.h"
 #include "ei_draw_button.h"
@@ -165,9 +166,11 @@ void ei_draw_button(ei_surface_t surface,
                     ei_color_t color,
                     ei_relief_t relief,
                     ei_bool_t push){
-    if (border && relief != ei_relief_none) {
-        int min = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
-        assert(border <= min);
+    int min_size = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
+    if (2 * radius > min_size - 2*border) radius = (min_size - 2*border)/2;
+
+    if (border) { //&& relief != ei_relief_none
+        assert(2 * border <= min_size);
         float factor = 0.1;
         ei_color_t shade = {color.red * (1 - factor),
                             color.green * (1 - factor),
@@ -193,12 +196,12 @@ void ei_draw_button(ei_surface_t surface,
         }
         free_linked_point(up_pts);
         free_linked_point(down_pts);
+        frame.size.width -= 2 * border;
+        frame.size.height -= 2 * border;
+        frame.top_left.x +=  border;
+        frame.top_left.y += border;
     }
 
-    frame.size.width -= 2 * border;
-    frame.size.height -= 2 * border;
-    frame.top_left.x +=  border;
-    frame.top_left.y += border;
     if (radius) {
         ei_linked_point_t* all_pts = rounded_frame(frame, radius);
         ei_draw_polygon(surface, all_pts, color, clipper);

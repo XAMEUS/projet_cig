@@ -47,6 +47,9 @@ ei_main(int argc, char **argv)
     ei_relief_t     frame_relief = ei_relief_raised;
     int             frame_border_width = 6;
 
+	char*		text		= "Frame";
+	ei_color_t	text_color	= {0x00, 0x00, 0x00, 0xff};
+	ei_anchor_t text_anchor = ei_anc_south;
     /*
      * Create the application and change the color of the background.
      */
@@ -59,8 +62,8 @@ ei_main(int argc, char **argv)
      */
     frame = ei_widget_create("frame", ei_app_root_widget());
     ei_frame_configure(frame, &frame_size, &frame_color,
-		       &frame_border_width, &frame_relief, NULL, NULL,
-		       NULL, NULL, NULL, NULL, NULL);
+		       &frame_border_width, &frame_relief, &text, NULL, &text_color,
+		       &text_anchor, NULL, NULL, NULL);
     ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL,
 	     NULL);
 

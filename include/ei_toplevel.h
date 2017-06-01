@@ -10,15 +10,18 @@
 #include "ei_widget.h"
 #include "ei_button.h"
 
+#define BORDER 30
+
 typedef struct ei_toplevel_t {
     ei_widget_t widget;
     ei_color_t bg_color;
     int border_width;
     char* title;
+    ei_font_t title_font;
     ei_bool_t closable;
-    ei_button_t* close_button;
+    ei_widget_t* close_button;
     ei_axis_set_t resizable;
-    ei_button_t* resize_button;
+    ei_widget_t* resize_button;
     ei_size_t* min_size;
 } ei_toplevel_t;
 
