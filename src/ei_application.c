@@ -17,24 +17,7 @@ static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
 static list_picking *LIST_PICKING;
 static ei_linked_rect_t *INVALIDATE_RECT = NULL;
 
-/**
- * \brief	Creates an application.
- *		<ul>
- *			<li> initializes the hardware (calls \ref hw_init), </li>
- *			<li> registers all classes of widget and all geometry managers, </li>
- *			<li> creates the root window (either in a system window, or the entire
- *				screen), </li>
- *			<li> creates the root widget to accress the root window. </li>
- *		</ul>
- *
- * @param	main_window_size	If "fullscreen is false, the size of the root window of the
- *					application.
- *					If "fullscreen" is true, the current monitor resolution is
- *					used as the size of the root window, this size is returned
- *					in this parameter.
- * @param	fullScreen		If true, the root window is the entire screen. Otherwise, it
- *					is a system window.
- */
+
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     hw_init();
     /* We register all classes */
@@ -60,10 +43,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_app_invalidate_rect(&screen_rect);
 }
 
-/**
- * \brief	Releases all the resources of the application, and releases the hardware
- *		(ie. calls \ref hw_quit).
- */
+
 void ei_app_free() {
     ei_widget_t *to_free = ROOT_WIDGET;
     ei_widget_t *tmp;
