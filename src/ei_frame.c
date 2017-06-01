@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
+
 #include "ei_frame.h"
 #include "ei_button.h"
+#include "ei_draw.h"
 #include "ei_draw_button.h"
-#include "ei_draw_ex.h"
+#include "ei_draw_content.h"
+
 #include "ei_application.h"
 
 static void* ei_frame_alloc();

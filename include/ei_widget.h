@@ -11,7 +11,6 @@
 #define EI_WIDGET_H
 
 #include "ei_draw.h"
-#include "ei_draw_ex.h"
 #include "ei_widgetclass.h"
 #include "ei_placer.h"
 
