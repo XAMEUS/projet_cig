@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ei_placer.h"
 #include "ei_widget.h"
-
+#include "ei_application.h"
 void ei_place(struct ei_widget_t* widget,
                 ei_anchor_t* anchor,
                 int* x,

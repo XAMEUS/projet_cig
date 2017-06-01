@@ -2,6 +2,7 @@
 #include <string.h>
 #include "ei_toplevel.h"
 #include "ei_draw_ex.h"
+#include "ei_draw_toplevel.h"
 
 static void* ei_toplevel_alloc();
 static void ei_toplevel_release_func(struct ei_widget_t* widget);
@@ -22,7 +23,7 @@ void ei_toplevel_register_class() {
     widget->releasefunc = &ei_toplevel_release_func;
     widget->drawfunc = &ei_toplevel_drawfunc;
     widget->setdefaultsfunc = &ei_toplevel_setdefaultsfunc;
-    widget->geomnotifyfunc = NULL;
+    widget->geomnotifyfunc = &ei_toplevel_geomnotifyfunc;
     widget->handlefunc =  &ei_toplevel_handlefunc;
     ei_widgetclass_register(widget);
 }
