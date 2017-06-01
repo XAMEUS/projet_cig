@@ -22,7 +22,7 @@ void ei_toplevel_register_class() {
     widget->releasefunc = &ei_toplevel_release_func;
     widget->drawfunc = &ei_toplevel_drawfunc;
     widget->setdefaultsfunc = &ei_toplevel_setdefaultsfunc;
-    widget->geomnotifyfunc = NULL;
+    widget->geomnotifyfunc = &ei_toplevel_geomnotifyfunc;
     widget->handlefunc =  &ei_toplevel_handlefunc;
     ei_widgetclass_register(widget);
 }

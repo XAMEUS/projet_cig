@@ -94,11 +94,13 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 		int offset = ((ei_button_t*) widget)->frame.border_width + ((ei_button_t*) widget)->corner_radius * (1 - sqrt(2)/2);
 		draw_image(widget, surface, pick_surface, clipper, offset);
 	}
+	ei_linked_point_t* pts = rounded_frame(widget->screen_location,
+				 ((ei_button_t*) widget)->corner_radius);
 	ei_draw_polygon(pick_surface,
-					rounded_frame(widget->screen_location,
-								 ((ei_button_t*) widget)->corner_radius),
+					pts,
 					*(widget->pick_color),
 					clipper);
+	free_linked_point(pts);
 }
 
 static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
