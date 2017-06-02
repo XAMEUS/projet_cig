@@ -154,9 +154,9 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
     if(!widget->content_rect || widget->content_rect == & widget->screen_location)
         widget->content_rect = malloc(sizeof(ei_rect_t));
     widget->content_rect->top_left.x = widget->screen_location.top_left.x + ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER;
+    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER + ((ei_toplevel_t*) widget)->border_width;
     widget->content_rect->size.width = widget->screen_location.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - 2 * ((ei_toplevel_t*) widget)->border_width;
     if(((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->content_rect =
             &((ei_toplevel_t*) widget)->close_button->screen_location;
