@@ -86,6 +86,22 @@ int ei_main(int argc, char** argv)
 				NULL, NULL, NULL, &button_callback, NULL);
 	ei_place(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, NULL);
 
+	// if (argc > 1) {
+	// 	ei_surface_t image		= hw_image_load(argv[1], ei_app_root_surface());
+	// 	// ei_size_t image_size	= hw_surface_get_size(image);
+	// 	ei_rect_t* image_rect = malloc(sizeof(ei_rect_t));
+	// 	image_rect->top_left.x = 250;
+	// 	image_rect->top_left.y = 100;
+	// 	image_rect->size.width = 100;
+	// 	image_rect->size.height = 500;
+	// 	ei_anchor_t	image_anchor = ei_anc_center;
+	//  	ei_button_configure(button, NULL, &button_color, &button_border_width, NULL,
+	// 		&button_relief, NULL, NULL, NULL, NULL, &image, &image_rect, &image_anchor, &button_callback, NULL);
+	// 	ei_place(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, NULL);
+	// 	hw_surface_free(image);
+	// 	free(image_rect);
+	// }
+
 	/* Run the application's main loop. */
 	ei_app_run();
 
