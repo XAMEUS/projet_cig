@@ -38,24 +38,30 @@ static void* ei_button_alloc() {
 
 static ei_bool_t ei_button_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-	if (event->type == ei_ev_mouse_buttondown) {
-		((ei_button_t*) widget)->push = EI_TRUE;
-		ei_app_invalidate_rect(&widget->screen_location);
-		ei_event_set_active_widget(widget);
-		return EI_TRUE;
-
-	}
-	if (event->type == ei_ev_mouse_buttonup) {
-		((ei_button_t*) widget)->push = EI_FALSE;
-		ei_app_invalidate_rect(&widget->screen_location);
-		if (((ei_button_t*) widget)->callback &&
-			widget == ei_widget_pick(&(event->param.mouse.where))) {
-			((ei_button_t*) widget)->callback(widget,
-											  event,
-											  ((ei_button_t*) widget)->user_param);
+	if(ei_event_get_active_widget()) {
+		ei_bool_t on_button = widget == ei_widget_pick(&(event->param.mouse.where));
+		if(on_button ^ ((ei_button_t*) widget)->push) {
+			((ei_button_t*) widget)->push = !((ei_button_t*) widget)->push;
+			ei_app_invalidate_rect(&widget->screen_location);
 		}
-		ei_event_set_active_widget(NULL);
-		return EI_TRUE;
+		if (event->type == ei_ev_mouse_buttonup) {
+			((ei_button_t*) widget)->push = EI_FALSE;
+			ei_app_invalidate_rect(&widget->screen_location);
+			if (((ei_button_t*) widget)->callback && on_button) {
+				((ei_button_t*) widget)->callback(widget,
+												  event,
+												  ((ei_button_t*) widget)->user_param);
+			}
+			ei_event_set_active_widget(NULL);
+			return EI_TRUE;
+		}
+		return EI_FALSE;
+	}
+	else if (event->type == ei_ev_mouse_buttondown) {
+			((ei_button_t*) widget)->push = EI_TRUE;
+			ei_app_invalidate_rect(&widget->screen_location);
+			ei_event_set_active_widget(widget);
+			return EI_TRUE;
 	}
 	return EI_FALSE;
 }
