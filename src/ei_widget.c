@@ -30,7 +30,6 @@ void ei_widget_destroy (ei_widget_t* widget) {
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
     while(to_free) {
-        printf("%s\n", widget->wclass->name);
         while(to_free->children_head)
             to_free = to_free->children_head;
 
