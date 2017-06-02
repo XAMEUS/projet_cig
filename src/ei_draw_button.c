@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "ei_tools.h"
 #include "ei_draw.h"
 #include "ei_draw_button.h"
 

@@ -200,20 +200,4 @@ void ei_toplevel_configure (ei_widget_t* widget,
         ((ei_toplevel_t*) widget)->resizable = *resizable;
     if (min_size)
         ((ei_toplevel_t*) widget)->min_size = *min_size;
-
-    if(((ei_toplevel_t*) widget)->closable && !((ei_toplevel_t*) widget)->close_button) {
-        ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
-        ei_size_t button_size = {10, 10};
-        ei_color_t button_color = {255, 0, 0, 255};
-        int button_border = 2;
-        int button_radius = 10;
-        ei_button_configure(((ei_toplevel_t*) widget)->close_button, &button_size, &button_color, &button_border, &button_radius, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    }
-    if(((ei_toplevel_t*) widget)->resizable && !((ei_toplevel_t*) widget)->resize_button) {
-        ((ei_toplevel_t*) widget)->resize_button = ei_widget_create("button", ei_app_root_widget());
-        ei_size_t button_size = {10, 10};
-        int zero = 0;
-        ei_color_t button_color = {((ei_toplevel_t*) widget)->bg_color.red * 0.65, ((ei_toplevel_t*) widget)->bg_color.green * 0.65, ((ei_toplevel_t*) widget)->bg_color.blue * 0.65, 255};
-        ei_button_configure(((ei_toplevel_t*) widget)->resize_button, &button_size, &button_color, &zero, &zero, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    }
 }

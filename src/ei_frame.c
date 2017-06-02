@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ei_tools.h"
 #include "ei_frame.h"
 #include "ei_button.h"
 #include "ei_draw.h"

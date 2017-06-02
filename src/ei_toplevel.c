@@ -6,6 +6,8 @@
 #include "ei_draw_toplevel.h"
 #include "ei_draw_button.h"
 #include "ei_event.h"
+#include "ei_tools.h"
+#include "ei_application.h"
 
 static void* ei_toplevel_alloc();
 static void ei_toplevel_release_func(struct ei_widget_t* widget);
@@ -53,8 +55,10 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
         ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, clipper);
         text_where.x += 3 * ((ei_toplevel_t*) widget)->close_button->screen_location.size.width;
     }
-    if (((ei_toplevel_t*) widget)->resize_button)
-        ((ei_toplevel_t*) widget)->resize_button->wclass->drawfunc(((ei_toplevel_t*) widget)->resize_button, surface, pick_surface, clipper);
+    if (((ei_toplevel_t*) widget)->resizable) {
+        ei_color_t button_color = {((ei_toplevel_t*) widget)->bg_color.red * 0.65, ((ei_toplevel_t*) widget)->bg_color.green * 0.65, ((ei_toplevel_t*) widget)->bg_color.blue * 0.65, 255};
+        ei_fill(surface, &button_color, &((ei_toplevel_t*) widget)->resize_button);
+    }
     ei_color_t text_color = {255, 255, 255, 255};
     ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, clipper);
 }
@@ -68,34 +72,67 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_toplevel_t*) widget)->closable = EI_TRUE;
 	((ei_toplevel_t*) widget)->resizable = ei_axis_both;
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
+
+    if(((ei_toplevel_t*) widget)->closable && !((ei_toplevel_t*) widget)->close_button) {
+        ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
+        ei_size_t button_size = {10, 10};
+        ei_color_t button_color = {255, 0, 0, 255};
+        int button_border = 2;
+        int button_radius = 10;
+        ei_button_configure(((ei_toplevel_t*) widget)->close_button, &button_size, &button_color, &button_border, &button_radius, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
 }
 
 static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 						 			 struct ei_event_t*	event) {
     static ei_point_t old_mouse_pos;
+    static enum {NONE, MOVE, RESIZE} type;
     if(ei_event_get_active_widget()) {
         if(event->type == ei_ev_mouse_buttonup) {
             ei_event_set_active_widget(NULL);
             return EI_TRUE;
         }
         if(event->type == ei_ev_mouse_move) {
-            int new_x = widget->placer_params->x_data + event->param.mouse.where.x - old_mouse_pos.x;
-            int new_y = widget->placer_params->y_data + event->param.mouse.where.y - old_mouse_pos.y;
-            ei_place(widget, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL, NULL, NULL);
-            old_mouse_pos = event->param.mouse.where;
-            return EI_TRUE;
+            if(type == MOVE) {
+                int new_x = widget->placer_params->x_data + event->param.mouse.where.x - old_mouse_pos.x;
+                int new_y = widget->placer_params->y_data + event->param.mouse.where.y - old_mouse_pos.y;
+                ei_place(widget, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL, NULL, NULL);
+                old_mouse_pos = event->param.mouse.where;
+                return EI_TRUE;
+            }
+            if(type == RESIZE) {
+                int new_x = widget->placer_params->w_data + event->param.mouse.where.x - old_mouse_pos.x;
+                int new_y = widget->placer_params->h_data + event->param.mouse.where.y - old_mouse_pos.y;
+                ei_place(widget, NULL, NULL, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL);
+                old_mouse_pos = event->param.mouse.where;
+                return EI_TRUE;
+
+            }
         }
     }
-    else if(event->type == ei_ev_mouse_buttondown &&
-        event->param.mouse.where.x >= widget->screen_location.top_left.x &&
-        event->param.mouse.where.y >= widget->screen_location.top_left.y &&
-        event->param.mouse.where.x <= widget->screen_location.top_left.x +
+    else if(event->type == ei_ev_mouse_buttondown) {
+        if(event->param.mouse.where.x >= widget->screen_location.top_left.x &&
+            event->param.mouse.where.y >= widget->screen_location.top_left.y &&
+            event->param.mouse.where.x <= widget->screen_location.top_left.x +
                                         widget->screen_location.size.width &&
-        event->param.mouse.where.y <= widget->screen_location.top_left.y +
+            event->param.mouse.where.y <= widget->screen_location.top_left.y +
                                         BORDER) {
-        old_mouse_pos = event->param.mouse.where;
-        ei_event_set_active_widget(widget);
-        return EI_TRUE;
+            old_mouse_pos = event->param.mouse.where;
+            type = MOVE;
+            ei_event_set_active_widget(widget);
+            return EI_TRUE;
+        }
+        if(event->param.mouse.where.x >= ((ei_toplevel_t*) widget)->resize_button.top_left.x &&
+            event->param.mouse.where.y >= ((ei_toplevel_t*) widget)->resize_button.top_left.y &&
+            event->param.mouse.where.x <= ((ei_toplevel_t*) widget)->resize_button.top_left.x +
+                                        ((ei_toplevel_t*) widget)->resize_button.size.width &&
+            event->param.mouse.where.y <= ((ei_toplevel_t*) widget)->resize_button.top_left.y +
+                                        ((ei_toplevel_t*) widget)->resize_button.size.height) {
+            old_mouse_pos = event->param.mouse.where;
+            type = RESIZE;
+            ei_event_set_active_widget(widget);
+            return EI_TRUE;
+        }
     }
     return EI_FALSE;
 }
@@ -118,13 +155,9 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
         ((ei_toplevel_t*) widget)->close_button->screen_location.size.width = 10;
         ((ei_toplevel_t*) widget)->close_button->screen_location.size.height = 10;
     }
-    if (((ei_toplevel_t*) widget)->resize_button) {
-        ((ei_toplevel_t*) widget)->resize_button->content_rect =
-            &((ei_toplevel_t*) widget)->resize_button->screen_location;
-            ((ei_toplevel_t*) widget)->resize_button->screen_location.size.width = 10;
-            ((ei_toplevel_t*) widget)->resize_button->screen_location.size.height = 10;
-        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width - ((ei_toplevel_t*) widget)->resize_button->screen_location.size.width;
-        ((ei_toplevel_t*) widget)->resize_button->screen_location.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height - ((ei_toplevel_t*) widget)->resize_button->screen_location.size.height;
+    if (((ei_toplevel_t*) widget)->resizable) {
+        ((ei_toplevel_t*) widget)->resize_button.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width - 10;
+        ((ei_toplevel_t*) widget)->resize_button.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height - 10;
+        ((ei_toplevel_t*) widget)->resize_button.size.width = ((ei_toplevel_t*) widget)->resize_button.size.height = 10;
     }
-
 }
