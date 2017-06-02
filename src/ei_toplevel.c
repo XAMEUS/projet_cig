@@ -86,7 +86,12 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
 
     if(!((ei_toplevel_t*) widget)->close_button) {
-        ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
+        ei_widgetclass_t* class = ei_widgetclass_from_name("button");
+        ((ei_toplevel_t*) widget)->close_button = class->allocfunc();
+        ((ei_toplevel_t*) widget)->close_button->wclass = class;
+        ((ei_toplevel_t*) widget)->close_button->parent = widget;
+        ((ei_toplevel_t*) widget)->close_button->wclass->setdefaultsfunc(((ei_toplevel_t*) widget)->close_button);
+        add_picker(ei_app_picking_list(), ((ei_toplevel_t*) widget)->close_button);
         ei_size_t button_size = {10, 10};
         ei_color_t button_color = {255, 0, 0, 255};
         int button_border = 2;
@@ -160,6 +165,13 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
     widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER + ((ei_toplevel_t*) widget)->border_width;
     widget->content_rect->size.width = widget->screen_location.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
     widget->content_rect->size.height = widget->screen_location.size.height - BORDER - 2 * ((ei_toplevel_t*) widget)->border_width;
+    if(((ei_toplevel_t*) widget)->min_size) {
+        if(((ei_toplevel_t*) widget)->min_size->width > widget->placer_params->w_data)
+            ei_place(widget, NULL, NULL, NULL, &((ei_toplevel_t*) widget)->min_size->width, NULL, NULL, NULL, NULL, NULL);
+        if(((ei_toplevel_t*) widget)->min_size->height > widget->placer_params->h_data)
+            ei_place(widget, NULL, NULL, NULL, NULL, &((ei_toplevel_t*) widget)->min_size->height, NULL, NULL, NULL, NULL);
+
+    }
     if(((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->content_rect =
             &((ei_toplevel_t*) widget)->close_button->screen_location;
@@ -179,5 +191,5 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
 
 static void ei_close_toplevel(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
-	ei_widget_destroy(widget);
+	ei_widget_destroy(widget->parent);
 }
