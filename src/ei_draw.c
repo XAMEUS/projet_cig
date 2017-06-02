@@ -145,9 +145,9 @@ void ei_fill(ei_surface_t surface,
 			n_clipper.top_left.y = 0;
 		}
 		if(n_clipper.top_left.x + n_clipper.size.width >= size.width)
-			n_clipper.size.width = n_clipper.size.width - n_clipper.top_left.x;
+			n_clipper.size.width = size.width - n_clipper.top_left.x;
 		if(n_clipper.top_left.y + n_clipper.size.height >= size.height)
-			n_clipper.size.height = n_clipper.size.height - n_clipper.top_left.y;
+			n_clipper.size.height = size.height - n_clipper.top_left.y;
 		p += size.width * n_clipper.top_left.y + n_clipper.top_left.x;
 		int x; int y = 0;
 		uint32_t dx = n_clipper.top_left.x +
@@ -158,8 +158,10 @@ void ei_fill(ei_surface_t surface,
 				*p = mcolor;
 				p++; x++;
 			}
+            printf("fill\n");
 			p += dx; y++;
 		}
+        printf("zer\n");
 	}
 }
 
