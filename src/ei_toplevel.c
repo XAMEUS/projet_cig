@@ -116,8 +116,8 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
             if(type == RESIZE) {
                 int new_x = widget->placer_params->w_data + event->param.mouse.where.x - old_mouse_pos.x;
                 int new_y = widget->placer_params->h_data + event->param.mouse.where.y - old_mouse_pos.y;
-                new_x = (new_x >= ((ei_toplevel_t*) widget)->close_button->screen_location.size.width * 3) ? new_x : ((ei_toplevel_t*) widget)->close_button->screen_location.size.width * 3;
-                new_y = (new_y >= BORDER) ? new_y : BORDER;
+                new_x = (new_x >= 50) ? new_x : 50;
+                new_y = (new_y >= BORDER * 2) ? new_y : BORDER * 2;
                 ei_place(widget, NULL, NULL, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL);
                 old_mouse_pos = event->param.mouse.where;
                 return EI_TRUE;
