@@ -64,8 +64,6 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_toplevel_t*) widget)->closable = EI_TRUE;
 	((ei_toplevel_t*) widget)->resizable = ei_axis_both;
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
-    widget->screen_location.size.width += widget->requested_size.width + 2 * ((ei_toplevel_t*) widget)->border_width;
-    widget->screen_location.size.height += widget->requested_size.height + 2 * ((ei_toplevel_t*) widget)->border_width + BORDER;
 }
 
 static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
@@ -75,6 +73,12 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 
 static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
     widget->screen_location = rect;
+    if(!widget->content_rect || widget->content_rect == & widget->screen_location)
+        widget->content_rect = malloc(sizeof(ei_rect_t));
+    widget->content_rect->top_left.x = widget->screen_location.top_left.x + ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER;
+    widget->content_rect->size.width = widget->screen_location.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - ((ei_toplevel_t*) widget)->border_width;
     if(((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->content_rect =
             &((ei_toplevel_t*) widget)->close_button->screen_location;
