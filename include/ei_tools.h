@@ -6,6 +6,6 @@
 
 ei_rect_t *ei_rect_intrsct(ei_rect_t *rect1, ei_rect_t *rect2);
 ei_rect_t *ei_rect_pack(ei_rect_t *rect1, ei_rect_t *rect2);
-ei_bool_t in_rect(ei_point_t pt, ei_rect_t rect);
+ei_bool_t in_rect(ei_point_t *pt, ei_rect_t *rect);
 
 #endif
