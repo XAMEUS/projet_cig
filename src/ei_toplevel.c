@@ -57,9 +57,10 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
     ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
     ei_rect_t n_clipper = *clipper;
-    if(drawing_wall)
+    if(drawing_wall) {
     	ei_fill(pick_surface, widget->pick_color, drawing_wall);
         n_clipper = *drawing_wall;
+    }
     free(drawing_wall);
     ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + 5};
     if (((ei_toplevel_t*) widget)->close_button) {
@@ -115,6 +116,8 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
             if(type == RESIZE) {
                 int new_x = widget->placer_params->w_data + event->param.mouse.where.x - old_mouse_pos.x;
                 int new_y = widget->placer_params->h_data + event->param.mouse.where.y - old_mouse_pos.y;
+                new_x = (new_x >= 50) ? new_x : 50;
+                new_y = (new_y >= BORDER * 2) ? new_y : BORDER * 2;
                 ei_place(widget, NULL, NULL, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL);
                 old_mouse_pos = event->param.mouse.where;
                 return EI_TRUE;
@@ -154,9 +157,9 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
     if(!widget->content_rect || widget->content_rect == & widget->screen_location)
         widget->content_rect = malloc(sizeof(ei_rect_t));
     widget->content_rect->top_left.x = widget->screen_location.top_left.x + ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER;
+    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER + ((ei_toplevel_t*) widget)->border_width;
     widget->content_rect->size.width = widget->screen_location.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - 2 * ((ei_toplevel_t*) widget)->border_width;
     if(((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->content_rect =
             &((ei_toplevel_t*) widget)->close_button->screen_location;

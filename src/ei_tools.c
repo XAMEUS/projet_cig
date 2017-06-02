@@ -11,17 +11,17 @@
 
 ei_rect_t *ei_rect_intrsct(ei_rect_t *rect1, ei_rect_t *rect2) {
 
-    uint32_t x1 = rect1->top_left.x + rect1->size.width;
-    uint32_t x2 = rect2->top_left.x + rect2->size.width;
-    uint32_t y1 = rect1->top_left.y + rect1->size.height;
-    uint32_t y2 = rect2->top_left.y + rect2->size.height;
+    long x1 = rect1->top_left.x + rect1->size.width;
+    long x2 = rect2->top_left.x + rect2->size.width;
+    long y1 = rect1->top_left.y + rect1->size.height;
+    long y2 = rect2->top_left.y + rect2->size.height;
 
-    uint32_t x3 = max(rect1->top_left.x, rect2->top_left.x);
-    uint32_t x4 = min(x1, x2);
+    long x3 = max(rect1->top_left.x, rect2->top_left.x);
+    long x4 = min(x1, x2);
     if (x4 <= x3)
         return NULL;
-    uint32_t y3 = max(rect1->top_left.y, rect2->top_left.y);
-    uint32_t y4 = min(y1, y2);
+    long y3 = max(rect1->top_left.y, rect2->top_left.y);
+    long y4 = min(y1, y2);
     if (y4 <= y3)
         return NULL;
     ei_rect_t *intrsct = calloc(1, sizeof(ei_rect_t));
