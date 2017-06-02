@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "ei_toplevel.h"
 #include "ei_draw_toplevel.h"
 #include "ei_draw_button.h"
-
-#include <stdio.h>
+#include "ei_event.h"
 
 static void* ei_toplevel_alloc();
 static void ei_toplevel_release_func(struct ei_widget_t* widget);
@@ -44,6 +44,10 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
     							 ei_rect_t*		clipper) {
 	draw_toplevel(surface, clipper, widget->screen_location,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
+    ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
+    if(drawing_wall)
+    	ei_fill(pick_surface, widget->pick_color, drawing_wall);
+    free(drawing_wall);
     ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + 5};
     if (((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, clipper);
@@ -68,6 +72,31 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 
 static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 						 			 struct ei_event_t*	event) {
+    static ei_point_t old_mouse_pos;
+    if(ei_event_get_active_widget()) {
+        if(event->type == ei_ev_mouse_buttonup) {
+            ei_event_set_active_widget(NULL);
+            return EI_TRUE;
+        }
+        if(event->type == ei_ev_mouse_move) {
+            int new_x = widget->placer_params->x_data + event->param.mouse.where.x - old_mouse_pos.x;
+            int new_y = widget->placer_params->y_data + event->param.mouse.where.y - old_mouse_pos.y;
+            ei_place(widget, NULL, &new_x, &new_y, NULL, NULL, NULL, NULL, NULL, NULL);
+            old_mouse_pos = event->param.mouse.where;
+            return EI_TRUE;
+        }
+    }
+    else if(event->type == ei_ev_mouse_buttondown &&
+        event->param.mouse.where.x >= widget->screen_location.top_left.x &&
+        event->param.mouse.where.y >= widget->screen_location.top_left.y &&
+        event->param.mouse.where.x <= widget->screen_location.top_left.x +
+                                        widget->screen_location.size.width &&
+        event->param.mouse.where.y <= widget->screen_location.top_left.y +
+                                        BORDER) {
+        old_mouse_pos = event->param.mouse.where;
+        ei_event_set_active_widget(widget);
+        return EI_TRUE;
+    }
     return EI_FALSE;
 }
 

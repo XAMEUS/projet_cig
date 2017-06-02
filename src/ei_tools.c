@@ -48,3 +48,10 @@ ei_rect_t *ei_rect_pack(ei_rect_t *rect1, ei_rect_t *rect2) {
         rect2->top_left.y + rect2->size.height - pack->top_left.y;
     return pack;
 }
+
+ei_bool_t in_rect(ei_point_t *pt, ei_rect_t *rect) {
+    return(pt->x >= rect->top_left.x &&
+            pt->y >= rect->top_left.y &&
+            pt->x <= rect->top_left.x + rect->size.width &&
+            pt->y <= rect->top_left.y + rect->size.height);
+}
