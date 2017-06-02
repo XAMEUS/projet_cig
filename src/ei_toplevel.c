@@ -86,7 +86,12 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
 
     if(!((ei_toplevel_t*) widget)->close_button) {
-        ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
+        ei_widgetclass_t* class = ei_widgetclass_from_name("button");
+        ((ei_toplevel_t*) widget)->close_button = class->allocfunc();
+        ((ei_toplevel_t*) widget)->close_button->wclass = class;
+        ((ei_toplevel_t*) widget)->close_button->parent = widget;
+        ((ei_toplevel_t*) widget)->close_button->wclass->setdefaultsfunc(((ei_toplevel_t*) widget)->close_button);
+        add_picker(ei_app_picking_list(), ((ei_toplevel_t*) widget)->close_button);
         ei_size_t button_size = {10, 10};
         ei_color_t button_color = {255, 0, 0, 255};
         int button_border = 2;
@@ -179,5 +184,5 @@ static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rec
 
 static void ei_close_toplevel(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
-	ei_widget_destroy(widget);
+	ei_widget_destroy(widget->parent);
 }

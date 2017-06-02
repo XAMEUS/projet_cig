@@ -30,6 +30,7 @@ void ei_widget_destroy (ei_widget_t* widget) {
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
     while(to_free) {
+        printf("%s\n", widget->wclass->name);
         while(to_free->children_head)
             to_free = to_free->children_head;
 
@@ -52,6 +53,7 @@ void ei_widget_destroy (ei_widget_t* widget) {
         else
             to_free = NULL;
         tmp->wclass->releasefunc(tmp);
+        ei_app_invalidate_rect(&tmp->screen_location);
         free(tmp);
     }
 }
@@ -192,12 +194,16 @@ void ei_toplevel_configure (ei_widget_t* widget,
         ((ei_toplevel_t*) widget)->bg_color = *color;
     if (border_width)
         ((ei_toplevel_t*) widget)->border_width = *border_width;
-    if (title)
-        ((ei_toplevel_t*) widget)->title = *title;
+    if (title) {
+        ((ei_toplevel_t*) widget)->title = malloc(strlen(*title) + 1);
+        strcpy(((ei_toplevel_t*) widget)->title, *title);
+    }
     if (closable)
         ((ei_toplevel_t*) widget)->closable = *closable;
     if (resizable)
         ((ei_toplevel_t*) widget)->resizable = *resizable;
-    if (min_size)
-        ((ei_toplevel_t*) widget)->min_size = *min_size;
+    if (min_size) {
+        ((ei_toplevel_t*) widget)->min_size = malloc(sizeof(ei_size_t));
+        *(((ei_toplevel_t*) widget)->min_size) = **min_size;
+    }
 }
