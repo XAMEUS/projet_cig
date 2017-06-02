@@ -39,6 +39,14 @@ static void* ei_toplevel_alloc() {
 }
 
 static void ei_toplevel_release_func(struct ei_widget_t* widget) {
+    if (((ei_toplevel_t*) widget)->title)
+        free(((ei_toplevel_t*) widget)->title);
+    if (((ei_toplevel_t*) widget)->close_button) {
+        ei_widgetclass_from_name("button")->releasefunc(((ei_toplevel_t*) widget)->close_button);
+        ei_widget_destroy(((ei_toplevel_t*) widget)->close_button);
+    }
+    if (((ei_toplevel_t*) widget)->min_size)
+        free(((ei_toplevel_t*) widget)->min_size);
 }
 
 static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
@@ -48,12 +56,14 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
 	draw_toplevel(surface, clipper, widget->screen_location,
 			((ei_toplevel_t*) widget)->bg_color, ((ei_toplevel_t*) widget)->border_width);
     ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
+    ei_rect_t n_clipper = *clipper;
     if(drawing_wall)
     	ei_fill(pick_surface, widget->pick_color, drawing_wall);
+        n_clipper = *drawing_wall;
     free(drawing_wall);
     ei_point_t text_where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + 5};
     if (((ei_toplevel_t*) widget)->close_button) {
-        ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, clipper);
+        ((ei_toplevel_t*) widget)->close_button->wclass->drawfunc(((ei_toplevel_t*) widget)->close_button, surface, pick_surface, &n_clipper);
         text_where.x += 3 * ((ei_toplevel_t*) widget)->close_button->screen_location.size.width;
     }
     if (((ei_toplevel_t*) widget)->resizable) {
@@ -61,7 +71,7 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
         ei_fill(surface, &button_color, &((ei_toplevel_t*) widget)->resize_button);
     }
     ei_color_t text_color = {255, 255, 255, 255};
-    ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, clipper);
+    ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, &n_clipper);
 }
 
 static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
@@ -74,12 +84,12 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_toplevel_t*) widget)->resizable = ei_axis_both;
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
 
-    if(((ei_toplevel_t*) widget)->closable && !((ei_toplevel_t*) widget)->close_button) {
+    if(!((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button = ei_widget_create("button", ei_app_root_widget());
         ei_size_t button_size = {10, 10};
         ei_color_t button_color = {255, 0, 0, 255};
         int button_border = 2;
-        int button_radius = 10;
+        int button_radius = 4;
         ei_callback_t	button_callback 	= ei_close_toplevel;
         ei_button_configure(((ei_toplevel_t*) widget)->close_button, &button_size, &button_color, &button_border, &button_radius, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &button_callback, NULL);
     }

@@ -158,10 +158,8 @@ void ei_fill(ei_surface_t surface,
 				*p = mcolor;
 				p++; x++;
 			}
-            printf("fill\n");
 			p += dx; y++;
 		}
-        printf("zer\n");
 	}
 }
 
