@@ -125,8 +125,8 @@ void ei_placer_run(struct ei_widget_t* widget) {
             break;
     }
     if (widget->parent) {
-        new_screen_location.top_left.x += widget->parent->screen_location.top_left.x;
-        new_screen_location.top_left.y += widget->parent->screen_location.top_left.y;
+        new_screen_location.top_left.x += widget->parent->content_rect->top_left.x;
+        new_screen_location.top_left.y += widget->parent->content_rect->top_left.y;
     }
     if(new_screen_location.top_left.x != new_screen_location.top_left.x ||
        new_screen_location.top_left.y != new_screen_location.top_left.y ||
