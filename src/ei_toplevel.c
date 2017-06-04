@@ -158,6 +158,7 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
+    rect.size.height += BORDER;
     widget->screen_location = rect;
     if(!widget->content_rect || widget->content_rect == & widget->screen_location)
         widget->content_rect = malloc(sizeof(ei_rect_t));
