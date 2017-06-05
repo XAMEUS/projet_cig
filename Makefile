@@ -59,7 +59,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines frame button hello_world top_level_ception puzzle two048
+			minimal lines frame button hello_world top_level_ception puzzle two048 test_new_class
 
 all : ${TARGETS}
 
@@ -130,6 +130,11 @@ two048 : ${OBJDIR}/two048.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/two048.o : ${TESTS}/two048.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/two048.c -o ${OBJDIR}/two048.o
+
+# test_new_class
+test_new_class : all
+	${LINK} -o test_ext_class -I./include -I/usr/include/SDL ${TESTS}/test_ext_class.c misc/ext_testclass.o ${OBJDIR}/libei.a _x11/libeibase64.a -L_x11 -lSDL -lSDL_ttf -lSDL_image -lm
+
 
 
 # VERY IMPORTANT TO DEFAULT COMPILE .o
