@@ -3,6 +3,7 @@
 #include "ei_toplevel.h"
 #include "ei_types.h"
 #include "ei_button.h"
+#include "ei_set_destroy_cb.h"
 #include "ei_picking.h"
 #include "ei_application.h"
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+
+static ei_chained_cb *CHAINED_CB = NULL;
 
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* parent) {
     assert(parent);
@@ -27,6 +30,21 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
 }
 
 void ei_widget_destroy (ei_widget_t* widget) {
+    ei_chained_cb *tmp_list = CHAINED_CB;
+    if(CHAINED_CB) {
+        if(CHAINED_CB->widget == widget) {
+            CHAINED_CB = tmp_list->next;
+            tmp_list->callback(tmp_list->widget, NULL, tmp_list->user_param);
+            free(tmp_list);
+        }
+        else while(tmp_list->next != NULL)
+            if(tmp_list->next->widget == widget) {
+                tmp_list->next->callback(tmp_list->next->widget, NULL, tmp_list->next->user_param);
+                ei_chained_cb *next = tmp_list->next->next;
+                free(tmp_list->next);
+                tmp_list->next = next;
+            }
+    }
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
     while(to_free) {
@@ -34,10 +52,21 @@ void ei_widget_destroy (ei_widget_t* widget) {
             to_free = to_free->children_head;
 
         if(to_free->parent) {
-            if(to_free->parent->children_head == to_free)
+            if(to_free->parent->children_head == to_free) {
                 to_free->parent->children_head = to_free->next_sibling;
-            if(to_free->parent->children_tail == to_free)
-                to_free->parent->children_tail = NULL;
+                if(to_free->parent->children_tail == to_free)
+                    to_free->parent->children_tail = NULL;
+            }
+            else for(tmp = to_free->parent->children_head;
+                     tmp->next_sibling != NULL;
+                     tmp = tmp->next_sibling) {
+                if(tmp->next_sibling == to_free) {
+                    tmp->next_sibling = to_free->next_sibling;
+                    if(to_free->parent->children_tail == to_free)
+                        to_free->parent->children_tail = tmp;
+                break;
+                }
+            }
         }
 
         tmp = to_free;
@@ -45,12 +74,12 @@ void ei_widget_destroy (ei_widget_t* widget) {
             free(tmp->placer_params);
         if(tmp->content_rect && tmp->content_rect != &tmp->screen_location)
             free(tmp->content_rect);
-        if(to_free->next_sibling)
-            to_free = to_free->next_sibling;
-        else if(to_free != widget)
-            to_free = to_free->parent;
-        else
+        if(to_free == widget)
             to_free = NULL;
+        else if(to_free->next_sibling)
+            to_free = to_free->next_sibling;
+        else
+            to_free = to_free->parent;
         tmp->wclass->releasefunc(tmp);
         ei_app_invalidate_rect(&tmp->screen_location);
         free(tmp);
@@ -205,4 +234,23 @@ void ei_toplevel_configure (ei_widget_t* widget,
         ((ei_toplevel_t*) widget)->min_size = malloc(sizeof(ei_size_t));
         *(((ei_toplevel_t*) widget)->min_size) = **min_size;
     }
+}
+
+void ei_widget_set_destroy_cb	(ei_widget_t*		widget,
+				 ei_callback_t		callback,
+				 void*			user_param) {
+    ei_chained_cb *list = CHAINED_CB;
+    while(list != NULL && list->next != NULL) {
+        if(list->widget == widget) {
+            list->callback = callback;
+            list->user_param = user_param;
+            return;
+        }
+    }
+    /* widget not in the list */
+    CHAINED_CB = malloc(sizeof(ei_chained_cb));
+    CHAINED_CB->widget = widget;
+    CHAINED_CB->callback = callback;
+    CHAINED_CB->user_param = user_param;
+    CHAINED_CB->next = list;
 }

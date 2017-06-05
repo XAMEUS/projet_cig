@@ -183,7 +183,7 @@ void test_position() {
 	ei_place(window2, NULL, &(window2_position.x), &(window2_position.y), NULL, NULL, NULL, NULL, NULL, NULL);
 
 	ei_widget_t*	button;
-	ei_anchor_t	button_anchor		= ei_anc_northeast;
+	ei_anchor_t	button_anchor		= ei_anc_northwest;
 	int		button_x		= 20;
 	int		button_y		= 20;
 	float		button_rel_x		= 0.0;
@@ -191,7 +191,7 @@ void test_position() {
 	int		button_width		= 60;
 	int		button_height		= 50;
 	ei_color_t	button_color		= {0xF6, 0xFB, 0x7A, 0xff};
-	char*		button_title		= "northeast";
+	char*		button_title		= "northwest";
 	ei_color_t	button_text_color	= {0xFF, 0x6B, 0x6B, 0xff};
 	ei_relief_t	button_relief		= ei_relief_raised;
 	int		button_border_width	= 2;
@@ -203,7 +203,7 @@ void test_position() {
 	ei_place(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, NULL, NULL);
 
 	ei_widget_t*	button2;
-	ei_anchor_t	button2_anchor		= ei_anc_southwest;
+	ei_anchor_t	button2_anchor		= ei_anc_southeast;
 	int		button2_x		= -20;
 	int		button2_y		= -20;
 	float		button2_rel_x		= 1.0;
@@ -211,7 +211,7 @@ void test_position() {
 	int		button2_width	= 60;
 	int		button2_height	= 50;
 	ei_color_t	button2_color		= {0xF6, 0xFB, 0x7A, 0xff};
-	char*		button2_title		= "southwest";
+	char*		button2_title		= "southeast";
 	ei_color_t	button2_text_color	= {0xFF, 0x6B, 0x6B, 0xff};
 	ei_relief_t	button2_relief		= ei_relief_raised;
 	int		button2_border_width	= 2;

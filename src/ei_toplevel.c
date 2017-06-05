@@ -43,6 +43,7 @@ static void ei_toplevel_release_func(struct ei_widget_t* widget) {
         free(((ei_toplevel_t*) widget)->title);
     if (((ei_toplevel_t*) widget)->close_button) {
         ei_widgetclass_from_name("button")->releasefunc(((ei_toplevel_t*) widget)->close_button);
+        ((ei_toplevel_t*) widget)->close_button->parent = NULL;
         ei_widget_destroy(((ei_toplevel_t*) widget)->close_button);
     }
     if (((ei_toplevel_t*) widget)->min_size)

@@ -6,6 +6,7 @@
 #include "ei_widget.h"
 #include "ei_frame.h"
 #include "ei_button.h"
+#include "ei_tools.h"
 
 
 void place_content(ei_point_t* where,
@@ -57,47 +58,53 @@ void draw_text (struct ei_widget_t*	widget,
 		((ei_button_t*) widget)->push) {
 		text_box.top_left.x += 2;
 		text_box.top_left.y += 2;
+		text_box.size.width -= 2;
+		text_box.size.height -= 2;
 	}
 	text_box.size.width -= 2 * offset;
 	text_box.size.height -= 2 * offset;
-	ei_point_t where = {text_box.top_left.x,
-						text_box.top_left.y};
 	ei_size_t text_size;
 	hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
 							&text_size.width, &text_size.height);
-	place_content(&where, text_box.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, text_size);
-	ei_draw_text(surface, &where, ((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
-				&((ei_frame_t*) widget)->opt.txt.text_color, clipper);
+	if (text_size.width > text_box.size.width)
+	 	text_size.width = text_box.size.width;
+	if (text_size.height > text_box.size.height)
+	 	text_size.height = text_box.size.height;
+	place_content(&text_box.top_left, text_box.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, text_size);
+	ei_rect_t* text_clipper = ei_rect_intrsct(&text_box, clipper);
+	if (text_clipper)
+		ei_draw_text(surface, &text_box.top_left, ((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
+					&((ei_frame_t*) widget)->opt.txt.text_color, text_clipper);
 }
 
 void draw_image(struct ei_widget_t*	widget,
 				ei_surface_t		surface,
 				ei_rect_t*		clipper,
 				int offset) {
-	ei_rect_t img_clipper = widget->screen_location;
-	img_clipper.top_left.x += offset;
-	img_clipper.top_left.y += offset;
+	ei_rect_t img_box = widget->screen_location;
+	img_box.top_left.x += offset;
+	img_box.top_left.y += offset;
 	if(strncmp(widget->wclass->name, "button", 20) == 0 &&
 		((ei_button_t*) widget)->push) {
-		img_clipper.top_left.x += 2;
-		img_clipper.top_left.y += 2;
+		img_box.top_left.x += 2;
+		img_box.top_left.y += 2;
+		img_box.size.width -= 2;
+		img_box.size.height -= 2;
 	}
-	img_clipper.size.width -= 2 * offset;
-	img_clipper.size.height -= 2 * offset;
-	ei_point_t where = {0, 0}; ei_size_t img_size = {0, 0};
+	img_box.size.width -= 2 * offset;
+	img_box.size.height -= 2 * offset;
+	ei_point_t where = {img_box.top_left.x, img_box.top_left.y};
+	ei_size_t img_size;
 	if (((ei_frame_t*) widget)->opt.img.img_rect) {
 		img_size.width = ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
 		img_size.height = ((ei_frame_t*) widget)->opt.img.img_rect->size.height;
-	} else {
+	} else
 		img_size = hw_surface_get_size(((ei_frame_t*) widget)->opt.img.img);
-	}
-	if (img_size.width > img_clipper.size.width)
-	 	img_size.width = img_clipper.size.width;
-	 if (img_size.height > img_clipper.size.height)
-	 	img_size.height = img_clipper.size.height;
-	if (img_size.width != img_clipper.size.width || img_size.height != img_clipper.size.height)
-		place_content(&where, img_clipper.size, ((ei_frame_t*) widget)->opt.img.img_anchor, img_size);
-	where.x += img_clipper.top_left.x; where.y += img_clipper.top_left.y;
+	if (img_size.width > img_box.size.width)
+	 	img_size.width = img_box.size.width;
+	if (img_size.height > img_box.size.height)
+	 	img_size.height = img_box.size.height;
+	place_content(&where, img_box.size, ((ei_frame_t*) widget)->opt.img.img_anchor, img_size);
 	ei_point_t where_img = ((ei_frame_t*) widget)->opt.img.img_rect->top_left;
 	if (clipper) {
 		if (where.x < clipper->top_left.x) {
