@@ -52,10 +52,21 @@ void ei_widget_destroy (ei_widget_t* widget) {
             to_free = to_free->children_head;
 
         if(to_free->parent) {
-            if(to_free->parent->children_head == to_free)
+            if(to_free->parent->children_head == to_free) {
                 to_free->parent->children_head = to_free->next_sibling;
-            if(to_free->parent->children_tail == to_free)
-                to_free->parent->children_tail = NULL;
+                if(to_free->parent->children_tail == to_free)
+                    to_free->parent->children_tail = NULL;
+            }
+            else for(tmp = to_free->parent->children_head;
+                     tmp->next_sibling != NULL;
+                     tmp = tmp->next_sibling) {
+                if(tmp->next_sibling == to_free) {
+                    tmp->next_sibling = to_free->next_sibling;
+                    if(to_free->parent->children_tail == to_free)
+                        to_free->parent->children_tail = tmp;
+                break;
+                }
+            }
         }
 
         tmp = to_free;
@@ -63,12 +74,12 @@ void ei_widget_destroy (ei_widget_t* widget) {
             free(tmp->placer_params);
         if(tmp->content_rect && tmp->content_rect != &tmp->screen_location)
             free(tmp->content_rect);
-        if(to_free->next_sibling)
-            to_free = to_free->next_sibling;
-        else if(to_free != widget)
-            to_free = to_free->parent;
-        else
+        if(to_free == widget)
             to_free = NULL;
+        else if(to_free->next_sibling)
+            to_free = to_free->next_sibling;
+        else
+            to_free = to_free->parent;
         tmp->wclass->releasefunc(tmp);
         ei_app_invalidate_rect(&tmp->screen_location);
         free(tmp);
