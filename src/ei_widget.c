@@ -3,6 +3,7 @@
 #include "ei_toplevel.h"
 #include "ei_types.h"
 #include "ei_button.h"
+#include "ei_set_destroy_cb.h"
 #include "ei_picking.h"
 #include "ei_application.h"
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+
+static ei_chained_cb *CHAINED_CB = NULL;
 
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* parent) {
     assert(parent);
@@ -27,6 +30,21 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t	class_name, ei_widget_t* par
 }
 
 void ei_widget_destroy (ei_widget_t* widget) {
+    ei_chained_cb *tmp_list = CHAINED_CB;
+    if(CHAINED_CB) {
+        if(CHAINED_CB->widget == widget) {
+            CHAINED_CB = tmp_list->next;
+            tmp_list->callback(tmp_list->widget, NULL, tmp_list->user_param);
+            free(tmp_list);
+        }
+        else while(tmp_list->next != NULL)
+            if(tmp_list->next->widget == widget) {
+                tmp_list->next->callback(tmp_list->next->widget, NULL, tmp_list->next->user_param);
+                ei_chained_cb *next = tmp_list->next->next;
+                free(tmp_list->next);
+                tmp_list->next = next;
+            }
+    }
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
     while(to_free) {
@@ -205,4 +223,23 @@ void ei_toplevel_configure (ei_widget_t* widget,
         ((ei_toplevel_t*) widget)->min_size = malloc(sizeof(ei_size_t));
         *(((ei_toplevel_t*) widget)->min_size) = **min_size;
     }
+}
+
+void ei_widget_set_destroy_cb	(ei_widget_t*		widget,
+				 ei_callback_t		callback,
+				 void*			user_param) {
+    ei_chained_cb *list = CHAINED_CB;
+    while(list != NULL && list->next != NULL) {
+        if(list->widget == widget) {
+            list->callback = callback;
+            list->user_param = user_param;
+            return;
+        }
+    }
+    /* widget not in the list */
+    CHAINED_CB = malloc(sizeof(ei_chained_cb));
+    CHAINED_CB->widget = widget;
+    CHAINED_CB->callback = callback;
+    CHAINED_CB->user_param = user_param;
+    CHAINED_CB->next = list;
 }
