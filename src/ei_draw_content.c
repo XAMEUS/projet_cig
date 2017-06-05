@@ -6,6 +6,7 @@
 #include "ei_widget.h"
 #include "ei_frame.h"
 #include "ei_button.h"
+#include "ei_tools.h"
 
 
 void place_content(ei_point_t* where,
@@ -60,14 +61,16 @@ void draw_text (struct ei_widget_t*	widget,
 	}
 	text_box.size.width -= 2 * offset;
 	text_box.size.height -= 2 * offset;
-	ei_point_t where = {text_box.top_left.x,
-						text_box.top_left.y};
+	fprintf(stderr, "%d %d %d %d\n", text_box.top_left.x, text_box.top_left.y, text_box.size.width, text_box.size.height);
 	ei_size_t text_size;
 	hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
 							&text_size.width, &text_size.height);
-	place_content(&where, text_box.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, text_size);
-	ei_draw_text(surface, &where, ((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
-				&((ei_frame_t*) widget)->opt.txt.text_color, clipper);
+	if (widget->screen_location.size.width >= text_size.width && widget->screen_location.size.height >= text_size.height)
+		place_content(&text_box.top_left, text_box.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, text_size);
+	ei_rect_t* text_clipper = ei_rect_intrsct(&text_box, clipper);
+	if (text_clipper)
+		ei_draw_text(surface, &text_box.top_left, ((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
+					&((ei_frame_t*) widget)->opt.txt.text_color, text_clipper);
 }
 
 void draw_image(struct ei_widget_t*	widget,
