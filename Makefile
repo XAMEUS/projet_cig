@@ -14,10 +14,10 @@ DEBUG := true
 
 # The list of objects to include in the library
 ifeq ($(DEBUG),true)
-LIBEIOBJS	:= ./objs/freq_counter.o ./objs/ei_tools.o ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o
+LIBEIOBJS	:= ./objs/freq_counter.o ./objs/ei_tools.o ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o
 CCFLAGS		:= ${CCFLAGS} -pg
 else
-LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o
+LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o
 endif
 
 
@@ -59,8 +59,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines frame button hello_world top_level_ception puzzle two048 test_new_class
-
+			minimal lines lines2 frame button hello_world top_level_ception puzzle two048 test_new_class
 all : ${TARGETS}
 
 ########## Test-programs
@@ -82,6 +81,13 @@ lines : ${OBJDIR}/lines.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/lines.o : ${TESTS}/lines.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/lines.c -o ${OBJDIR}/lines.o
+
+lines2 : ${OBJDIR}/lines2.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o lines2 ${OBJDIR}/lines2.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/lines2.o : ${TESTS}/lines2.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/lines2.c -o ${OBJDIR}/lines2.o
+
 
 # frame
 
