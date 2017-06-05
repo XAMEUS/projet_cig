@@ -89,15 +89,11 @@ void ei_app_run() {
                         break;
                 }
                 #else
-                if(w->placer_params) {
-                    if(w->parent->parent)
-                        rect_clipping = ei_rect_intrsct(w->parent->content_rect, w->parent->parent->content_rect);
-                    else
-                        rect_clipping = ei_rect_intrsct(w->parent->content_rect, &INVALIDATE_RECT->rect);
-                    if (rect_clipping) {
-                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
-                        free(rect_clipping);
-                    }
+                if(w->placer_params &&
+                    (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
+                                     &INVALIDATE_RECT->rect))) {
+                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
+                    free(rect_clipping);
                 }
                 else if(w == ROOT_WIDGET)
                     w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
