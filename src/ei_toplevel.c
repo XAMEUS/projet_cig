@@ -70,7 +70,11 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
     }
     if (((ei_toplevel_t*) widget)->resizable) {
         ei_color_t button_color = {((ei_toplevel_t*) widget)->bg_color.red * 0.65, ((ei_toplevel_t*) widget)->bg_color.green * 0.65, ((ei_toplevel_t*) widget)->bg_color.blue * 0.65, 255};
-        ei_fill(surface, &button_color, &((ei_toplevel_t*) widget)->resize_button);
+        ei_rect_t* button_rect = ei_rect_intrsct(&((ei_toplevel_t*) widget)->resize_button, clipper);
+        if (button_rect) {
+            ei_fill(surface, &button_color, button_rect);
+            free(button_rect);
+        }
     }
     ei_color_t text_color = {255, 255, 255, 255};
     ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, &n_clipper);
