@@ -149,7 +149,7 @@ void test_dot(ei_surface_t surface, ei_rect_t* clipper)
 
 void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 {
-	ei_color_t		color		= { 0, 0, 255, 255 };
+	ei_color_t		color		= { 0, 0, 255, 100 };
 	ei_point_t	center = { 400, 300 };
 	ei_linked_point_t* pts = NULL;
 	ei_linked_point_t* last_point = arc(&pts, center, 200, 0, 2 * acos(-1));
@@ -229,15 +229,14 @@ int ei_main(int argc, char** argv)
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	/* Draw polylines. */
-	//test_text	(main_window, clipper_ptr);
-	// test_octogone	(main_window, clipper_ptr);
-	// test_square	(main_window, clipper_ptr);
-	// test_line	(main_window, clipper_ptr);
-	// test_dot	(main_window, clipper_ptr);
-	// test_copy	(main_window, clipper_ptr);
-	// test_circle (main_window, clipper_ptr);
+	test_octogone	(main_window, clipper_ptr);
+	test_square	(main_window, clipper_ptr);
+	test_line	(main_window, clipper_ptr);
+	test_dot	(main_window, clipper_ptr);
+	test_circle (main_window, clipper_ptr);
 	// test_rounded_frame (main_window, clipper_ptr);
 	test_draw_button (main_window, clipper_ptr);
+	test_text	(main_window, clipper_ptr);
 	// test_top_level (main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */

@@ -59,7 +59,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines lines2 frame button hello_world top_level_ception puzzle two048 test_new_class
+			minimal lines text frame button hello_world top_level_ception puzzle two048 test_new_class
 all : ${TARGETS}
 
 ########## Test-programs
@@ -82,11 +82,11 @@ lines : ${OBJDIR}/lines.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/lines.o : ${TESTS}/lines.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/lines.c -o ${OBJDIR}/lines.o
 
-lines2 : ${OBJDIR}/lines2.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o lines2 ${OBJDIR}/lines2.o ${LIBEI} ${LIBS}
+text : ${OBJDIR}/text.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o text ${OBJDIR}/text.o ${LIBEI} ${LIBS}
 
-${OBJDIR}/lines2.o : ${TESTS}/lines2.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/lines2.c -o ${OBJDIR}/lines2.o
+${OBJDIR}/text.o : ${TESTS}/text.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/text.c -o ${OBJDIR}/text.o
 
 
 # frame
