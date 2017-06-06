@@ -37,13 +37,16 @@ void ei_widget_destroy (ei_widget_t* widget) {
             tmp_list->callback(tmp_list->widget, NULL, tmp_list->user_param);
             free(tmp_list);
         }
-        else while(tmp_list->next != NULL)
+        else while(tmp_list->next != NULL) {
             if(tmp_list->next->widget == widget) {
                 tmp_list->next->callback(tmp_list->next->widget, NULL, tmp_list->next->user_param);
                 ei_chained_cb *next = tmp_list->next->next;
                 free(tmp_list->next);
                 tmp_list->next = next;
+                break;
             }
+            tmp_list = tmp_list->next;
+        }
     }
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
