@@ -14,7 +14,9 @@ void add_picker(list_picking *ptr_list, ei_widget_t* new_widget) {
     uint32_t indice;
     if(ptr_list->to_add) {
         indice = ptr_list->to_add->nb;
+        list_picking *tmp = ptr_list->to_add;
         ptr_list->to_add = ptr_list->to_add->next;
+        free(tmp);
     }
     else {
         if(ptr_list->len == ptr_list->alloc_size) {
