@@ -31,8 +31,9 @@ void add_picker(list_picking *ptr_list, ei_widget_t* new_widget) {
 
 void del_picker(list_picking *ptr_list, uint32_t pick_id) {
     ((ei_color_t*) &pick_id)->alpha = 0;
-    assert(pick_id <= ptr_list->len && ptr_list->data[pick_id] != NULL);
-    ptr_list->data[pick_id]->pick_color = NULL;
+    assert(pick_id <= ptr_list->len);
+    if(ptr_list->data[pick_id] != NULL)
+        ptr_list->data[pick_id]->pick_color = NULL;
     if(pick_id == ptr_list->len) ptr_list->len--;
     else {
         chained_numbers *n_num = malloc(sizeof(chained_numbers));
