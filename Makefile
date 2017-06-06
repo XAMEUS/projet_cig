@@ -14,10 +14,10 @@ DEBUG := true
 
 # The list of objects to include in the library
 ifeq ($(DEBUG),true)
-LIBEIOBJS	:= ./objs/freq_counter.o ./objs/ei_tools.o ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o
+LIBEIOBJS	:= ./objs/freq_counter.o ./objs/ei_tools.o ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o ./objs/ei_intrsct_pile.o
 CCFLAGS		:= ${CCFLAGS} -pg
 else
-LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o
+LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o ./objs/ei_intrsct_pile.o
 endif
 
 

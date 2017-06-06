@@ -11,6 +11,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ei_intrsct_pile.h"
+
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
 static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
@@ -65,6 +67,8 @@ void ei_app_run() {
     while(1) {
     #else
     while(SHALL_WE_CONTINUE) {
+        ei_pile *intrsct_pile = NULL;
+        ei_pile_push(&intrsct_pile, ROOT_WIDGET->screen_location);
         while(INVALIDATE_RECT) {
     #endif
             hw_surface_lock(ROOT_SURFACE);
@@ -89,24 +93,38 @@ void ei_app_run() {
                         break;
                 }
                 #else
-                if(w->placer_params &&
-                    (rect_clipping = ei_rect_intrsct(w->parent->content_rect,
-                                     &INVALIDATE_RECT->rect))) {
-                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
-                    free(rect_clipping);
+                if(w->placer_params) {
+                    rect_clipping = ei_rect_intrsct(w->parent->content_rect, &(intrsct_pile->rect));
+                    if (rect_clipping)
+                        rect_clipping = ei_rect_intrsct(rect_clipping, &INVALIDATE_RECT->rect);
+                    if (rect_clipping) {
+                        ei_pile_push(&intrsct_pile, *rect_clipping);
+                        w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
+                        free(rect_clipping);
+                    } else {
+                        ei_rect_t null_rect = {{0, 0}, {0, 0}};
+                        ei_pile_push(&intrsct_pile, null_rect);
+                    }
+
                 }
                 else if(w == ROOT_WIDGET)
                     w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
 
-                if(w->children_head != NULL)
+                if(w->children_head != NULL) {
                     w = w->children_head;
-                else if(w->next_sibling != NULL)
+                }
+                else if(w->next_sibling != NULL) {
                     w = w->next_sibling;
-                else {
-                    while(w->parent != NULL && w->parent->next_sibling == NULL)
+                    ei_pile_pop(&intrsct_pile);
+                } else {
+                    while(w->parent != NULL && w->parent->next_sibling == NULL) {
                         w = w->parent;
-                    if(w->parent != NULL)
+                        ei_pile_pop(&intrsct_pile);
+                    }
+                    if(w->parent != NULL) {
                         w = w->parent->next_sibling;
+                        ei_pile_pop(&intrsct_pile);
+                    }
                     else
                         break;
                 }
@@ -122,6 +140,7 @@ void ei_app_run() {
             #endif
 
     #ifndef DEBUG
+        ei_pile_clear(&intrsct_pile);
         }
         hw_event_wait_next(event);
         widget_event = ei_event_get_active_widget();

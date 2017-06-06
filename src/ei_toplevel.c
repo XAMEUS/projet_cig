@@ -8,6 +8,7 @@
 #include "ei_event.h"
 #include "ei_tools.h"
 #include "ei_application.h"
+#include "ei_picking.h"
 
 static void* ei_toplevel_alloc();
 static void ei_toplevel_release_func(struct ei_widget_t* widget);
@@ -70,7 +71,11 @@ static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
     }
     if (((ei_toplevel_t*) widget)->resizable) {
         ei_color_t button_color = {((ei_toplevel_t*) widget)->bg_color.red * 0.65, ((ei_toplevel_t*) widget)->bg_color.green * 0.65, ((ei_toplevel_t*) widget)->bg_color.blue * 0.65, 255};
-        ei_fill(surface, &button_color, &((ei_toplevel_t*) widget)->resize_button);
+        ei_rect_t* button_clipper = ei_rect_intrsct(&((ei_toplevel_t*) widget)->resize_button, clipper);
+        if (button_clipper) {
+            ei_fill(surface, &button_color, button_clipper);
+            free(button_clipper);
+        }
     }
     ei_color_t text_color = {255, 255, 255, 255};
     ei_draw_text(surface, &text_where, ((ei_toplevel_t*) widget)->title, ((ei_toplevel_t*) widget)->title_font, &text_color, &n_clipper);
