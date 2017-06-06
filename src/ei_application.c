@@ -184,7 +184,6 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
             lk = lk->next;
         free(n_rect);
     }
-    free(n_lk_rect);
 }
 
 void ei_app_quit_request() {
