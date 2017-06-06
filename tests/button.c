@@ -79,7 +79,6 @@ int ei_main(int argc, char** argv)
 	/* image */
 	if (argc > 1) {
 		ei_surface_t image		= hw_image_load(argv[1], ei_app_root_surface());
-		ei_size_t image_size	= hw_surface_get_size(image);
 		ei_rect_t* image_rect = malloc(sizeof(ei_rect_t));
 		image_rect->top_left.x = 100;
 		image_rect->top_left.y = 100;

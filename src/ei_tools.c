@@ -1,6 +1,9 @@
 #include "ei_tools.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include <assert.h>
+#include <string.h>
 
 #ifndef max
     #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -54,6 +57,36 @@ ei_bool_t in_rect(ei_point_t *pt, ei_rect_t *rect) {
             pt->y >= rect->top_left.y &&
             pt->x <= rect->top_left.x + rect->size.width &&
             pt->y <= rect->top_left.y + rect->size.height);
+}
+
+char *strdup (const char *s);
+char *strdup (const char *s) {
+    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
+    if (d == NULL) return NULL;          // No memory
+    strcpy (d,s);                        // Copy the characters
+    return d;                            // Return the new string
+}
+
+char* strtok_r(char *str, const char *delim, char **nextp);
+char* strtok_r(char *str, const char *delim, char **nextp) {
+    char *ret;
+    if (str == NULL)
+    {
+        str = *nextp;
+    }
+    str += strspn(str, delim);
+    if (*str == '\0')
+    {
+        return NULL;
+    }
+    ret = str;
+    str += strcspn(str, delim);
+    if (*str)
+    {
+        *str++ = '\0';
+    }
+    *nextp = str;
+    return ret;
 }
 
 // see: https://www.quora.com/How-do-you-write-a-C-program-to-split-a-string-by-a-delimiter
