@@ -101,7 +101,7 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
         ei_size_t button_size = {10, 10};
         ei_color_t button_color = {255, 0, 0, 255};
         int button_border = 2;
-        int button_radius = 4;
+        int button_radius = 5;
         ei_callback_t	button_callback 	= ei_close_toplevel;
         ei_button_configure(((ei_toplevel_t*) widget)->close_button, &button_size, &button_color, &button_border, &button_radius, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &button_callback, NULL);
     }
