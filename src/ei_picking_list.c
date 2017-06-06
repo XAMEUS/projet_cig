@@ -10,11 +10,12 @@ list_picking *create_picker() {
     list->data = data;
     return list;
 }
+
 void add_picker(list_picking *ptr_list, ei_widget_t* new_widget) {
     uint32_t indice;
     if(ptr_list->to_add) {
         indice = ptr_list->to_add->nb;
-        list_picking *tmp = ptr_list->to_add;
+        list_picking *tmp = (list_picking *)ptr_list->to_add;
         ptr_list->to_add = ptr_list->to_add->next;
         free(tmp);
     }
