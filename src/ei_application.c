@@ -7,6 +7,7 @@
 #include "ei_event.h"
 #include "ei_button.h"
 #include "ei_tools.h"
+#include "ei_set_destroy_cb.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -49,6 +50,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
 
 
 void ei_app_free() {
+    ei_widget_remove_cb();
     ei_widget_destroy(ROOT_WIDGET);
     hw_surface_free(ROOT_SURFACE);
     hw_surface_free(PICKING);

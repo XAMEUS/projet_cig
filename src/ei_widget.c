@@ -267,3 +267,12 @@ void ei_widget_set_destroy_cb	(ei_widget_t*		widget,
     CHAINED_CB->user_param = user_param;
     CHAINED_CB->next = list;
 }
+
+void ei_widget_remove_cb() {
+    ei_chained_cb *to_remove;
+    while(CHAINED_CB) {
+        to_remove = CHAINED_CB;
+        CHAINED_CB = CHAINED_CB->next;
+        free(to_remove);
+    }
+}
