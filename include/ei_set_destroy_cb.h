@@ -22,4 +22,6 @@ void ei_widget_set_destroy_cb	(ei_widget_t*		widget,
      struct ei_chained_cb *next;
  } ei_chained_cb;
 
+void ei_widget_remove_cb();
+
 #endif

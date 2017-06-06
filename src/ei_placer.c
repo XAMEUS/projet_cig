@@ -143,5 +143,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
 }
 
 void ei_placer_forget(struct ei_widget_t* widget) {
-    return;
+    if(widget->placer_params)
+        free(widget->placer_params);
 }

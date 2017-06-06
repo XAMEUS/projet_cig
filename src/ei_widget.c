@@ -73,8 +73,7 @@ void ei_widget_destroy (ei_widget_t* widget) {
         }
         del_picker(ei_app_picking_list(), widget->pick_id);
         tmp = to_free;
-        if(tmp->placer_params)
-            free(tmp->placer_params);
+        ei_placer_forget(tmp);
         if(tmp->content_rect && tmp->content_rect != &tmp->screen_location)
             free(tmp->content_rect);
         if(to_free == widget)
