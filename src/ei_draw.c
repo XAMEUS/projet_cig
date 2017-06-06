@@ -125,7 +125,8 @@ void ei_fill(ei_surface_t surface,
                 const ei_rect_t* clipper) {
     uint32_t *p = (uint32_t *)hw_surface_get_buffer(surface);
     ei_size_t size = hw_surface_get_size(surface);
-    uint32_t mcolor = ei_map_rgba(surface, color);
+    ei_color_t black = {0, 0, 0, 255};
+    uint32_t mcolor = (color) ? ei_map_rgba(surface, color) : ei_map_rgba(surface, &black);
     if (clipper == NULL) {
         int c = 0;
         while (c < size.width * size.height) {
