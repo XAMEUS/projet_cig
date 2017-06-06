@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "ei_tools.h"
+#include "ei_draw.h"
 #include "ei_draw_text_lines.h"
 
 void ei_draw_text_lines(ei_surface_t	surface,
@@ -20,7 +21,6 @@ void ei_draw_text_lines(ei_surface_t	surface,
     else box = (hw_surface_get_rect(surface)).size;
 
 	char *line = NULL;
-    size_t linelen;
     char **tokens;
     size_t numtokens;
     tokens = strsplit(text, "\t\n", &numtokens);
@@ -30,7 +30,6 @@ void ei_draw_text_lines(ei_surface_t	surface,
 		// hw_text_compute_size(tokens[i], font, &width, &height);
         // printf("  token: \"%s\" %d %d\n", tokens[i], width, height);
 		char *word = NULL;
-	    size_t nwords;
 	    char **wtokens;
 	    size_t nwtokens;
 	    wtokens = strsplit(tokens[i], " ", &nwtokens);

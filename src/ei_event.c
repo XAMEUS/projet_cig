@@ -1,4 +1,5 @@
 #include "ei_event.h"
+#include "ei_application.h"
 #include <stdlib.h>
 
 static ei_widget_t* ACTIVE_WIDGET = NULL;
