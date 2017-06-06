@@ -37,13 +37,16 @@ void ei_widget_destroy (ei_widget_t* widget) {
             tmp_list->callback(tmp_list->widget, NULL, tmp_list->user_param);
             free(tmp_list);
         }
-        else while(tmp_list->next != NULL)
+        else while(tmp_list->next != NULL) {
             if(tmp_list->next->widget == widget) {
                 tmp_list->next->callback(tmp_list->next->widget, NULL, tmp_list->next->user_param);
                 ei_chained_cb *next = tmp_list->next->next;
                 free(tmp_list->next);
                 tmp_list->next = next;
+                break;
             }
+            tmp_list = tmp_list->next;
+        }
     }
     ei_widget_t *to_free = widget;
     ei_widget_t *tmp;
@@ -158,8 +161,11 @@ void ei_frame_configure (ei_widget_t* widget,
         if(img_anchor)
             ((ei_frame_t*) widget)->opt.img.img_anchor = *img_anchor;
     }
-    if(requested_size)
+    if(requested_size) {
         widget->requested_size = *requested_size;
+        if(widget->placer_params)
+            ei_placer_run(widget);
+    }
     else if(widget->requested_size.width == 0 && widget->requested_size.height == 0) {
             if(((ei_frame_t*) widget)->opt_type == TEXT)
                 hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text,
@@ -172,6 +178,8 @@ void ei_frame_configure (ei_widget_t* widget,
             widget->requested_size.width += ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
             widget->requested_size.height += ((ei_frame_t*) widget)->opt.img.img_rect->size.height;
         }
+        if(widget->placer_params)
+            ei_placer_run(widget);
     }
 }
 
@@ -201,6 +209,8 @@ void ei_button_configure(ei_widget_t* widget,
         int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
         widget->requested_size.width += offset;
         widget->requested_size.height += offset;
+        if(widget->placer_params)
+            ei_placer_run(widget);
     }
     if (callback)
         ((ei_button_t*) widget)->callback = *callback;
@@ -216,8 +226,11 @@ void ei_toplevel_configure (ei_widget_t* widget,
 							 ei_bool_t* closable,
 							 ei_axis_set_t* resizable,
 						 	 ei_size_t** min_size) {
-    if (requested_size)
+    if (requested_size) {
         widget->requested_size = *requested_size;
+        if(widget->placer_params)
+            ei_placer_run(widget);
+    }
     if (color)
         ((ei_toplevel_t*) widget)->bg_color = *color;
     if (border_width)
