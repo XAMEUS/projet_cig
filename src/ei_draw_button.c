@@ -13,7 +13,7 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
                        const int radius,
                        const float first_angle,
                        const float last_angle) {
-    int step_nbr = radius; // a reflechir
+    int step_nbr = 5; // a reflechir
     float angle_step = (last_angle - first_angle) / step_nbr;
 
     *first_point = malloc(sizeof(ei_linked_point_t));
@@ -21,8 +21,6 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
     (*first_point)->point.x = center.x + radius * cos(first_angle);
     (*first_point)->point.y = center.y - radius * sin(first_angle);
     (*first_point)->next = NULL;
-    // int i = 0;
-    // fprintf(stderr, "point n°%d : %d %d \n", i, (*first_point)->point.x, (*first_point)->point.y);
     ei_linked_point_t* last_point = *first_point;
     for(float angle = (first_angle + angle_step); radius != 0 && angle < last_angle; angle += angle_step) {
         ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
@@ -31,8 +29,6 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
         point->point.y = center.y - radius * sin(angle);
         last_point->next = point;
         last_point = last_point->next;
-        // i++;
-        // fprintf(stderr, "point n°%d : %d %d %f\n", i, point->point.x, point->point.y, angle);
     }
     last_point->next = NULL;
     return last_point;
@@ -73,6 +69,7 @@ ei_linked_point_t* rounded_frame(ei_rect_t frame,
 ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
                                     int radius,
                                     int h) {
+    float e = 0.4;
     /* top left */
     ei_point_t center = {frame.top_left.x + radius, frame.top_left.y + radius};
     ei_linked_point_t* first_top_left = NULL;
@@ -80,7 +77,7 @@ ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
     /* bottom left */
     center.y += frame.size.height - 2 * radius;
     ei_linked_point_t* first_bottom_left = NULL;
-    ei_linked_point_t* last_bottom_left = arc(&first_bottom_left, center, radius, M_PI, 5 * M_PI / 4);
+    ei_linked_point_t* last_bottom_left = arc(&first_bottom_left, center, radius, M_PI, (5+e) * M_PI / 4);
     last_top_left->next = first_bottom_left;
     /* zigzag */
     ei_linked_point_t* point = malloc(sizeof(ei_linked_point_t));
@@ -97,7 +94,7 @@ ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
     center.x += frame.size.width - 2 * radius;
     center.y = frame.top_left.y + radius;
     ei_linked_point_t* first_top_right = NULL;
-    ei_linked_point_t* last_top_right = arc(&first_top_right, center, radius, M_PI / 4, M_PI / 2);
+    ei_linked_point_t* last_top_right = arc(&first_top_right, center, radius, (1-e) * M_PI / 4, M_PI / 2);
     next_point->next = first_top_right;
     /* final link */
     ei_linked_point_t* last_point = malloc(sizeof(ei_linked_point_t));
@@ -170,7 +167,7 @@ void ei_draw_button(ei_surface_t surface,
     int min_size = (frame.size.height < frame.size.width) ? frame.size.height : frame.size.width;
     if (2 * radius > min_size - 2*border) radius = (min_size - 2*border)/2;
 
-    if (border) { //&& relief != ei_relief_none
+    if (border && relief != ei_relief_none) {
         assert(2 * border <= min_size);
         float factor = 0.1;
         ei_color_t shade = {color.red * (1 - factor),
