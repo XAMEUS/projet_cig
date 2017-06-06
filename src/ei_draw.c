@@ -128,11 +128,33 @@ void ei_fill(ei_surface_t surface,
     ei_color_t black = {0, 0, 0, 255};
     uint32_t mcolor = (color) ? ei_map_rgba(surface, color) : ei_map_rgba(surface, &black);
     if (clipper == NULL) {
-        int c = 0;
-        while (c < size.width * size.height) {
-            *p = mcolor;
-            p++;
-            c++;
+        if (color && color->alpha != 255) {
+            int r, g, b, a;
+            hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
+            int c = 0;
+            while (c < size.width * size.height) {
+                uint8_t* d_pos = (uint8_t*) p;
+                uint8_t s_r = color->red;
+                uint8_t s_g = color->green;
+                uint8_t s_b = color->blue;
+                uint8_t s_a = color->alpha;
+                uint8_t d_r = d_pos[r];
+                uint8_t d_g = d_pos[g];
+                uint8_t d_b = d_pos[b];
+                d_pos[r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+                d_pos[g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+                d_pos[b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+                if(a >= 0) d_pos[a] = 255;
+                p++;
+                c++;
+            }
+        } else {
+            int c = 0;
+            while (c < size.width * size.height) {
+                *p = mcolor;
+                p++;
+                c++;
+            }
         }
     }
 	else {
@@ -149,18 +171,43 @@ void ei_fill(ei_surface_t surface,
 			n_clipper.size.width = size.width - n_clipper.top_left.x;
 		if(n_clipper.top_left.y + n_clipper.size.height >= size.height)
 			n_clipper.size.height = size.height - n_clipper.top_left.y;
-		p += size.width * n_clipper.top_left.y + n_clipper.top_left.x;
-		int x; int y = 0;
-		uint32_t dx = n_clipper.top_left.x +
-		size.width - (n_clipper.top_left.x + n_clipper.size.width);
-		while (y < n_clipper.size.height) {
-			x = 0;
-			while (x < n_clipper.size.width) {
-				*p = mcolor;
-				p++; x++;
-			}
-			p += dx; y++;
-		}
+
+        int x; int y = 0;
+        p += size.width * n_clipper.top_left.y + n_clipper.top_left.x;
+        uint32_t dx = n_clipper.top_left.x + size.width - (n_clipper.top_left.x + n_clipper.size.width);
+
+        if (color && color->alpha != 255) {
+            int r, g, b, a;
+            hw_surface_get_channel_indices(surface, &r, &g, &b, &a);
+            while (y < n_clipper.size.height) {
+        		x = 0;
+        		while (x < n_clipper.size.width) {
+					uint8_t* d_pos = (uint8_t*) p;
+					uint8_t s_r = color->red;
+					uint8_t s_g = color->green;
+					uint8_t s_b = color->blue;
+					uint8_t s_a = color->alpha;
+					uint8_t d_r = d_pos[r];
+					uint8_t d_g = d_pos[g];
+					uint8_t d_b = d_pos[b];
+					d_pos[r] = ((uint16_t) d_r * (255 - s_a) + (uint16_t) s_r * s_a) / 255;
+					d_pos[g] = ((uint16_t) d_g * (255 - s_a) + (uint16_t) s_g * s_a) / 255;
+					d_pos[b] = ((uint16_t) d_b * (255 - s_a) + (uint16_t) s_b * s_a) / 255;
+                    if(a >= 0) d_pos[a] = 255;
+        			p++; x++;
+			    }
+			    p += dx; y++;
+            }
+        } else {
+            while (y < n_clipper.size.height) {
+        		x = 0;
+        		while (x < n_clipper.size.width) {
+        			*p = mcolor;
+        			p++; x++;
+			    }
+			    p += dx; y++;
+            }
+        }
 	}
 }
 
