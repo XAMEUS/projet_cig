@@ -98,27 +98,30 @@ void ei_placer_run(struct ei_widget_t* widget) {
 
     switch (widget->placer_params->anchor_data) {
         case ei_anc_center:
-            new_screen_location.top_left.y -= new_screen_location.size.height / 2;
-        case ei_anc_north:
-            new_screen_location.top_left.x -= new_screen_location.size.width / 2;
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
             break;
+        case ei_anc_west:
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
+            break;
+        case ei_anc_east:
+            new_screen_location.top_left.y -= new_screen_location.size.height/2;
         case ei_anc_northeast:
             new_screen_location.top_left.x -= new_screen_location.size.width;
             break;
-        case ei_anc_east:
-            new_screen_location.top_left.x -= new_screen_location.size.width;
-            new_screen_location.top_left.y -= new_screen_location.size.height / 2;
+        case ei_anc_south:
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
+        case ei_anc_southwest:
+            new_screen_location.top_left.y -= new_screen_location.size.height;
+            break;
         case ei_anc_southeast:
             new_screen_location.top_left.x -= new_screen_location.size.width;
             new_screen_location.top_left.y -= new_screen_location.size.height;
             break;
-        case ei_anc_south:
-            new_screen_location.top_left.x -= new_screen_location.size.width / 2;
-        case ei_anc_southwest:
-            new_screen_location.top_left.y -= new_screen_location.size.height;
+        case ei_anc_north:
+            new_screen_location.top_left.x -= new_screen_location.size.width/2;
             break;
-        case ei_anc_west:
-            new_screen_location.top_left.y -= new_screen_location.size.height / 2;
+        default:
             break;
     }
     if (widget->parent) {
