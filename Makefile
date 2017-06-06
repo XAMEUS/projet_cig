@@ -1,7 +1,7 @@
 # Variable definitions.
 
 PLATFORM	= $(shell uname)
-CC		= gcc-5
+CC		= gcc
 OBJDIR		= ./objs
 TESTS		= ./tests
 INCLUDES	= ./include
