@@ -158,8 +158,11 @@ void ei_frame_configure (ei_widget_t* widget,
         if(img_anchor)
             ((ei_frame_t*) widget)->opt.img.img_anchor = *img_anchor;
     }
-    if(requested_size)
+    if(requested_size) {
         widget->requested_size = *requested_size;
+        if(widget->placer_params)
+            ei_placer_run(widget);
+    }
     else if(widget->requested_size.width == 0 && widget->requested_size.height == 0) {
             if(((ei_frame_t*) widget)->opt_type == TEXT)
                 hw_text_compute_size(((ei_frame_t*) widget)->opt.txt.text,
@@ -172,6 +175,8 @@ void ei_frame_configure (ei_widget_t* widget,
             widget->requested_size.width += ((ei_frame_t*) widget)->opt.img.img_rect->size.width;
             widget->requested_size.height += ((ei_frame_t*) widget)->opt.img.img_rect->size.height;
         }
+        if(widget->placer_params)
+            ei_placer_run(widget);
     }
 }
 
@@ -201,6 +206,8 @@ void ei_button_configure(ei_widget_t* widget,
         int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
         widget->requested_size.width += offset;
         widget->requested_size.height += offset;
+        if(widget->placer_params)
+            ei_placer_run(widget);
     }
     if (callback)
         ((ei_button_t*) widget)->callback = *callback;
@@ -216,8 +223,11 @@ void ei_toplevel_configure (ei_widget_t* widget,
 							 ei_bool_t* closable,
 							 ei_axis_set_t* resizable,
 						 	 ei_size_t** min_size) {
-    if (requested_size)
+    if (requested_size) {
         widget->requested_size = *requested_size;
+        if(widget->placer_params)
+            ei_placer_run(widget);
+    }
     if (color)
         ((ei_toplevel_t*) widget)->bg_color = *color;
     if (border_width)
