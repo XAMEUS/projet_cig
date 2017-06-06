@@ -72,9 +72,11 @@ void draw_text (struct ei_widget_t*	widget,
 	 	text_size.height = text_box.size.height;
 	place_content(&text_box.top_left, text_box.size, ((ei_frame_t*) widget)->opt.txt.text_anchor, text_size);
 	ei_rect_t* text_clipper = ei_rect_intrsct(&text_box, clipper);
-	if (text_clipper)
+	if (text_clipper) {
 		ei_draw_text(surface, &text_box.top_left, ((ei_frame_t*) widget)->opt.txt.text, ((ei_frame_t*) widget)->opt.txt.font,
-					&((ei_frame_t*) widget)->opt.txt.text_color, text_clipper);
+			&((ei_frame_t*) widget)->opt.txt.text_color, text_clipper);
+		free(text_clipper);
+	}
 }
 
 void draw_image(struct ei_widget_t*	widget,

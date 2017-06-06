@@ -98,8 +98,11 @@ void ei_app_run() {
                 if(w->placer_params) {
                     assert(intrsct_pile != NULL);
                     rect_clipping = ei_rect_intrsct(w->parent->content_rect, &(intrsct_pile->rect));
-                    if (rect_clipping)
+                    if (rect_clipping) {
+                        ei_rect_t *rect_to_free = rect_clipping;
                         rect_clipping = ei_rect_intrsct(rect_clipping, &INVALIDATE_RECT->rect);
+                        free(rect_to_free);
+                    }
                     if (rect_clipping) {
                         ei_pile_push(&intrsct_pile, *rect_clipping);
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
@@ -162,10 +165,10 @@ void ei_app_run() {
 }
 
 void ei_app_invalidate_rect(ei_rect_t* rect) {
-    ei_linked_rect_t *n_rect = malloc(sizeof(ei_linked_rect_t));
-    n_rect->rect = *rect;
-    n_rect->next = INVALIDATE_RECT;
-    INVALIDATE_RECT = n_rect;
+    ei_linked_rect_t *n_lk_rect = malloc(sizeof(ei_linked_rect_t));
+    n_lk_rect->rect = *rect;
+    n_lk_rect->next = INVALIDATE_RECT;
+    INVALIDATE_RECT = n_lk_rect;
     ei_linked_rect_t *lk = INVALIDATE_RECT;
     while(lk != NULL && lk->next != NULL) {
         ei_rect_t *n_rect = ei_rect_pack(&lk->rect, &lk->next->rect);
@@ -175,11 +178,11 @@ void ei_app_invalidate_rect(ei_rect_t* rect) {
             ei_linked_rect_t *tmp = lk->next;
             lk->next = lk->next->next;
             lk->rect = *n_rect;
-            free(n_rect);
             free(tmp);
         }
         else
             lk = lk->next;
+        free(n_rect);
     }
 }
 

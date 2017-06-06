@@ -98,7 +98,7 @@ ei_widget_t* ei_widget_pick(ei_point_t* where) {
     int r, g, b, a;
     hw_surface_get_channel_indices(pick_surface, &r, &g, &b, &a);
     n_buff += number * 4;
-    ei_color_t color = {n_buff[r], n_buff[b], n_buff[g], 0x00};
+    ei_color_t color = {n_buff[r], n_buff[g], n_buff[b], 0x00};
     ei_widget_t * result = take_picker(ei_app_picking_list(), *((uint32_t*) &color));
     hw_surface_unlock(pick_surface);
     return result;

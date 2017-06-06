@@ -49,6 +49,8 @@ static void ei_toplevel_release_func(struct ei_widget_t* widget) {
     }
     if (((ei_toplevel_t*) widget)->min_size)
         free(((ei_toplevel_t*) widget)->min_size);
+    if(((ei_toplevel_t*) widget)->title_font)
+        hw_text_font_free(((ei_toplevel_t*) widget)->title_font);
 }
 
 static void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
