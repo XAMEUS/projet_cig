@@ -13,6 +13,8 @@
 
 #include "ei_intrsct_pile.h"
 
+#include <assert.h>
+
 static ei_widget_t *ROOT_WIDGET;
 static ei_surface_t ROOT_SURFACE, PICKING;
 static ei_bool_t SHALL_WE_CONTINUE = EI_TRUE;
@@ -67,10 +69,10 @@ void ei_app_run() {
     while(1) {
     #else
     while(SHALL_WE_CONTINUE) {
-        ei_pile *intrsct_pile = NULL;
-        ei_pile_push(&intrsct_pile, ROOT_WIDGET->screen_location);
         while(INVALIDATE_RECT) {
     #endif
+            ei_pile *intrsct_pile = NULL;
+            ei_pile_push(&intrsct_pile, ROOT_WIDGET->screen_location);
             hw_surface_lock(ROOT_SURFACE);
             hw_surface_lock(PICKING);
             w = ROOT_WIDGET;
@@ -94,6 +96,7 @@ void ei_app_run() {
                 }
                 #else
                 if(w->placer_params) {
+                    assert(intrsct_pile != NULL);
                     rect_clipping = ei_rect_intrsct(w->parent->content_rect, &(intrsct_pile->rect));
                     if (rect_clipping)
                         rect_clipping = ei_rect_intrsct(rect_clipping, &INVALIDATE_RECT->rect);
@@ -105,7 +108,6 @@ void ei_app_run() {
                         ei_rect_t null_rect = {{0, 0}, {0, 0}};
                         ei_pile_push(&intrsct_pile, null_rect);
                     }
-
                 }
                 else if(w == ROOT_WIDGET)
                     w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, &INVALIDATE_RECT->rect);
@@ -130,6 +132,7 @@ void ei_app_run() {
                 }
                 #endif
             }
+            ei_pile_clear(&intrsct_pile);
             hw_surface_unlock(ROOT_SURFACE);
             hw_surface_unlock(PICKING);
             hw_surface_update_rects(ROOT_SURFACE, NULL);
@@ -140,7 +143,6 @@ void ei_app_run() {
             #endif
 
     #ifndef DEBUG
-        ei_pile_clear(&intrsct_pile);
         }
         hw_event_wait_next(event);
         widget_event = ei_event_get_active_widget();

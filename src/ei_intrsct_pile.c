@@ -5,13 +5,6 @@
 
 #include <stdio.h>
 
-ei_pile *ei_new_pile(ei_rect_t root_rect) {
-    ei_pile* pile = malloc(sizeof(ei_pile));
-    assert(pile != NULL);
-    pile->rect = root_rect;
-    pile->prev = NULL;
-    return pile;
-}
 
 void ei_pile_push(ei_pile **pile, ei_rect_t rect) {
     ei_pile* new_element = malloc(sizeof(ei_pile));
@@ -31,4 +24,13 @@ void ei_pile_clear(ei_pile **pile) {
     while(*pile) {
         ei_pile_pop(pile);
     }
+}
+
+void ei_print_pile(ei_pile *pile) {
+    printf("PILE\n");
+    while(pile) {
+        printf("%d %d %d %d\n", pile->rect.top_left.x, pile->rect.top_left.y, pile->rect.size.width, pile->rect.size.height);
+        pile = pile->prev;
+    }
+    printf("\n");
 }
