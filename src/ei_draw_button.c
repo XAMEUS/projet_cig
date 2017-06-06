@@ -208,9 +208,13 @@ void ei_draw_button(ei_surface_t surface,
         ei_draw_polygon(surface, all_pts, color, clipper);
         free_linked_point(all_pts);
     } else {
-        ei_rect_t *drawing_wall = ei_rect_intrsct(&frame, clipper);
-        if(drawing_wall)
+        if (!clipper) {
+            ei_fill(surface, &color, &frame);
+        } else {
+            ei_rect_t *drawing_wall = ei_rect_intrsct(&frame, clipper);
+            if(drawing_wall)
             ei_fill(surface, &color, drawing_wall);
-        free(drawing_wall);
+            free(drawing_wall);
+        }
     }
 }
