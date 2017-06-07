@@ -39,10 +39,10 @@ int ei_main(int argc, char** argv)
 	ei_widget_t*	radiobutton;
 	ei_size_t	radiobutton_size		= {300,200};
 	int		radiobutton_corner_radius	= 20;
-	int		radiobutton_x		= 150;
-	int		radiobutton_y		= 200;
+	int		radiobutton_x		= 0;
+	int		radiobutton_y		= 0;
 	ei_color_t	radiobutton_color		= {0x88, 0x88, 0x88, 0xff};
-	char*		radiobutton_text		= "Bouton";
+	char*		radiobutton_text		= "Ceci est le texte global";
 	ei_color_t	radiobutton_text_color	= {0x00, 0x00, 0x00, 0xff};
 	ei_relief_t	radiobutton_relief		= ei_relief_raised;
 	int		radiobutton_border_width	= 6;
@@ -63,6 +63,7 @@ int ei_main(int argc, char** argv)
 	                            NULL,
 	                            &radiobutton_text_color,
 	                            &radiobutton_text_anchor);
+	ei_place(radiobutton, NULL, &radiobutton_x, &radiobutton_y, NULL, NULL, NULL, NULL, NULL, NULL);
 	//ei_radiobutton_configure(...)
 	ei_color_t bg_color = {255, 0, 0, 255};
 	char* text = "hello";
