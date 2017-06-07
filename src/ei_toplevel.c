@@ -172,38 +172,33 @@ static ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void	ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
-    ei_app_invalidate_rect(&widget->screen_location);
-    rect.size.height += BORDER;
-    widget->screen_location = rect;
     if(!widget->content_rect || widget->content_rect == & widget->screen_location)
         widget->content_rect = malloc(sizeof(ei_rect_t));
-    widget->content_rect->top_left.x = widget->screen_location.top_left.x + ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->top_left.y = widget->screen_location.top_left.y + BORDER + ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->size.width = widget->screen_location.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
-    widget->content_rect->size.height = widget->screen_location.size.height - BORDER - 2 * ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->top_left.x = rect.top_left.x + ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->top_left.y = rect.top_left.y + BORDER + ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->size.width = rect.size.width - 2 * ((ei_toplevel_t*) widget)->border_width;
+    widget->content_rect->size.height = rect.size.height - BORDER - 2 * ((ei_toplevel_t*) widget)->border_width;
     if(((ei_toplevel_t*) widget)->min_size) {
         if(((ei_toplevel_t*) widget)->min_size->width > widget->placer_params->w_data)
             ei_place(widget, NULL, NULL, NULL, &((ei_toplevel_t*) widget)->min_size->width, NULL, NULL, NULL, NULL, NULL);
         if(((ei_toplevel_t*) widget)->min_size->height > widget->placer_params->h_data)
             ei_place(widget, NULL, NULL, NULL, NULL, &((ei_toplevel_t*) widget)->min_size->height, NULL, NULL, NULL, NULL);
-
     }
     if(((ei_toplevel_t*) widget)->close_button) {
         ((ei_toplevel_t*) widget)->close_button->content_rect =
             &((ei_toplevel_t*) widget)->close_button->screen_location;
         ((ei_toplevel_t*) widget)->close_button->screen_location.top_left.x =
-            widget->screen_location.top_left.x + 10;
+            rect.top_left.x + 10;
         ((ei_toplevel_t*) widget)->close_button->screen_location.top_left.y =
-            widget->screen_location.top_left.y + 12;
+            rect.top_left.y + 12;
         ((ei_toplevel_t*) widget)->close_button->screen_location.size.width = 10;
         ((ei_toplevel_t*) widget)->close_button->screen_location.size.height = 10;
     }
     if (((ei_toplevel_t*) widget)->resizable) {
-        ((ei_toplevel_t*) widget)->resize_button.top_left.x = widget->screen_location.top_left.x + widget->screen_location.size.width - 10;
-        ((ei_toplevel_t*) widget)->resize_button.top_left.y = widget->screen_location.top_left.y + widget->screen_location.size.height - 10;
+        ((ei_toplevel_t*) widget)->resize_button.top_left.x = rect.top_left.x + rect.size.width - 10;
+        ((ei_toplevel_t*) widget)->resize_button.top_left.y = rect.top_left.y + rect.size.height - 10;
         ((ei_toplevel_t*) widget)->resize_button.size.width = ((ei_toplevel_t*) widget)->resize_button.size.height = 10;
     }
-    ei_app_invalidate_rect(&widget->screen_location);
 }
 
 static void ei_close_toplevel(ei_widget_t* widget, ei_event_t* event, void* user_param)

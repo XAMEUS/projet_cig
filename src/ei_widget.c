@@ -227,6 +227,7 @@ void ei_toplevel_configure (ei_widget_t* widget,
 						 	 ei_size_t** min_size) {
     if (requested_size) {
         widget->requested_size = *requested_size;
+        widget->requested_size.height += BORDER;
         if(widget->placer_params)
             ei_placer_run(widget);
     }
@@ -245,6 +246,7 @@ void ei_toplevel_configure (ei_widget_t* widget,
     if (min_size) {
         ((ei_toplevel_t*) widget)->min_size = malloc(sizeof(ei_size_t));
         *(((ei_toplevel_t*) widget)->min_size) = **min_size;
+        (((ei_toplevel_t*) widget)->min_size)->height += BORDER;
     }
 }
 
