@@ -36,28 +36,34 @@ int ei_main(int argc, char** argv)
 	ei_size_t	screen_size		= {600, 600};
 	ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
-	ei_widget_t*	button;
-	ei_size_t	button_size		= {300,200};
-	int		button_corner_radius	= 20;
-	int		button_x		= 150;
-	int		button_y		= 200;
-	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
-	char*		button_title		= "Bouton";
-	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
-	ei_relief_t	button_relief		= ei_relief_raised;
-	int		button_border_width	= 6;
-	ei_callback_t	button_callback 	= button_press;
+	ei_widget_t*	radiobutton;
+	ei_size_t	radiobutton_size		= {300,200};
+	int		radiobutton_corner_radius	= 20;
+	int		radiobutton_x		= 150;
+	int		radiobutton_y		= 200;
+	ei_color_t	radiobutton_color		= {0x88, 0x88, 0x88, 0xff};
+	char*		radiobutton_text		= "Bouton";
+	ei_color_t	radiobutton_text_color	= {0x00, 0x00, 0x00, 0xff};
+	ei_relief_t	radiobutton_relief		= ei_relief_raised;
+	int		radiobutton_border_width	= 6;
+	//ei_callback_t	radiobutton_callback 	= radiobutton_press;
 
-	ei_anchor_t button_text_anchor = ei_anc_north;
+	ei_anchor_t radiobutton_text_anchor = ei_anc_north;
 
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
 	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	ei_event_set_default_handle_func(process_key);
 
-	/* Create, configure and place the button on screen. */
+	/* Create, configure and place the radiobutton on screen. */
 	radiobutton = ei_widget_create("radiobutton", ei_app_root_widget());
-	// TODO: ei_radiobutton_configure(...)
+	ei_radiobutton_configure(radiobutton,radiobutton_size,
+	                            radiobutton_color,
+	                            radiobutton_text,
+	                            NULL,
+	                            radiobutton_text_color,
+	                            radiobutton_text_anchor);
+	//ei_radiobutton_configure(...)
 	// TODO: ei_radio_add_choice(radiobutton, "choix1");
 
 	/* Hook the keypress callback to the event. */
