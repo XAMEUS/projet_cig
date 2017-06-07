@@ -56,9 +56,13 @@ void free_linked_point(ei_linked_point_t* first_point);
 *
 * @param clipper If not NULL, the drawing is restricted within this rectangle.
 *
+* @param frame The rectangle representing the button without rounded corners.
+*
 * @param radius The radius in pixel of the rounded corners. Will draw a frame if 0.
 *
 * @param border The width in pixel of the border decoration of the widget.
+*
+* @param color The color of the button.
 *
 * @param relief Appearance of the border of the widget.
 
