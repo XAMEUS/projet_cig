@@ -163,6 +163,6 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
     ei_draw_radiobutton(surface, clipper, ((ei_rbutton_t *) widget)->where, 18, ((ei_rbutton_t *) widget)->bg_color, widget->next_sibling? EI_FALSE:EI_TRUE);
-    ei_point_t text_where = {((ei_rbutton_t *) widget)->where.x + 3*18, ((ei_rbutton_t *) widget)->where.y}
+    ei_point_t text_where = {((ei_rbutton_t *) widget)->where.x + 3*18, ((ei_rbutton_t *) widget)->where.y};
     ei_draw_text(surface, &text_where, ((ei_rbutton_t *) widget)->text.text, ((ei_rbutton_t *) widget)->text.font, ((ei_rbutton_t *) widget)->text.text_color, clipper);
 }
