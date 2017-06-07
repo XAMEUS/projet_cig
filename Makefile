@@ -138,7 +138,7 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/two048.c -o ${OBJDIR}/two048.o
 
 # test_ext_class
-test_ext_class : all
+test_ext_class : ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_ext_class -I./include -I/usr/include/SDL ${TESTS}/test_ext_class.c misc/ext_testclass.o ${OBJDIR}/libei.a _x11/libeibase64.a -L_x11 -lSDL -lSDL_ttf -lSDL_image -lm
 
 
