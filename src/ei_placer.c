@@ -132,8 +132,6 @@ void ei_placer_run(struct ei_widget_t* widget) {
        new_screen_location.top_left.y != new_screen_location.top_left.y ||
        new_screen_location.size.width == new_screen_location.size.width ||
        new_screen_location.size.height == new_screen_location.size.height) {
-           ei_app_invalidate_rect(&widget->screen_location);
-           ei_app_invalidate_rect(&new_screen_location);
            widget->wclass->geomnotifyfunc(widget, new_screen_location);
            for (ei_widget_t *child = widget->children_head;
                 child != NULL;

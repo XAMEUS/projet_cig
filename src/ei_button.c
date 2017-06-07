@@ -107,5 +107,7 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 }
 
 static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
+	ei_app_invalidate_rect(&widget->screen_location);
 	widget->screen_location = rect;
+	ei_app_invalidate_rect(&widget->screen_location);
 }
