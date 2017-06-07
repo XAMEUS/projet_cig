@@ -43,4 +43,15 @@ ei_rect_t *ei_rect_pack(ei_rect_t *rect1, ei_rect_t *rect2);
  */
 ei_bool_t in_rect(ei_point_t *pt, ei_rect_t *rect);
 
+/**
+ * \brief	Splits a string acording to the specified delimiter.
+ *
+ * @param	str     the text to split.
+ * @param	rect     the delimiter.
+ * @param	rect     number of tokens.
+ *
+ * @return 			a pointer to the first token.
+ */
+char **strsplit(const char* str, const char* delim, size_t* numtokens);
+
 #endif
