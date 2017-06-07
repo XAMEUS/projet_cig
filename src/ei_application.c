@@ -79,24 +79,6 @@ void ei_app_run() {
             hw_surface_lock(PICKING);
             w = ROOT_WIDGET;
             while(1) {
-                #ifdef DEBUG
-                if(w->placer_params)
-                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, w->parent->content_rect);
-                else if(w == ROOT_WIDGET)
-                    w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, NULL);
-                if(w->children_head != NULL)
-                    w = w->children_head;
-                else if(w->next_sibling != NULL)
-                    w = w->next_sibling;
-                else {
-                    while(w->parent != NULL && w->parent->next_sibling == NULL)
-                        w = w->parent;
-                    if(w->parent != NULL)
-                        w = w->parent->next_sibling;
-                    else
-                        break;
-                }
-                #else
                 if(w->placer_params) {
                     assert(intrsct_pile != NULL);
                     rect_clipping = ei_rect_intrsct(w->parent->content_rect, &(intrsct_pile->rect));
@@ -135,7 +117,6 @@ void ei_app_run() {
                     else
                         break;
                 }
-                #endif
             }
             ei_pile_clear(&intrsct_pile);
             hw_surface_unlock(ROOT_SURFACE);
