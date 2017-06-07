@@ -57,12 +57,12 @@ int ei_main(int argc, char** argv)
 
 	/* Create, configure and place the radiobutton on screen. */
 	radiobutton = ei_widget_create("radiobutton", ei_app_root_widget());
-	ei_radiobutton_configure(radiobutton,radiobutton_size,
-	                            radiobutton_color,
-	                            radiobutton_text,
+	ei_radiobutton_configure(radiobutton, &radiobutton_size,
+	                            &radiobutton_color,
+	                            &radiobutton_text,
 	                            NULL,
-	                            radiobutton_text_color,
-	                            radiobutton_text_anchor);
+	                            &radiobutton_text_color,
+	                            &radiobutton_text_anchor);
 	//ei_radiobutton_configure(...)
 	// TODO: ei_radio_add_choice(radiobutton, "choix1");
 
