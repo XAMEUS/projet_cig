@@ -152,7 +152,7 @@ static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void ei_rbutton_release_func(struct ei_widget_t* widget) {
-	ei_widgetclass_from_name("frame")->releasefunc(widget);
+	// TODO free stuff
 }
 
 static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget) {
@@ -168,27 +168,9 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    ei_draw_rbutton(surface, clipper,
-        widget->screen_location,
-        ((ei_rbutton_t*) widget)->corner_radius,
-        ((ei_rbutton_t*) widget)->frame.border_width,
-        ((ei_rbutton_t*) widget)->frame.bg_color,
-		((ei_rbutton_t*) widget)->frame.relief,
-        ((ei_rbutton_t*) widget)->push);
-	if(((ei_rbutton_t*) widget)->frame.opt_type == TEXT) {
-		int offset = ((ei_rbutton_t*) widget)->frame.border_width + ((ei_rbutton_t*) widget)->corner_radius * (1 - sqrt(2)/2);
-		draw_text(widget, surface, clipper, offset);
-	} else if (((ei_rbutton_t*) widget)->frame.opt_type == IMAGE) {
-		int offset = ((ei_rbutton_t*) widget)->frame.border_width + ((ei_rbutton_t*) widget)->corner_radius * (1 - sqrt(2)/2);
-		draw_image(widget, surface, clipper, offset);
-	}
-	ei_linked_point_t* pts = rounded_frame(widget->screen_location,
-				 ((ei_rbutton_t*) widget)->corner_radius);
-	ei_draw_polygon(pick_surface,
-					pts,
-					*(widget->pick_color),
-					clipper);
-	free_linked_point(pts);
+    ei_draw_radiobutton(surface, clipper, ((ei_rbutton_t *) widget)->where, 18, ((ei_rbutton_t *) widget)->bg_color, widget->next_sibling? EI_FALSE:EI_TRUE);
+    ei_point_t text_where = {((ei_rbutton_t *) widget)->where.x + 3*18, ((ei_rbutton_t *) widget)->where.y}
+    ei_draw_text(surface, &text_where, ((ei_rbutton_t *) widget)->text.text, ((ei_rbutton_t *) widget)->text.font, ((ei_rbutton_t *) widget)->text.text_color, clipper);
 }
 
 static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
