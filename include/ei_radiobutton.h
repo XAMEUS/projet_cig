@@ -41,4 +41,19 @@ typedef struct ei_radiobutton_t {
     size_t nb_buttons; ///< Number of radion buttons (~ children).
 } ei_radiobutton_t;
 
+
+/**
+ * \brief	Adds a new radiobutton.
+ *
+ * @param	widget     the rbutton pack.
+ * @param	bg_color     the background color.
+ * @param	number     the text_size.
+ * @param	font     the font to use.
+ * @param	text     the text to print.
+ * @param	text_color     the text color.
+ * @param	test_anchor     the test anchor.
+ */
+void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+                    char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor);
+
 #endif
