@@ -37,6 +37,13 @@ void ei_radiobutton_configure(ei_widget_t* widget,
         ei_placer_run(widget);
 }
 
+void ei_add_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+                    char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
+    ei_widget_t *rb = ei_widget_create("rbutton", widget);
+    ((ei_rbutton_t*) widget)->number = ((ei_radiobutton_t*) widget)->nb_buttons;
+    ((ei_radiobutton_t*) widget)->nb_buttons += 1;
+}
+
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
     if(number)
@@ -44,17 +51,19 @@ void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* num
     if(bg_color)
         ((ei_rbutton*) but)->bg_color = *bg_color;
     if(text) {
-        if(((ei_radiobutton_t*) widget)->text.text)
-            free(((ei_radiobutton_t*) widget)->text.text);
-            ((ei_radiobutton_t*) widget)->text.text = malloc(strlen(*text) + 1);
-            strcpy(((ei_radiobutton_t*) widget)->text.text, *text);
+        if(((ei_rbutton_t*) widget)->text.text)
+            free(((ei_rbutton_t*) widget)->text.text);
+            ((ei_rbutton_t*) widget)->text.text = malloc(strlen(*text) + 1);
+            strcpy(((ei_rbutton_t*) widget)->text.text, *text);
         }
     if(text_font)
-        ((ei_radiobutton_t*) widget)->text.font = *text_font;
+        ((ei_rbutton_t*) widget)->text.font = *text_font;
     if(text_color)
-        ((ei_radiobutton_t*) widget)->text.text_color = *text_color;
+        ((ei_rbutton_t*) widget)->text.text_color = *text_color;
     if(text_anchor)
-        ((ei_radiobutton_t*) widget)->text.text_anchor = *text_anchor;
+        ((ei_rbutton_t*) widget)->text.text_anchor = *text_anchor;
+    if(widget->placer_params)
+        ei_placer_run(widget);
 }
 
 static void* ei_radiobutton_alloc();
