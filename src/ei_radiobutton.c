@@ -69,7 +69,8 @@ void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color,
     ei_rbutton_configure(rb, bg_color, &((ei_radiobutton_t*) widget)->nb_buttons, text, font, text_color, test_anchor);
     ((ei_radiobutton_t*) widget)->nb_buttons += 1;
     ei_anchor_t anchor = ei_anc_southwest;
-    ei_place(rb, &anchor, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	int size = 18;
+    ei_place(rb, &anchor, NULL, NULL, &size, NULL, NULL, NULL, NULL, NULL);
 }
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
@@ -202,7 +203,7 @@ static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
     }
     else if (event->type == ei_ev_mouse_buttondown) {
     	ei_event_set_active_widget(widget);
-        ei_app_invalidate_rect(&widget->screen_location);
+        ei_app_invalidate_rect(&widget->parent->screen_location);
         return EI_TRUE;
     }
     return EI_FALSE;
