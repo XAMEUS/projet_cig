@@ -128,13 +128,21 @@ void ei_placer_run(struct ei_widget_t* widget) {
         new_screen_location.top_left.x += widget->parent->content_rect->top_left.x;
         new_screen_location.top_left.y += widget->parent->content_rect->top_left.y;
     }
-    if(new_screen_location.top_left.x != new_screen_location.top_left.x ||
-       new_screen_location.top_left.y != new_screen_location.top_left.y ||
-       new_screen_location.size.width == new_screen_location.size.width ||
-       new_screen_location.size.height == new_screen_location.size.height) {
+    if(new_screen_location.size.width < 0) {
+        new_screen_location.top_left.x += new_screen_location.size.width;
+        new_screen_location.size.width = -new_screen_location.size.width;
+    }
+    if(new_screen_location.size.height < 0) {
+        new_screen_location.top_left.y += new_screen_location.size.height;
+        new_screen_location.size.height = -new_screen_location.size.height;
+    }
+    ei_app_invalidate_rect(&widget->screen_location);
+    if(new_screen_location.top_left.x != widget->screen_location.top_left.x ||
+       new_screen_location.top_left.y != widget->screen_location.top_left.y ||
+       new_screen_location.size.width != widget->screen_location.size.width ||
+       new_screen_location.size.height != widget->screen_location.size.height) {
            if(widget->wclass->geomnotifyfunc)
                 widget->wclass->geomnotifyfunc(widget, new_screen_location);
-           ei_app_invalidate_rect(&widget->screen_location);
            widget->screen_location = new_screen_location;
            ei_app_invalidate_rect(&widget->screen_location);
            for (ei_widget_t *child = widget->children_head;

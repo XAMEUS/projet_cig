@@ -27,7 +27,7 @@ void ei_button_register_class() {
     widget->releasefunc = &ei_button_release_func;
     widget->drawfunc = &ei_button_drawfunc;
     widget->setdefaultsfunc = &ei_button_setdefaultsfunc;
-    widget->geomnotifyfunc = &ei_button_geomnotifyfunc;
+    widget->geomnotifyfunc = NULL;
     widget->handlefunc = &ei_button_handlefunc;
     ei_widgetclass_register(widget);
 }
@@ -104,10 +104,4 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 					*(widget->pick_color),
 					clipper);
 	free_linked_point(pts);
-}
-
-static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
-	ei_app_invalidate_rect(&widget->screen_location);
-	widget->screen_location = rect;
-	ei_app_invalidate_rect(&widget->screen_location);
 }
