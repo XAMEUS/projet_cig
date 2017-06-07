@@ -1,7 +1,7 @@
 /**
  * @file	ei_radiobutton.h
  *
- * @brief 	Definition of button.
+ * @brief 	Definition of radiobutton.
  */
 
 #ifndef EI_RADIOBUTTON_H
@@ -38,8 +38,7 @@ typedef struct ei_radiobutton_t {
     ei_color_t bg_color; ///< The background color (with transparency).
     ei_callback_t callback; ///< When we click on button.
     struct ei_text title; ///< Optionnal title
-    ei_rbutton_t *buttons;
-    size_t nb_buttons;
+    size_t nb_buttons; ///< Number of radion buttons (~ children).
 } ei_radiobutton_t;
 
 #endif
