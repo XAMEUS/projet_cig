@@ -9,7 +9,7 @@
 #include "ei_tools.h"
 
 
-void place_content(ei_point_t* where,
+static void place_content(ei_point_t* where,
 					ei_size_t widget_size,
 					ei_anchor_t anchor,
 					ei_size_t content_size) {
