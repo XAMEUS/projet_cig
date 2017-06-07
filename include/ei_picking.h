@@ -1,3 +1,9 @@
+/**
+ * @file	ei_picking.h
+ *
+ * @brief 	Struct and functions for uses a picking list. Useful for the picker.
+ */
+
 #ifndef EI_PICKING_H
 #define EI_PICKING_H
 
@@ -15,8 +21,8 @@ ei_surface_t ei_app_picking_object();
  * Useful for list_picking
  */
 typedef struct chained_numbers {
-    uint32_t nb;
-    struct chained_numbers *next;
+    uint32_t nb; ///< Represents the number.
+    struct chained_numbers *next; ///< The next number is here.
 } chained_numbers;
 
 /**
@@ -24,9 +30,9 @@ typedef struct chained_numbers {
  *
  */
 typedef struct list_picking {
-    uint32_t len; ///< The maximum element of the list
-    uint32_t alloc_size; ///< The number of allocated elements
-    ei_widget_t **data; ///< The list
+    uint32_t len; ///< The maximum element of the list.
+    uint32_t alloc_size; ///< The number of allocated elements.
+    ei_widget_t **data; ///< The list.
     chained_numbers *to_add; ///< Blank elements in the picking list.
 } list_picking;
 
@@ -36,11 +42,43 @@ typedef struct list_picking {
  */
 list_picking* ei_app_picking_list();
 
-
+/**
+ * \brief	Create the "picking list" of the application.
+ * @return 			The picking list.
+ */
 list_picking *create_picker();
+
+/**
+ * \brief	Add to the picking list a new widget.
+ * @param	ptr_list		The pointer of the picking list.
+ * @param   new_widget      The widget that will be added.
+ */
 void add_picker(list_picking *ptr_list, ei_widget_t* new_widget);
+
+/**
+ * \brief	Remove to the picking list the widget with the "color" pick_id.
+ * @param	ptr_list		The pointer of the picking list.
+ * @param   pick_id         The "color" of the widget.
+ */
 void del_picker(list_picking *ptr_list, uint32_t pick_id);
+
+/**
+ * \brief	Returns the widget that has the right pick_id.
+ * @param	ptr_list		The pointer of the picking list.
+ * @param   pick_id         The "color" of the widget.
+ * @return 			The widget.
+ */
 ei_widget_t* take_picker(list_picking *ptr_list, uint32_t pick_id);
+
+/**
+ * \brief	Destroys the "picking list" of the application.
+ * @param	ptr_list		The pointer of the picking list.
+ */
 void remove_picker(list_picking *ptr_list);
+
+/**
+ * \brief	Prints the "picking list" of the application.
+ * @param	ptr_list		The pointer of the picking list.
+ */
 void print_picker(list_picking *ptr_list);
 #endif
