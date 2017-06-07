@@ -46,11 +46,11 @@ void ei_add_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
 }
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
-                    char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
+                    char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor) {
     if(number)
-        ((ei_rbutton*) but)->number = *number;
+        ((ei_rbutton_t*) widget)->number = *number;
     if(bg_color)
-        ((ei_rbutton*) but)->bg_color = *bg_color;
+        ((ei_rbutton_t*) widget)->bg_color = *bg_color;
     if(text) {
         if(((ei_rbutton_t*) widget)->text.text)
             free(((ei_rbutton_t*) widget)->text.text);
