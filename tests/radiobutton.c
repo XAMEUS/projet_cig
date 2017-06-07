@@ -68,6 +68,10 @@ int ei_main(int argc, char** argv)
 	ei_color_t bg_color = {255, 0, 0, 255};
 	char* text = "hello";
 	ei_add_radiobutton(radiobutton, &bg_color, NULL, &text, NULL, NULL, NULL);
+
+	ei_color_t bg_color2 = {0, 255, 0, 255};
+	char* text2 = "world";
+	ei_add_radiobutton(radiobutton, &bg_color2, NULL, &text2, NULL, NULL, NULL);
 	// TODO: ei_radio_add_choice(radiobutton, "choix1");
 
 	/* Hook the keypress callback to the event. */
