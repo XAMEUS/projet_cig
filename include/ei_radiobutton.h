@@ -57,9 +57,46 @@ typedef struct ei_radiobutton_t {
 void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor);
 
+/**
+ * @brief	Configures the attributes of widgets of the class "rbutton".
+ *
+ *		Parameters obey the "default" protocol: if a parameter is "NULL" and it has never
+ *		been defined before, then a default value should be used (default values are
+ *		specified for each parameter). If the parameter is "NULL" but was defined on a
+ *		previous call, then its value must not be changed.
+ *
+ * @param	widget		The widget to configure.
+ * @param	number		The id of the widget.
+ * @param	border_width	The width in pixel of the border decoration of the widget. The final
+ *				appearance depends on the "relief" parameter. Defaults to 0.
+ * @param	text		The text to display in the widget.
+ * @param	text_font	The font used to display the text. Defaults to \ref ei_default_font.
+ * @param	text_color	The color used to display the text. Defaults to
+ *				\ref ei_font_default_color.
+ * @param	text_anchor	The anchor of the text, i.e. where it is placed whithin the widget
+ *				when the size of the widget is bigger than the size of the text.
+ */
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
                     char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
 
+/**
+ * @brief	Configures the attributes of widgets of the class "ei_radiobutton_configure".
+ *
+ *		Parameters obey the "default" protocol: if a parameter is "NULL" and it has never
+ *		been defined before, then a default value should be used (default values are
+ *		specified for each parameter). If the parameter is "NULL" but was defined on a
+ *		previous call, then its value must not be changed.
+ *
+ * @param	widget		The widget to configure.
+ * @param	requested_size	The size requested for this widget, including borders.
+ * @param	color		The background color.
+ * @param	text		The text to display in the widget.
+ * @param	text_font	The font used to display the text. Defaults to \ref ei_default_font.
+ * @param	text_color	The color used to display the text. Defaults to
+ *				\ref ei_font_default_color.
+ * @param	text_anchor	The anchor of the text, i.e. where it is placed whithin the widget
+ *				when the size of the widget is bigger than the size of the text.
+ */
 void ei_radiobutton_configure(ei_widget_t* widget,
                              ei_size_t* requested_size,
                              const ei_color_t* color,
