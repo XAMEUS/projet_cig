@@ -10,6 +10,7 @@
 #include "ei_tools.h"
 #include "ei_set_destroy_cb.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -82,6 +83,8 @@ void ei_app_run() {
             hw_surface_lock(PICKING);
             w = ROOT_WIDGET;
             while(1) {
+                fprintf(stderr, "%s %u %d %d %d %d\n", w->wclass->name, w, w->screen_location.top_left.x,
+                w->screen_location.top_left.y, w->screen_location.size.width, w->screen_location.size.height);
                 if(w->placer_params) {
                     assert(intrsct_pile != NULL);
                     rect_clipping = ei_rect_intrsct(w->parent->content_rect, &(intrsct_pile->rect));
@@ -92,8 +95,6 @@ void ei_app_run() {
                     }
                     if (rect_clipping) {
                         ei_pile_push(&intrsct_pile, *rect_clipping);
-                        // printf("%s %u %d %d %d %d\n", w->wclass->name, w, w->screen_location.top_left.x,
-                        // w->screen_location.top_left.y, w->screen_location.size.width, w->screen_location.size.height);
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     } else {
