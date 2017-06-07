@@ -19,7 +19,7 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget);
 static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t* widget,
 						 			 struct ei_event_t*	event);
-static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+// static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 static void* ei_rbutton_alloc();
 static void ei_rbutton_release_func(struct ei_widget_t* widget);
@@ -30,7 +30,7 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
-static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+// static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
                     char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
@@ -174,7 +174,7 @@ void ei_rbutton_register_class() {
     widget->releasefunc = &ei_rbutton_release_func;
     widget->drawfunc = &ei_rbutton_drawfunc;
     widget->setdefaultsfunc = &ei_rbutton_setdefaultsfunc;
-    widget->geomnotifyfunc = &ei_rbutton_geomnotifyfunc;
+    widget->geomnotifyfunc = NULL;
     widget->handlefunc = &ei_rbutton_handlefunc;
     ei_widgetclass_register(widget);
 }
