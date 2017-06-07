@@ -46,23 +46,29 @@ static void* ei_radiobutton_alloc() {
 }
 
 static void ei_radiobutton_release_func(struct ei_widget_t* widget) {
-    if(((ei_radiobutton_t*) widget)->text) {
-
-        free(((ei_radiobutton_t*) widget)->text);
+    if(((ei_radiobutton_t*) widget)->title) {
+        free(((ei_radiobutton_t*) widget)->title->text);
+        free(((ei_radiobutton_t*) widget)->title);
     }
-
 }
 
 static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-	ei_draw_button(surface, clipper, widget->screen_location, 0, ((ei_radiobutton_t*) widget)->border_width, ((ei_radiobutton_t*) widget)->bg_color, ((ei_radiobutton_t*) widget)->relief, EI_TRUE);
-	if(((ei_button_t*) widget)->radiobutton.opt_type == TEXT) {
-		draw_text(widget, surface, clipper, ((ei_button_t*) widget)->radiobutton.border_width);
-	} else if (((ei_button_t*) widget)->radiobutton.opt_type == IMAGE) {
-		draw_image(widget, surface, clipper, ((ei_button_t*) widget)->radiobutton.border_width);
-	}
+    ei_widget *child = w->children_head;
+    while(child) {
+        child->wclass->drawfunc(child);
+        child = child->next;
+    }
+	if(((ei_radiobutton_t*) widget)->title && ((ei_radiobutton_t*) widget)->title->text) {
+        ei_draw_text(surface,
+        					widget->screen_location->top_level,
+        					((ei_radiobutton_t*) widget)->title->text,
+        					((ei_radiobutton_t*) widget)->title->font,
+        					color,
+        					clipper);
+    }
 	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
 	if(drawing_wall)
 		ei_fill(pick_surface, widget->pick_color, drawing_wall);
@@ -71,10 +77,10 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_radiobutton_t*) widget)->bg_color = ei_default_background_color;
-    if(((ei_radiobutton_t*) widget)->title)
-        free(((ei_radiobutton_t*) widget)->title);
+    w->wclass->releasefunc(w);
     ((ei_radiobutton_t*) widget)->title = NULL;
-	((ei_radiobutton_t*) widget)->buttons = NULL;
+    ((ei_radiobutton_t*) widget)->buttons = NULL;
+    ((ei_radiobutton_t*) widget)->callback = NULL;
 	widget->content_rect = &(widget->screen_location);
 }
 

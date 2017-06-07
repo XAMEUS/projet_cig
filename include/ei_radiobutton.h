@@ -20,13 +20,13 @@ void			ei_radiobutton_register_class 	();
 struct ei_rbutton_t;
 
 /**
-* \brief LinkedList of raddiobuttons
+* \brief Widget rbutton
 */
 typedef struct ei_rbutton {
     ei_widget_t widget; ///< Common to all types of widget.
+    ei_color_t bg_color; ///< The background color (with transparency).
+    ei_point_t where;
     struct ei_text text;
-    ei_callback_t callback; ///< When we click on button.
-	void* user_param; ///< Pointer passed to the callback function when it's called..
 } ei_rbutton;
 
 
@@ -36,6 +36,7 @@ typedef struct ei_rbutton {
 typedef struct ei_rbutton_t {
     ei_widget_t widget; ///< Common to all types of widget.
     ei_color_t bg_color; ///< The background color (with transparency).
+    ei_callback_t callback; ///< When we click on button.
     struct ei_text title; ///< Optionnal title
     ei_rbuttons_list buttons;
 } ei_frame_t;
