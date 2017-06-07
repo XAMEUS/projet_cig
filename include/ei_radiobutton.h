@@ -23,7 +23,8 @@ void			ei_radiobutton_register_class 	();
 typedef struct ei_rbutton_t {
     ei_widget_t widget; ///< Common to all types of widget.
     ei_color_t bg_color; ///< The background color (with transparency).
-    ei_point_t where;
+    int number;
+    int offset;
     struct ei_text text;
 } ei_rbutton_t;
 
