@@ -84,6 +84,11 @@ void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* num
         }
     if(text_font)
         ((ei_rbutton_t*) widget)->text.font = *text_font;
+	if ((((ei_rbutton_t*) widget)->text.text && text_font) || (((ei_rbutton_t*) widget)->text.font && text)) {
+		int text_width, text_height;
+		hw_text_compute_size(((ei_rbutton_t*) widget)->text.text, ((ei_rbutton_t*) widget)->text.font, &text_width, &text_height);
+		((ei_rbutton_t*) widget)->offset = text_height;
+	}
     if(text_color)
         ((ei_rbutton_t*) widget)->text.text_color = *text_color;
     if(text_anchor)
@@ -183,7 +188,24 @@ static void* ei_rbutton_alloc() {
 
 static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-
+    if(ei_event_get_active_widget()) {
+    	if (event->type == ei_ev_mouse_buttonup) {
+    		if (((ei_button_t*) widget)->callback) {
+                int number = ((ei_rbutton_t *) widget)->number;
+    		    ((ei_button_t*) widget)->callback(widget, event,
+    									    &number);
+            }
+            ei_event_set_active_widget(NULL);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+    else if (event->type == ei_ev_mouse_buttondown) {
+    	ei_event_set_active_widget(widget);
+        ei_app_invalidate_rect(&widget->screen_location);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
 }
 
 static void ei_rbutton_release_func(struct ei_widget_t* widget) {
