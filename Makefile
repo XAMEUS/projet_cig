@@ -13,7 +13,7 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 DEBUG := false
 
 # The list of objects to include in the library
-LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o ./objs/ei_intrsct_pile.o ./objs/ei_radiobutton.o
+LIBEIOBJS	:= ./objs/ei_draw.o ./objs/ei_placer.o ./objs/ei_event.o ./objs/ei_widget.o ./objs/ei_widgetclass.o ./objs/ei_application.o ./objs/ei_frame.o ./objs/ei_button.o ./objs/ei_toplevel.o ./objs/ei_tools.o ./objs/ei_draw_polygon.o ./objs/ei_picking_list.o ./objs/ei_draw_button.o  ./objs/ei_draw_toplevel.o ./objs/ei_draw_content.o ./objs/ei_draw_text_lines.o ./objs/ei_intrsct_pile.o ./objs/ei_draw_radiobutton.o ./objs/ei_radiobutton.o
 ifeq ($(DEBUG),true)
 LIBEIOBJS	:= ./objs/freq_counter.o ${LIBEIOBJS}
 CCFLAGS		:= ${CCFLAGS} -pg
@@ -58,7 +58,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines text frame button hello_world top_level_ception puzzle two048 test_ext_class
+			minimal lines text frame button hello_world top_level_ception_simple top_level_ception_advanced top_level_ception_position puzzle two048 test_ext_class
 all : ${TARGETS}
 
 ########## Test-programs
@@ -112,12 +112,29 @@ hello_world : ${OBJDIR}/hello_world.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/hello_world.o : ${TESTS}/hello_world.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/hello_world.c -o ${OBJDIR}/hello_world.o
 
-top_level_ception : ${OBJDIR}/top_level_ception.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o top_level_ception ${LDFLAGS} ${OBJDIR}/top_level_ception.o ${LIBEI} ${LIBS}
+# top_level_ception_simple
 
-${OBJDIR}/top_level_ception.o : ${TESTS}/top_level_ception.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/top_level_ception.c -o ${OBJDIR}/top_level_ception.o
+top_level_ception_simple : ${OBJDIR}/top_level_ception_simple.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o top_level_ception_simple ${LDFLAGS} ${OBJDIR}/top_level_ception_simple.o ${LIBEI} ${LIBS}
 
+${OBJDIR}/top_level_ception_simple.o : ${TESTS}/top_level_ception_simple.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/top_level_ception_simple.c -o ${OBJDIR}/top_level_ception_simple.o
+
+# top_level_ception_advanced
+
+top_level_ception_advanced : ${OBJDIR}/top_level_ception_advanced.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o top_level_ception_advanced ${LDFLAGS} ${OBJDIR}/top_level_ception_advanced.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/top_level_ception_advanced.o : ${TESTS}/top_level_ception_advanced.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/top_level_ception_advanced.c -o ${OBJDIR}/top_level_ception_advanced.o
+
+# top_level_ception_position
+
+top_level_ception_position : ${OBJDIR}/top_level_ception_position.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o top_level_ception_position ${LDFLAGS} ${OBJDIR}/top_level_ception_position.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/top_level_ception_position.o : ${TESTS}/top_level_ception_position.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/top_level_ception_position.c -o ${OBJDIR}/top_level_ception_position.o
 
 # puzzle
 
