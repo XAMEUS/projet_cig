@@ -19,8 +19,7 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget);
 static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t* widget,
 						 			 struct ei_event_t*	event);
-// static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
-
+		
 static void* ei_rbutton_alloc();
 static void ei_rbutton_release_func(struct ei_widget_t* widget);
 static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget);
@@ -30,10 +29,6 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
-// static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
-
-void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
-                    char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
 
 void ei_radiobutton_configure(ei_widget_t* widget,
                             ei_size_t* requested_size,
@@ -227,14 +222,16 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    ei_point_t where = {widget->screen_location.top_left.x,
-						widget->screen_location.top_left.y + (((ei_rbutton_t *) widget)->number + 1) * ((ei_rbutton_t *) widget)->offset};
+	int border = 2;
+    ei_point_t where = {widget->screen_location.top_left.x + border,
+						widget->screen_location.top_left.y + (((ei_rbutton_t *) widget)->number + 1) * ((ei_rbutton_t *) widget)->offset + border};
     ei_draw_radiobutton(surface, clipper, where, 18, ((ei_rbutton_t *) widget)->bg_color, widget->next_sibling? EI_FALSE : EI_TRUE);
 	ei_rect_t diamond_frame = {where, {18, 18}};
 	ei_linked_point_t* pick_pts = diamond(diamond_frame, EI_TRUE, EI_TRUE);
 	ei_draw_polygon(pick_surface, pick_pts, *(widget->pick_color), clipper);
 	free_linked_point(pick_pts);
 
-    where.x += 24;
+    where.x += 18 + border * 3;
+	where.y -= border;
     ei_draw_text(surface, &where, ((ei_rbutton_t *) widget)->text.text, ((ei_rbutton_t *) widget)->text.font, &(((ei_rbutton_t *) widget)->text.text_color), clipper);
 }

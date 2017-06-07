@@ -40,8 +40,8 @@ int ei_main(int argc, char** argv)
 	ei_size_t	radiobutton_size		= {300,200};
 	int		radiobutton_x		= 0;
 	int		radiobutton_y		= 0;
-	ei_color_t	radiobutton_color		= {0x88, 0x88, 0x88, 0xff};
-	char*		radiobutton_text		= "Ceci est le texte global";
+	ei_color_t	radiobutton_color		= {156, 160, 174, 0xff};
+	char*		radiobutton_text		= "-- Radiobuttons --";
 	ei_color_t	radiobutton_text_color	= {0x00, 0x00, 0x00, 0xff};
 	//ei_callback_t	radiobutton_callback 	= radiobutton_press;
 
@@ -62,13 +62,25 @@ int ei_main(int argc, char** argv)
 	                            &radiobutton_text_anchor);
 	ei_place(radiobutton, NULL, &radiobutton_x, &radiobutton_y, NULL, NULL, NULL, NULL, NULL, NULL);
 	//ei_radiobutton_configure(...)
-	ei_color_t bg_color = {255, 0, 0, 255};
-	char* text = "hello";
+	ei_color_t bg_color = {236, 208, 120, 255};
+	char* text = "Great";
 	ei_add_radiobutton(radiobutton, &bg_color, &text, NULL, NULL, NULL);
 
-	ei_color_t bg_color2 = {0, 255, 0, 255};
-	char* text2 = "world";
+	ei_color_t bg_color2 = {217, 91, 67, 255};
+	char* text2 = "Good";
 	ei_add_radiobutton(radiobutton, &bg_color2, &text2, NULL, NULL, NULL);
+
+	ei_color_t bg_color3 = {192, 41, 66, 255};
+	char* text3 = "OK";
+	ei_add_radiobutton(radiobutton, &bg_color3, &text3, NULL, NULL, NULL);
+
+	ei_color_t bg_color4 = {84, 36, 55, 255};
+	char* text4 = "Poor";
+	ei_add_radiobutton(radiobutton, &bg_color4, &text4, NULL, NULL, NULL);
+
+	ei_color_t bg_color5 = {83, 119, 122, 255};
+	char* text5 = "Awful";
+	ei_add_radiobutton(radiobutton, &bg_color5, &text5, NULL, NULL, NULL);
 
 	/* Hook the keypress callback to the event. */
 	ei_frame_configure(ei_app_root_widget(), NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
