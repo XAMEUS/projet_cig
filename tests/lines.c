@@ -8,6 +8,7 @@
 #include "ei_draw.h"
 #include "ei_draw_button.h"
 #include "ei_draw_toplevel.h"
+#include "ei_draw_radiobutton.h"
 #include "ei_types.h"
 
 /* test_text --
@@ -206,6 +207,14 @@ void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 // 	draw_toplevel(surface, clipper, bg_size, bg_color, border_width);
 // }
 
+void test_draw_radiobutton(ei_surface_t surface, ei_rect_t* clipper) {
+	ei_color_t		color		= { 0, 128, 255, 255 };
+	ei_point_t		top_left	= {100, 100};
+	int 			size  		= 50;
+	ei_bool_t		push		= EI_TRUE;
+	ei_draw_radiobutton(surface, clipper, top_left, size, color, push);
+}
+
 /*
  * ei_main --
  *
@@ -229,15 +238,16 @@ int ei_main(int argc, char** argv)
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	/* Draw polylines. */
-	test_octogone	(main_window, clipper_ptr);
-	test_square	(main_window, clipper_ptr);
-	test_line	(main_window, clipper_ptr);
-	test_dot	(main_window, clipper_ptr);
-	test_circle (main_window, clipper_ptr);
+	// test_octogone	(main_window, clipper_ptr);
+	// test_square	(main_window, clipper_ptr);
+	// test_line	(main_window, clipper_ptr);
+	// test_dot	(main_window, clipper_ptr);
+	// test_circle (main_window, clipper_ptr);
 	// test_rounded_frame (main_window, clipper_ptr);
-	test_draw_button (main_window, clipper_ptr);
-	test_text	(main_window, clipper_ptr);
+	// test_draw_button (main_window, clipper_ptr);
+	// test_text	(main_window, clipper_ptr);
 	// test_top_level (main_window, clipper_ptr);
+	test_draw_radiobutton(main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
 	hw_surface_unlock(main_window);

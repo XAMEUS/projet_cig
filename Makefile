@@ -141,6 +141,13 @@ test_ext_class : ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_ext_class -I./include -I/usr/include/SDL ${TESTS}/test_ext_class.c misc/ext_testclass.o ${OBJDIR}/libei.a _x11/libeibase64.a -L_x11 -lSDL -lSDL_ttf -lSDL_image -lm
 
 
+radiobutton : ${OBJDIR}/radiobutton.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o radiobutton ${LDFLAGS} ${OBJDIR}/radiobutton.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/radiobutton.o : ${TESTS}/radiobutton.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/radiobutton.c -o ${OBJDIR}/radiobutton.o
+
+
 
 # VERY IMPORTANT TO DEFAULT COMPILE .o
 $(OBJDIR)/%.o: ./src/%.c
