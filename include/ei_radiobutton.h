@@ -10,6 +10,12 @@
 #include "ei_widget.h"
 #include "ei_frame.h"
 
+/**
+ * \brief	Registers the "radiobutton" widget class in the program. This must be called only
+ *		once before widgets of the class "radiobutton" can be created and configured with
+ *		\ref ei_radiobutton_configure.
+ */
+void			ei_radiobutton_register_class 	();
 
 /**
  * \brief	Fields of button. It has common fields with frame.
