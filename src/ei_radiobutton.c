@@ -117,6 +117,7 @@ static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t*	widget,
  * RBUTTON
  */
 
+
 static void* ei_rbutton_alloc();
 static void ei_rbutton_release_func(struct ei_widget_t* widget);
 static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget);
@@ -151,11 +152,10 @@ static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 }
 
 static void ei_rbutton_release_func(struct ei_widget_t* widget) {
-	// TODO free stuff
+	free(((ei_rbutton_t*) widget)->text.text);
 }
 
 static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget) {
-
 }
 
 static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
