@@ -1,9 +1,19 @@
 # projet_cig
 Projet C - Interfaces Graphiques
 
-Pierre Bouvier
-Maxime Gourgoulhon
-Julie Saouli
+Pierre Bouvier, Maxime Gourgoulhon, Julie Saouli
+
+## Utilisation :
+
+Pour tout compiler :
+```
+make
+```
+
+Pour avoir la documentation :
+```
+make doc
+```
 
 ## Tests
 
@@ -38,9 +48,21 @@ Super puzzle avec de jolies images.
 Super jeu très amusant.
 
 ### test_new_class
-Super extension dont on a pas le code qui ne marche pas, nous avons essayé sur un exemple minimal, le `register` fonctionne, tout est bien linké mais la `drawfunc` de testclass ne dessine rien.
+Super extension dont on a pas le code qui ne marche pas (mais c'est de notre faute, hein :p), nous avons essayé sur un exemple minimal, le `register` fonctionne, tout est bien "linké" mais la `drawfunc` de testclass ne dessine rien.
 
 ## Extensions
 
 ### text.c
 Une extension qui permet de dessiner du texte en gérant les `\n` et en allant automatiquement à la ligne pour continuer la suite du texte.
+À utiliser ensuite par des widgets.
+
+### radiobutton.c
+Un (début) d'extension permettant d'avoir des radiobutton.
+Le système de dessin fonctionne parfaitement avec de "magnifiques" losanges,
+une couleur de fond plus foncée pour celui selectionné, normaux avec une bordure en relief pour les autres.
+L'implémentation n'est pas complètement finie.
+
+## Utilisation avancée
+
+On peut utiliser `#include "ei_debug.h"` dans le fichier `ei_application.c` et modifier le Makefile en passant `debug` à `true` pour affichier les fps.
+N.B. : cela fait une boucle infinie d'affichage -> pas de capture d'évènements.
