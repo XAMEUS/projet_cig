@@ -213,6 +213,7 @@ static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_rbutton_t*) widget)->bg_color = ei_default_background_color;
 	((ei_rbutton_t*) widget)->text.font = ei_default_font;
 	((ei_rbutton_t*) widget)->text.text_color = ei_font_default_color;
+	((ei_rbutton_t*) widget)->offset = ei_font_default_size;
 }
 
 static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
