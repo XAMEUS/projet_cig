@@ -37,6 +37,26 @@ void ei_radiobutton_configure(ei_widget_t* widget,
         ei_placer_run(widget);
 }
 
+void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+                    char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
+    if(number)
+        ((ei_rbutton*) but)->number = *number;
+    if(bg_color)
+        ((ei_rbutton*) but)->bg_color = *bg_color;
+    if(text) {
+        if(((ei_radiobutton_t*) widget)->text.text)
+            free(((ei_radiobutton_t*) widget)->text.text);
+            ((ei_radiobutton_t*) widget)->text.text = malloc(strlen(*text) + 1);
+            strcpy(((ei_radiobutton_t*) widget)->text.text, *text);
+        }
+    if(text_font)
+        ((ei_radiobutton_t*) widget)->text.font = *text_font;
+    if(text_color)
+        ((ei_radiobutton_t*) widget)->text.text_color = *text_color;
+    if(text_anchor)
+        ((ei_radiobutton_t*) widget)->text.text_anchor = *text_anchor;
+}
+
 static void* ei_radiobutton_alloc();
 static void ei_radiobutton_release_func(struct ei_widget_t* widget);
 static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
@@ -103,6 +123,9 @@ static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
     ((ei_radiobutton_t*) widget)->title.text_color.blue = 0;
     ((ei_radiobutton_t*) widget)->title.text_color.alpha = 255;
     ((ei_radiobutton_t*) widget)->title.text_anchor = ei_anc_northwest;
+    if(((ei_radiobutton_t*) widget)->buttons)
+        free(((ei_radiobutton_t*) widget)->buttons);
+    ((ei_radiobutton_t*) widget)->nb_buttons = 0;
     ((ei_radiobutton_t*) widget)->buttons = NULL;
     ((ei_radiobutton_t*) widget)->callback = NULL;
 	widget->content_rect = &(widget->screen_location);
