@@ -17,7 +17,7 @@ static void ei_button_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
-static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+// static void	ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 
 void ei_button_register_class() {

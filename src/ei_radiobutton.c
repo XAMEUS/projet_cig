@@ -4,12 +4,12 @@
 #include "ei_tools.h"
 #include "ei_radiobutton.h"
 #include "ei_draw.h"
-#include "ei_draw_radiobuttons.h"
+#include "ei_draw_radio_button.h"
 #include "ei_draw_content.h"
 
 #include "ei_application.h"
 
-void ei_button_configure(ei_widget_t* widget,
+void ei_radiobutton_configure(ei_widget_t* widget,
                             ei_size_t* requested_size,
                             const ei_color_t* color,
                             int* border_width,
