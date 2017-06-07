@@ -63,11 +63,10 @@ void ei_radiobutton_configure(ei_widget_t* widget,
         ei_placer_run(widget);
 }
 
-void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
     ei_widget_t *rb = ei_widget_create("rbutton", widget);
-    ei_rbutton_configure(rb, bg_color, number, text, font, text_color, test_anchor);
-    ((ei_rbutton_t*) widget)->number = ((ei_radiobutton_t*) widget)->nb_buttons;
+    ei_rbutton_configure(rb, bg_color, &((ei_radiobutton_t*) widget)->nb_buttons, text, font, text_color, test_anchor);
     ((ei_radiobutton_t*) widget)->nb_buttons += 1;
     ei_anchor_t anchor = ei_anc_southwest;
     ei_place(rb, &anchor, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -221,7 +220,10 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    ei_point_t where = {widget->screen_location.top_left.x, widget->screen_location.top_left.y + ((ei_rbutton_t *) widget)->number * ((ei_rbutton_t *) widget)->offset};
+								 printf("trhhhhhhhhhhhhhhhhhh%u\n", ((ei_rbutton_t*) widget)->number);
+
+    ei_point_t where = {widget->screen_location.top_left.x,
+						widget->screen_location.top_left.y + ((ei_rbutton_t *) widget)->number * ((ei_rbutton_t *) widget)->offset};
     ei_draw_radiobutton(surface, clipper, where, 18, ((ei_rbutton_t *) widget)->bg_color, widget->next_sibling? EI_FALSE : EI_TRUE);
     where.x += 3*18;
     ei_draw_text(surface, &where, ((ei_rbutton_t *) widget)->text.text, ((ei_rbutton_t *) widget)->text.font, &(((ei_rbutton_t *) widget)->text.text_color), clipper);
