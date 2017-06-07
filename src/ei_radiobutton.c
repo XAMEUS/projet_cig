@@ -77,12 +77,12 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
         child->wclass->drawfunc(child, surface, pick_surface, clipper);
         child = child->next_sibling;
     }
-	if(((ei_radiobutton_t*) widget)->title && ((ei_radiobutton_t*) widget)->title.text) {
+	if(((ei_radiobutton_t*) widget)->title.text) {
         ei_draw_text(surface,
-        					widget->screen_location.top_level,
+        					&widget->screen_location.top_left,
         					((ei_radiobutton_t*) widget)->title.text,
         					((ei_radiobutton_t*) widget)->title.font,
-        					color,
+        					&((ei_radiobutton_t*) widget)->bg_color,
         					clipper);
     }
 	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
@@ -93,8 +93,16 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_radiobutton_t*) widget)->bg_color = ei_default_background_color;
-    w->wclass->releasefunc(w);
-    ((ei_radiobutton_t*) widget)->title = NULL;
+    widget->wclass->releasefunc(widget);
+    if (((ei_radiobutton_t*) widget)->title.text)
+        free(((ei_radiobutton_t*) widget)->title.text);
+    ((ei_radiobutton_t*) widget)->title.text = NULL;
+    ((ei_radiobutton_t*) widget)->title.font = ei_default_font;
+    ((ei_radiobutton_t*) widget)->title.text_color.red = 0;
+    ((ei_radiobutton_t*) widget)->title.text_color.green = 0;
+    ((ei_radiobutton_t*) widget)->title.text_color.blue = 0;
+    ((ei_radiobutton_t*) widget)->title.text_color.alpha = 255;
+    ((ei_radiobutton_t*) widget)->title.text_anchor = ei_anc_northwest;
     ((ei_radiobutton_t*) widget)->buttons = NULL;
     ((ei_radiobutton_t*) widget)->callback = NULL;
 	widget->content_rect = &(widget->screen_location);
