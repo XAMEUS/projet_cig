@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "ei_tools.h"
+#include "ei_event.h"
 #include "ei_radiobutton.h"
 #include "ei_draw.h"
 #include "ei_draw_radiobutton.h"
@@ -18,7 +19,7 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget);
 static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t* widget,
 						 			 struct ei_event_t*	event);
-static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+// static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 static void* ei_rbutton_alloc();
 static void ei_rbutton_release_func(struct ei_widget_t* widget);
@@ -29,7 +30,7 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper);
-static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+// static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
                     char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
@@ -152,10 +153,6 @@ static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
     ((ei_radiobutton_t*) widget)->title.text_color.blue = 0;
     ((ei_radiobutton_t*) widget)->title.text_color.alpha = 255;
     ((ei_radiobutton_t*) widget)->title.text_anchor = ei_anc_northwest;
-    if(((ei_radiobutton_t*) widget)->buttons)
-        free(((ei_radiobutton_t*) widget)->buttons);
-    ((ei_radiobutton_t*) widget)->nb_buttons = 0;
-    ((ei_radiobutton_t*) widget)->buttons = NULL;
     ((ei_radiobutton_t*) widget)->callback = NULL;
 	widget->content_rect = &(widget->screen_location);
 }
@@ -177,7 +174,7 @@ void ei_rbutton_register_class() {
     widget->releasefunc = &ei_rbutton_release_func;
     widget->drawfunc = &ei_rbutton_drawfunc;
     widget->setdefaultsfunc = &ei_rbutton_setdefaultsfunc;
-    widget->geomnotifyfunc = &ei_rbutton_geomnotifyfunc;
+    widget->geomnotifyfunc = NULL;
     widget->handlefunc = &ei_rbutton_handlefunc;
     ei_widgetclass_register(widget);
 }
@@ -190,9 +187,9 @@ static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
     if(ei_event_get_active_widget()) {
     	if (event->type == ei_ev_mouse_buttonup) {
-    		if (((ei_button_t*) widget)->callback) {
+    		if (((ei_radiobutton_t*) widget->parent)->callback) {
                 int number = ((ei_rbutton_t *) widget)->number;
-    		    ((ei_button_t*) widget)->callback(widget, event,
+    		    ((ei_radiobutton_t*) widget->parent)->callback(widget, event,
     									    &number);
             }
             ei_event_set_active_widget(NULL);
