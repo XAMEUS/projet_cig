@@ -7,6 +7,7 @@
 #ifndef EI_RADIOBUTTON_H
 #define EI_RADIOBUTTON_H
 
+#include <stdlib.h>
 #include "ei_widget.h"
 #include "ei_frame.h"
 
