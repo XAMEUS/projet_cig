@@ -47,8 +47,8 @@ void button_callback	(ei_widget_t*		widget,
 //	If true, the testclass drawfunc draws a widget *and its children*.
 //	If false, the testclass drawfunc only draws the widget, not its children.
 
- static const ei_bool_t	k_drawfunc_draws_children	= EI_TRUE;
-// static const ei_bool_t	k_drawfunc_draws_children	= EI_FALSE;
+ // static const ei_bool_t	k_drawfunc_draws_children	= EI_TRUE;
+static const ei_bool_t	k_drawfunc_draws_children	= EI_FALSE;
 
 
 
