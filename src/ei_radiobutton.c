@@ -69,7 +69,8 @@ void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color, size_t* numbe
     ei_rbutton_configure(rb, bg_color, number, text, font, text_color, test_anchor);
     ((ei_rbutton_t*) widget)->number = ((ei_radiobutton_t*) widget)->nb_buttons;
     ((ei_radiobutton_t*) widget)->nb_buttons += 1;
-    ei_placer_run(rb, ei_anc_southwest, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    ei_anchor_t anchor = ei_anc_southwest;
+    ei_place(rb, &anchor, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
