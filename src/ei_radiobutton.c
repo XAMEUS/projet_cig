@@ -9,6 +9,31 @@
 
 #include "ei_application.h"
 
+static void* ei_radiobutton_alloc();
+static void ei_radiobutton_release_func(struct ei_widget_t* widget);
+static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
+							 ei_surface_t		surface,
+							 ei_surface_t		pick_surface,
+							 ei_rect_t*		clipper);
+static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget);
+static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t* widget,
+						 			 struct ei_event_t*	event);
+static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+
+static void* ei_rbutton_alloc();
+static void ei_rbutton_release_func(struct ei_widget_t* widget);
+static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget);
+static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t* widget,
+						 struct ei_event_t*	event);
+static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
+							 ei_surface_t		surface,
+							 ei_surface_t		pick_surface,
+							 ei_rect_t*		clipper);
+static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+
+void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+                    char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
+
 void ei_radiobutton_configure(ei_widget_t* widget,
                             ei_size_t* requested_size,
                             const ei_color_t* color,
@@ -46,11 +71,11 @@ void ei_add_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
 }
 
 void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
-                    char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
+                    char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor) {
     if(number)
-        ((ei_rbutton*) but)->number = *number;
+        ((ei_rbutton_t*) widget)->number = *number;
     if(bg_color)
-        ((ei_rbutton*) but)->bg_color = *bg_color;
+        ((ei_rbutton_t*) widget)->bg_color = *bg_color;
     if(text) {
         if(((ei_rbutton_t*) widget)->text.text)
             free(((ei_rbutton_t*) widget)->text.text);
@@ -66,17 +91,6 @@ void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* num
     if(widget->placer_params)
         ei_placer_run(widget);
 }
-
-static void* ei_radiobutton_alloc();
-static void ei_radiobutton_release_func(struct ei_widget_t* widget);
-static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
-							 ei_surface_t		surface,
-							 ei_surface_t		pick_surface,
-							 ei_rect_t*		clipper);
-static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget);
-static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t* widget,
-						 			 struct ei_event_t*	event);
-static void	ei_radiobutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 void ei_radiobutton_register_class() {
     ei_widgetclass_t *widget = malloc(sizeof(ei_widgetclass_t));
@@ -149,18 +163,6 @@ static ei_bool_t ei_radiobutton_handlefunc(struct ei_widget_t*	widget,
 /*
  * RBUTTON
  */
-
-
-static void* ei_rbutton_alloc();
-static void ei_rbutton_release_func(struct ei_widget_t* widget);
-static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget);
-static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t* widget,
-						 struct ei_event_t*	event);
-static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
-							 ei_surface_t		surface,
-							 ei_surface_t		pick_surface,
-							 ei_rect_t*		clipper);
-static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 
 void ei_rbutton_register_class() {
