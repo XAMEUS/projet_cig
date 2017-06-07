@@ -54,7 +54,7 @@ typedef struct ei_radiobutton_t {
  * @param	text_color     the text color.
  * @param	test_anchor     the test anchor.
  */
-void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor);
 
 #endif
