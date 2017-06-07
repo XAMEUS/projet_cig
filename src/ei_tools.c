@@ -89,6 +89,8 @@ char* strtok_r(char *str, const char *delim, char **nextp) {
     return ret;
 }
 
+
+char **strsplit(const char* str, const char* delim, size_t* numtokens);
 // see: https://www.quora.com/How-do-you-write-a-C-program-to-split-a-string-by-a-delimiter
 char **strsplit(const char* str, const char* delim, size_t* numtokens) {
     // copy the original string so that we don't overwrite parts of it
