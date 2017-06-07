@@ -57,4 +57,15 @@ typedef struct ei_radiobutton_t {
 void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor);
 
+void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+                    char **text, ei_font_t* text_font, ei_color_t* text_color, ei_anchor_t* text_anchor);
+
+void ei_radiobutton_configure(ei_widget_t* widget,
+                             ei_size_t* requested_size,
+                             const ei_color_t* color,
+                             char** text,
+                             ei_font_t* text_font,
+                             ei_color_t* text_color,
+                             ei_anchor_t* text_anchor);
+
 #endif
