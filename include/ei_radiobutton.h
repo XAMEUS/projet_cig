@@ -33,14 +33,12 @@ typedef struct ei_rbutton {
 /**
  * \brief	Widget radiobutton
  */
-typedef struct ei_rbutton_t {
+typedef struct ei_radiobutton_t {
     ei_widget_t widget; ///< Common to all types of widget.
     ei_color_t bg_color; ///< The background color (with transparency).
     ei_callback_t callback; ///< When we click on button.
     struct ei_text title; ///< Optionnal title
-    ei_rbuttons_list buttons;
-} ei_frame_t;
-
-void add_rbutton(ei_raddiobutton_t, char* title);
+    ei_rbutton buttons;
+} ei_radiobutton_t;
 
 #endif

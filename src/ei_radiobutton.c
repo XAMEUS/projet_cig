@@ -16,6 +16,25 @@ void ei_radiobutton_configure(ei_widget_t* widget,
                             ei_font_t* text_font,
                             ei_color_t* text_color,
                             ei_anchor_t* text_anchor) {
+    if(color)
+        ((ei_radiobutton_t*) widget)->bg_color = *color;
+    if(text) {
+        if(((ei_radiobutton_t*) widget)->title.text)
+            free(((ei_radiobutton_t*) widget)->title.text);
+        ((ei_radiobutton_t*) widget)->title.text = malloc(strlen(*text) + 1);
+        strcpy(((ei_radiobutton_t*) widget)->title.text, *text);
+    }
+    if(text_font)
+        ((ei_radiobutton_t*) widget)->title.font = *text_font;
+    if(text_color)
+        ((ei_radiobutton_t*) widget)->title.text_color = *text_color;
+    if(text_anchor)
+        ((ei_radiobutton_t*) widget)->title.text_anchor = *text_anchor;
+
+    if(requested_size)
+        widget->requested_size = *requested_size;
+    if(widget->placer_params)
+        ei_placer_run(widget);
 }
 
 static void* ei_radiobutton_alloc();
@@ -46,26 +65,23 @@ static void* ei_radiobutton_alloc() {
 }
 
 static void ei_radiobutton_release_func(struct ei_widget_t* widget) {
-    if(((ei_radiobutton_t*) widget)->title) {
-        free(((ei_radiobutton_t*) widget)->title->text);
-        free(((ei_radiobutton_t*) widget)->title);
-    }
+        free(((ei_radiobutton_t*) widget)->title.text);
 }
 
 static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    ei_widget *child = w->children_head;
+    ei_widget_t *child = widget->children_head;
     while(child) {
-        child->wclass->drawfunc(child);
-        child = child->next;
+        child->wclass->drawfunc(child, surface, pick_surface, clipper);
+        child = child->next_sibling;
     }
-	if(((ei_radiobutton_t*) widget)->title && ((ei_radiobutton_t*) widget)->title->text) {
+	if(((ei_radiobutton_t*) widget)->title && ((ei_radiobutton_t*) widget)->title.text) {
         ei_draw_text(surface,
-        					widget->screen_location->top_level,
-        					((ei_radiobutton_t*) widget)->title->text,
-        					((ei_radiobutton_t*) widget)->title->font,
+        					widget->screen_location.top_level,
+        					((ei_radiobutton_t*) widget)->title.text,
+        					((ei_radiobutton_t*) widget)->title.font,
         					color,
         					clipper);
     }
@@ -123,76 +139,19 @@ static void* ei_rbutton_alloc() {
 
 static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-	if(ei_event_get_active_widget()) {
-		ei_bool_t on_rbutton = widget == ei_widget_pick(&(event->param.mouse.where));
-		if(on_rbutton ^ ((ei_rbutton_t*) widget)->push) {
-			((ei_rbutton_t*) widget)->push = !((ei_rbutton_t*) widget)->push;
-			ei_app_invalidate_rect(&widget->screen_location);
-		}
-		if (event->type == ei_ev_mouse_rbuttonup) {
-			((ei_rbutton_t*) widget)->push = EI_FALSE;
-			ei_app_invalidate_rect(&widget->screen_location);
-			if (((ei_rbutton_t*) widget)->callback && on_rbutton) {
-				((ei_rbutton_t*) widget)->callback(widget,
-												  event,
-												  ((ei_rbutton_t*) widget)->user_param);
-			}
-			ei_event_set_active_widget(NULL);
-			return EI_TRUE;
-		}
-		return EI_FALSE;
-	}
-	else if (event->type == ei_ev_mouse_rbuttondown) {
-			((ei_rbutton_t*) widget)->push = EI_TRUE;
-			ei_app_invalidate_rect(&widget->screen_location);
-			ei_event_set_active_widget(widget);
-			return EI_TRUE;
-	}
-	return EI_FALSE;
+
 }
 
 static void ei_rbutton_release_func(struct ei_widget_t* widget) {
-	ei_widgetclass_from_name("frame")->releasefunc(widget);
 }
 
 static void ei_rbutton_setdefaultsfunc(struct ei_widget_t* widget) {
-    ((ei_rbutton_t*) widget)->frame.bg_color = ei_default_background_color;
-	((ei_rbutton_t*) widget)->frame.border_width = k_default_rbutton_border_width;
-	((ei_rbutton_t*) widget)->frame.relief = ei_relief_raised;
-	((ei_rbutton_t*) widget)->frame.opt_type = NONE;
-    ((ei_rbutton_t*) widget)->corner_radius = k_default_rbutton_corner_radius;
-	widget->content_rect = &(widget->screen_location);
+
 }
 
 static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-    ei_draw_rbutton(surface, clipper,
-        widget->screen_location,
-        ((ei_rbutton_t*) widget)->corner_radius,
-        ((ei_rbutton_t*) widget)->frame.border_width,
-        ((ei_rbutton_t*) widget)->frame.bg_color,
-		((ei_rbutton_t*) widget)->frame.relief,
-        ((ei_rbutton_t*) widget)->push);
-	if(((ei_rbutton_t*) widget)->frame.opt_type == TEXT) {
-		int offset = ((ei_rbutton_t*) widget)->frame.border_width + ((ei_rbutton_t*) widget)->corner_radius * (1 - sqrt(2)/2);
-		draw_text(widget, surface, clipper, offset);
-	} else if (((ei_rbutton_t*) widget)->frame.opt_type == IMAGE) {
-		int offset = ((ei_rbutton_t*) widget)->frame.border_width + ((ei_rbutton_t*) widget)->corner_radius * (1 - sqrt(2)/2);
-		draw_image(widget, surface, clipper, offset);
-	}
-	ei_linked_point_t* pts = rounded_frame(widget->screen_location,
-				 ((ei_rbutton_t*) widget)->corner_radius);
-	ei_draw_polygon(pick_surface,
-					pts,
-					*(widget->pick_color),
-					clipper);
-	free_linked_point(pts);
-}
 
-static void	ei_rbutton_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
-	ei_app_invalidate_rect(&widget->screen_location);
-	widget->screen_location = rect;
-	ei_app_invalidate_rect(&widget->screen_location);
 }
