@@ -31,7 +31,7 @@ ei_linked_point_t* diamond(ei_rect_t frame,
     if (down) {
         bottom_point = malloc(sizeof(ei_linked_point_t));
         assert(bottom_point != NULL);
-        bottom_point->point.x = top_point->point.x;
+        bottom_point->point.x = frame.top_left.x + frame.size.width/2;
         bottom_point->point.y = frame.top_left.y + frame.size.height;
         right_point->next = bottom_point;
     }
