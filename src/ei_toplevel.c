@@ -88,7 +88,11 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 	widget->requested_size.height = 240;
 	((ei_toplevel_t*) widget)->bg_color = ei_default_background_color;
 	((ei_toplevel_t*) widget)->border_width = 4;
-	((ei_toplevel_t*) widget)->title = "Toplevel"; //TODO
+    if(((ei_toplevel_t*) widget)->title)
+        free(((ei_toplevel_t*) widget)->title);
+    ((ei_toplevel_t*) widget)->title = malloc(sizeof(char) * 9);
+    char *top_text = "Toplevel";
+	strncpy(((ei_toplevel_t*) widget)->title, top_text, 9);
 	((ei_toplevel_t*) widget)->closable = EI_TRUE;
 	((ei_toplevel_t*) widget)->resizable = ei_axis_both;
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);

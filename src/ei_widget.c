@@ -236,6 +236,8 @@ void ei_toplevel_configure (ei_widget_t* widget,
     if (border_width)
         ((ei_toplevel_t*) widget)->border_width = *border_width;
     if (title) {
+        if(((ei_toplevel_t*) widget)->title)
+            free(((ei_toplevel_t*) widget)->title);
         ((ei_toplevel_t*) widget)->title = malloc(strlen(*title) + 1);
         strcpy(((ei_toplevel_t*) widget)->title, *title);
     }
@@ -244,6 +246,8 @@ void ei_toplevel_configure (ei_widget_t* widget,
     if (resizable)
         ((ei_toplevel_t*) widget)->resizable = *resizable;
     if (min_size) {
+        if(((ei_toplevel_t*) widget)->min_size)
+            free(((ei_toplevel_t*) widget)->min_size);
         ((ei_toplevel_t*) widget)->min_size = malloc(sizeof(ei_size_t));
         *(((ei_toplevel_t*) widget)->min_size) = **min_size;
         (((ei_toplevel_t*) widget)->min_size)->height += BORDER;
