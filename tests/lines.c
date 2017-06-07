@@ -171,48 +171,23 @@ void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 	}
 }
 
-void test_rounded_frame(ei_surface_t surface, ei_rect_t* clipper) {
-	ei_color_t		color		= { 254, 153, 204, 255 };
-	ei_rect_t		frame 		= {{170, 206}, {206, 40}};
-	int				radius		= 25;
-	ei_linked_point_t* pts 		= rounded_frame(frame, radius);
-
-	// ei_color_t		color_bis		= { 255, 204, 229, 255 };
-	// ei_linked_point_t* pts_bis		= down_rounded_frame(frame, radius, h);
-
-	ei_draw_polygon(surface, pts, color, clipper);
-	// ei_draw_polygon(surface, pts_bis, color_bis, clipper);
-
-	while(pts != NULL) {
-		ei_linked_point_t* p = pts;
-		pts = pts->next;
-		free(p);
-	}
-}
-
 void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 0, 128, 255, 255 };
-	ei_rect_t		frame 		= {{100, 100}, {200, 200}};
-	int				radius		= 500;
-	int				border		= 100;
+	ei_rect_t		frame 		= {{5, 5}, {100, 100}};
+	int				radius		= 50;
+	int				border		= 10;
 	ei_bool_t		push		= EI_FALSE;
-	ei_relief_t		relief		= ei_relief_none;
+	ei_relief_t		relief		= ei_relief_raised;
 	ei_draw_button(surface, clipper, frame, radius, border, color, relief, push);
 }
 
-// void test_top_level(ei_surface_t surface, ei_rect_t* clipper) {
-// 	ei_size_t bg_size = {300, 200};
-// 	ei_color_t bg_color = {0x88, 0x88, 0x88, 0xff};
-// 	int border_width = 2;
-// 	draw_toplevel(surface, clipper, bg_size, bg_color, border_width);
-// }
-
 void test_draw_radiobutton(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 0, 128, 255, 255 };
-	ei_point_t		top_left	= {100, 100};
+	ei_point_t		top_left	= {600, 100};
+	ei_point_t		top_left_2	= {600, 150};
 	int 			size  		= 50;
-	ei_bool_t		push		= EI_TRUE;
-	ei_draw_radiobutton(surface, clipper, top_left, size, color, push);
+	ei_draw_radiobutton(surface, clipper, top_left, size, color, EI_FALSE);
+	ei_draw_radiobutton(surface, clipper, top_left_2, size, color, EI_TRUE);
 }
 
 /*
@@ -238,15 +213,13 @@ int ei_main(int argc, char** argv)
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	/* Draw polylines. */
-	// test_octogone	(main_window, clipper_ptr);
-	// test_square	(main_window, clipper_ptr);
-	// test_line	(main_window, clipper_ptr);
-	// test_dot	(main_window, clipper_ptr);
-	// test_circle (main_window, clipper_ptr);
-	// test_rounded_frame (main_window, clipper_ptr);
-	// test_draw_button (main_window, clipper_ptr);
-	// test_text	(main_window, clipper_ptr);
-	// test_top_level (main_window, clipper_ptr);
+	test_octogone	(main_window, clipper_ptr);
+	test_square	(main_window, clipper_ptr);
+	test_line	(main_window, clipper_ptr);
+	test_dot	(main_window, clipper_ptr);
+	test_circle (main_window, clipper_ptr);
+	test_draw_button (main_window, clipper_ptr);
+	test_text	(main_window, clipper_ptr);
 	test_draw_radiobutton(main_window, clipper_ptr);
 
 	/* Unlock and update the surface. */
