@@ -37,7 +37,7 @@ typedef struct ei_radiobutton_t {
     ei_color_t bg_color; ///< The background color (with transparency).
     ei_callback_t callback; ///< When we click on button.
     struct ei_text title; ///< Optionnal title
-    ei_rbutton *buttons;
+    ei_rbutton_t *buttons;
     size_t nb_buttons;
 } ei_radiobutton_t;
 
