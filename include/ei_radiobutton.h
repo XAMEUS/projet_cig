@@ -22,31 +22,24 @@ struct ei_rbutton_t;
 /**
 * \brief LinkedList of raddiobuttons
 */
-typedef struct ei_rbuttons_list {
-    ei_rect_t rect;
-    struct ei_rbuttons_list *next;
-} ei_rbuttons_list;
+typedef struct ei_rbutton {
+    ei_widget_t widget; ///< Common to all types of widget.
+    struct ei_text text;
+    ei_callback_t callback; ///< When we click on button.
+	void* user_param; ///< Pointer passed to the callback function when it's called..
+} ei_rbutton;
+
 
 /**
- * \brief	Raddiobuttons pack.
- */
-typedef struct ei_radiobutton_t {
-    ei_frame_t frame;
-    struct ei_rbutton_t *selected; ///< The current selected button.
-    ei_rbuttons_list list;
-} ei_radiobutton_t;
-
-/**
- * \brief	Fields of button. It has common fields with frame.
+ * \brief	Widget radiobutton
  */
 typedef struct ei_rbutton_t {
-    char* title;
-    ei_font_t *font;
-    int font_size;
-    ei_bool_t pushed; ///< Is the rbutton pushed?
-    ei_radiobutton_t parent;
-} ei_rbutton_t;
+    ei_widget_t widget; ///< Common to all types of widget.
+    ei_color_t bg_color; ///< The background color (with transparency).
+    struct ei_text title; ///< Optionnal title
+    ei_rbuttons_list buttons;
+} ei_frame_t;
 
-void add_rbutton(ei_radiobutton_t, char* title);
+void add_rbutton(ei_raddiobutton_t, char* title);
 
 #endif

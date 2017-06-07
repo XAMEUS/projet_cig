@@ -88,7 +88,7 @@ static void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget) {
 	widget->requested_size.height = 240;
 	((ei_toplevel_t*) widget)->bg_color = ei_default_background_color;
 	((ei_toplevel_t*) widget)->border_width = 4;
-	((ei_toplevel_t*) widget)->title = "Toplevel";
+	((ei_toplevel_t*) widget)->title = "Toplevel"; //TODO
 	((ei_toplevel_t*) widget)->closable = EI_TRUE;
 	((ei_toplevel_t*) widget)->resizable = ei_axis_both;
     ((ei_toplevel_t*) widget)->title_font = hw_text_font_create("misc/font.ttf", ei_style_normal, 18);
