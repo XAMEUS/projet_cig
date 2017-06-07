@@ -183,6 +183,21 @@ doc :
 	doxygen docs/doxygen.cfg
 
 
+# Magical auto-indentation :)
+
+indent-gnu :
+	indent -nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2 -ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -saf -sai -saw -nsc -nsob  src/ei_button.c src/ei_draw_button.c src/ei_draw.c src/ei_draw_content.c src/ei_draw_polygon.c src/ei_draw_radiobutton.c src/ei_draw_text_lines.c src/ei_draw_toplevel.c src/ei_event.c src/ei_frame.c src/ei_intrsct_pile.c src/ei_picking_list.c src/ei_placer.c src/ei_radiobutton.c src/ei_tools.c src/ei_toplevel.c src/ei_widget.c src/ei_widgetclass.c src/freq_counter.c tests/*.c include/*.h
+
+indent-kr :
+	indent -kr src/ei_button.c src/ei_draw_button.c src/ei_draw.c src/ei_draw_content.c src/ei_draw_polygon.c src/ei_draw_radiobutton.c src/ei_draw_text_lines.c src/ei_draw_toplevel.c src/ei_event.c src/ei_frame.c src/ei_intrsct_pile.c src/ei_picking_list.c src/ei_placer.c src/ei_radiobutton.c src/ei_tools.c src/ei_toplevel.c src/ei_widget.c src/ei_widgetclass.c src/freq_counter.c tests/*.c include/*.h
+
+indent-orig :
+	indent -orig src/ei_button.c src/ei_draw_button.c src/ei_draw.c src/ei_draw_content.c src/ei_draw_polygon.c src/ei_draw_radiobutton.c src/ei_draw_text_lines.c src/ei_draw_toplevel.c src/ei_event.c src/ei_frame.c src/ei_intrsct_pile.c src/ei_picking_list.c src/ei_placer.c src/ei_radiobutton.c src/ei_tools.c src/ei_toplevel.c src/ei_widget.c src/ei_widgetclass.c src/freq_counter.c tests/*.c include/*.h
+
+indent-linux :
+	indent nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -d0 -di1 -nfc1 -i8 -ip0 -l80 -lp -npcs -nprs -npsl -sai -saf -saw -ncs -nsc -sob -nfca -cp33 -ss -ts8 -il1 src/ei_button.c src/ei_draw_button.c src/ei_draw.c src/ei_draw_content.c src/ei_draw_polygon.c src/ei_draw_radiobutton.c src/ei_draw_text_lines.c src/ei_draw_toplevel.c src/ei_event.c src/ei_frame.c src/ei_intrsct_pile.c src/ei_picking_list.c src/ei_placer.c src/ei_radiobutton.c src/ei_tools.c src/ei_toplevel.c src/ei_widget.c src/ei_widgetclass.c src/freq_counter.c tests/*.c include/*.h
+
+
 
 # Removing all built files.
 
