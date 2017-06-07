@@ -89,6 +89,8 @@ void ei_app_run() {
                     }
                     if (rect_clipping) {
                         ei_pile_push(&intrsct_pile, *rect_clipping);
+                        printf("%s %u %d %d %d %d\n", w->wclass->name, w, w->screen_location.top_left.x,
+                        w->screen_location.top_left.y, w->screen_location.size.width, w->screen_location.size.height);
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     } else {
