@@ -123,17 +123,19 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
+	ei_fill(surface, &((ei_radiobutton_t*) widget)->bg_color, clipper);
     ei_widget_t *child = widget->children_head;
     while(child) {
         child->wclass->drawfunc(child, surface, pick_surface, clipper);
         child = child->next_sibling;
     }
 	if(((ei_radiobutton_t*) widget)->title.text) {
+		ei_color_t black = {0, 0, 0, 255};
         ei_draw_text(surface,
         					&widget->screen_location.top_left,
         					((ei_radiobutton_t*) widget)->title.text,
         					((ei_radiobutton_t*) widget)->title.font,
-        					&((ei_radiobutton_t*) widget)->bg_color,
+        					&black,
         					clipper);
     }
 	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
@@ -221,16 +223,14 @@ static void ei_rbutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-								 printf("trhhhhhhhhhhhhhhhhhh%u\n", ((ei_rbutton_t*) widget)->number);
-
     ei_point_t where = {widget->screen_location.top_left.x,
-						widget->screen_location.top_left.y + ((ei_rbutton_t *) widget)->number * ((ei_rbutton_t *) widget)->offset};
+						widget->screen_location.top_left.y + (((ei_rbutton_t *) widget)->number + 1) * ((ei_rbutton_t *) widget)->offset};
     ei_draw_radiobutton(surface, clipper, where, 18, ((ei_rbutton_t *) widget)->bg_color, widget->next_sibling? EI_FALSE : EI_TRUE);
 	ei_rect_t diamond_frame = {where, {18, 18}};
 	ei_linked_point_t* pick_pts = diamond(diamond_frame, EI_TRUE, EI_TRUE);
 	ei_draw_polygon(pick_surface, pick_pts, *(widget->pick_color), clipper);
 	free_linked_point(pick_pts);
 
-    where.x += 3*18;
+    where.x += 24;
     ei_draw_text(surface, &where, ((ei_rbutton_t *) widget)->text.text, ((ei_rbutton_t *) widget)->text.font, &(((ei_rbutton_t *) widget)->text.text_color), clipper);
 }
