@@ -42,5 +42,5 @@ Super extension dont on a pas le code qui ne marche pas, nous avons essayé sur 
 
 ## Extensions
 
-### text.c (pour l'instant lines2.c)
+### text.c
 Une extension qui permet de dessiner du texte en gérant les `\n` et en allant automatiquement à la ligne pour continuer la suite du texte.
