@@ -1,7 +1,7 @@
 /**
  * @file	ei_picking.h
  *
- * @brief 	Struct and functions for uses a picking list. Useful for the picker.
+ * @brief 	Structures and functions to define and use a picking list. Useful for the picker.
  */
 
 #ifndef EI_PICKING_H
@@ -43,20 +43,20 @@ typedef struct list_picking {
 list_picking* ei_app_picking_list();
 
 /**
- * \brief	Create the "picking list" of the application.
+ * \brief	Creates the "picking list" of the application.
  * @return 			The picking list.
  */
 list_picking *create_picker();
 
 /**
- * \brief	Add to the picking list a new widget.
+ * \brief	Adds to the picking list a new widget.
  * @param	ptr_list		The pointer of the picking list.
  * @param   new_widget      The widget that will be added.
  */
 void add_picker(list_picking *ptr_list, ei_widget_t* new_widget);
 
 /**
- * \brief	Remove to the picking list the widget with the "color" pick_id.
+ * \brief	Removes to the picking list the widget with the "color" pick_id.
  * @param	ptr_list		The pointer of the picking list.
  * @param   pick_id         The "color" of the widget.
  */
