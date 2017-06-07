@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-#include <stdio.h>
 
 #include "ei_tools.h"
 #include "ei_draw.h"
@@ -13,7 +12,7 @@ ei_linked_point_t* arc(ei_linked_point_t** first_point,
                        const int radius,
                        const float first_angle,
                        const float last_angle) {
-    int step_nbr = 5; // a reflechir
+    int step_nbr = radius;
     float angle_step = (last_angle - first_angle) / step_nbr;
 
     *first_point = malloc(sizeof(ei_linked_point_t));
@@ -66,7 +65,7 @@ ei_linked_point_t* rounded_frame(ei_rect_t frame,
     return first_top_left;
 }
 
-ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
+static ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
                                     int radius,
                                     int h) {
     float e = 0.4;
@@ -107,7 +106,7 @@ ei_linked_point_t* up_rounded_frame(ei_rect_t frame,
     return first_top_left;
 }
 
-ei_linked_point_t* down_rounded_frame(ei_rect_t frame,
+static ei_linked_point_t* down_rounded_frame(ei_rect_t frame,
                                       int radius,
                                       int h) {
     /* bottom right */
