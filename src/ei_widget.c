@@ -258,6 +258,7 @@ void ei_widget_set_destroy_cb	(ei_widget_t*		widget,
             list->user_param = user_param;
             return;
         }
+        list = list->next;
     }
     /* widget not in the list */
     CHAINED_CB = malloc(sizeof(ei_chained_cb));
