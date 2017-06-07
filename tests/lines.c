@@ -148,6 +148,10 @@ void test_dot(ei_surface_t surface, ei_rect_t* clipper)
 	ei_draw_polyline(surface, pts, color, clipper);
 }
 
+/* test_circle --
+*
+* Draws a circle.
+*/
 void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 {
 	ei_color_t		color		= { 0, 0, 255, 100 };
@@ -171,6 +175,10 @@ void test_circle(ei_surface_t surface, ei_rect_t* clipper)
 	}
 }
 
+/* test_draw_button --
+*
+* Draws a button.
+*/
 void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 0, 128, 255, 255 };
 	ei_rect_t		frame 		= {{5, 5}, {100, 100}};
@@ -181,6 +189,10 @@ void test_draw_button(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_draw_button(surface, clipper, frame, radius, border, color, relief, push);
 }
 
+/* test_draw_radiobutton --
+*
+* Draws two radiobuttons, one not pushed and one pushed.
+*/
 void test_draw_radiobutton(ei_surface_t surface, ei_rect_t* clipper) {
 	ei_color_t		color		= { 0, 128, 255, 255 };
 	ei_point_t		top_left	= {600, 100};
