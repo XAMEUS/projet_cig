@@ -58,7 +58,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines text frame button hello_world top_level_ception_simple top_level_ception_advanced top_level_ception_position puzzle two048 test_ext_class
+			minimal lines text frame button hello_world top_level_ception_simple top_level_ception_advanced top_level_ception_position puzzle two048 test_ext_class radiobutton
 all : ${TARGETS}
 
 ########## Test-programs
