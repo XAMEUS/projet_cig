@@ -84,6 +84,11 @@ void ei_rbutton_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* num
         }
     if(text_font)
         ((ei_rbutton_t*) widget)->text.font = *text_font;
+	if ((((ei_rbutton_t*) widget)->text.text && text_font) || (((ei_rbutton_t*) widget)->text.font && text)) {
+		int text_width, text_height;
+		hw_text_compute_size(((ei_rbutton_t*) widget)->text.text, ((ei_rbutton_t*) widget)->text.font, &text_width, &text_height);
+		((ei_rbutton_t*) widget)->offset = text_height;
+	}
     if(text_color)
         ((ei_rbutton_t*) widget)->text.text_color = *text_color;
     if(text_anchor)
