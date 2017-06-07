@@ -62,10 +62,10 @@ void ei_radiobutton_configure(ei_widget_t* widget,
         ei_placer_run(widget);
 }
 
-void ei_add_configure(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
+void ei_add_radiobutton(ei_widget_t* widget, ei_color_t *bg_color, size_t* number,
                     char **text, ei_font_t* font, ei_color_t* text_color, ei_anchor_t* test_anchor) {
     ei_widget_t *rb = ei_widget_create("rbutton", widget);
-    ei_rbutton_configure(widget, bg_color, number, text, font, text_color, test_anchor);
+    ei_rbutton_configure(rb, bg_color, number, text, font, text_color, test_anchor);
     ((ei_rbutton_t*) widget)->number = ((ei_radiobutton_t*) widget)->nb_buttons;
     ((ei_radiobutton_t*) widget)->nb_buttons += 1;
 }
@@ -188,7 +188,24 @@ static void* ei_rbutton_alloc() {
 
 static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
-
+    if(ei_event_get_active_widget()) {
+    	if (event->type == ei_ev_mouse_buttonup) {
+    		if (((ei_button_t*) widget)->callback) {
+                int number = ((ei_rbutton_t *) widget)->number;
+    		    ((ei_button_t*) widget)->callback(widget, event,
+    									    &number);
+            }
+            ei_event_set_active_widget(NULL);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+    else if (event->type == ei_ev_mouse_buttondown) {
+    	ei_event_set_active_widget(widget);
+        ei_app_invalidate_rect(&widget->screen_location);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
 }
 
 static void ei_rbutton_release_func(struct ei_widget_t* widget) {
