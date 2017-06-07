@@ -28,7 +28,7 @@ void ei_frame_register_class() {
     widget->releasefunc = &ei_frame_release_func;
     widget->drawfunc = &ei_frame_drawfunc;
     widget->setdefaultsfunc = &ei_frame_setdefaultsfunc;
-    widget->geomnotifyfunc = &ei_frame_geomnotifyfunc;
+    widget->geomnotifyfunc = NULL;
     widget->handlefunc = &ei_frame_handlefunc;
     ei_widgetclass_register(widget);
 }
@@ -77,7 +77,4 @@ static void ei_frame_setdefaultsfunc(struct ei_widget_t* widget) {
 static ei_bool_t ei_frame_handlefunc(struct ei_widget_t*	widget,
 						 			 struct ei_event_t*	event) {
 	return EI_FALSE;
-}
-
-static void	ei_frame_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect) {
 }
