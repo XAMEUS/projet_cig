@@ -8,7 +8,7 @@
 #include "ei_draw.h"
 #include "ei_draw_button.h"
 #include "ei_draw_toplevel.h"
-#include "ei_draw_radiobuttons.h"
+#include "ei_draw_radiobutton.h"
 #include "ei_types.h"
 
 /* test_text --

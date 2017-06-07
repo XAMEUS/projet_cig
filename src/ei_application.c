@@ -6,6 +6,7 @@
 #include "ei_picking.h"
 #include "ei_event.h"
 #include "ei_button.h"
+#include "ei_radiobutton.h"
 #include "ei_tools.h"
 #include "ei_set_destroy_cb.h"
 #include <stdlib.h>
@@ -29,6 +30,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_frame_register_class();
     ei_toplevel_register_class();
     ei_button_register_class();
+    ei_radiobutton_register_class();
     /* Root window */
     ROOT_SURFACE = hw_create_window(main_window_size, fullscreen);
     ei_size_t first = hw_surface_get_size(ROOT_SURFACE);
@@ -89,6 +91,8 @@ void ei_app_run() {
                     }
                     if (rect_clipping) {
                         ei_pile_push(&intrsct_pile, *rect_clipping);
+                        // printf("%s %u %d %d %d %d\n", w->wclass->name, w, w->screen_location.top_left.x,
+                        // w->screen_location.top_left.y, w->screen_location.size.width, w->screen_location.size.height);
                         w->wclass->drawfunc(w, ROOT_SURFACE, PICKING, rect_clipping);
                         free(rect_clipping);
                     } else {

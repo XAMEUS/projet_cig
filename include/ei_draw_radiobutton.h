@@ -3,6 +3,8 @@
 *
 * @brief Graphical primitive to draw radiobuttons.
 */
+#ifndef EI_DRAW_RADIOBUTTON
+#define EI_DRAW_RADIOBUTTON
 
 #include "ei_types.h"
 #include "hw_interface.h"
@@ -44,3 +46,6 @@ void ei_draw_radiobutton(ei_surface_t surface,
                     int size,
                     ei_color_t color,
                     ei_bool_t push);
+
+
+#endif
