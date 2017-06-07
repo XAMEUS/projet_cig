@@ -17,17 +17,15 @@
  */
 void			ei_radiobutton_register_class 	();
 
-struct ei_rbutton_t;
-
 /**
 * \brief Widget rbutton
 */
-typedef struct ei_rbutton {
+typedef struct ei_rbutton_t {
     ei_widget_t widget; ///< Common to all types of widget.
     ei_color_t bg_color; ///< The background color (with transparency).
     ei_point_t where;
     struct ei_text text;
-} ei_rbutton;
+} ei_rbutton_t;
 
 
 /**
