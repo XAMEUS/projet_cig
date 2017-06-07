@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "ei_tools.h"
+#include "ei_event.h"
 #include "ei_radiobutton.h"
 #include "ei_draw.h"
 #include "ei_draw_radiobutton.h"
@@ -147,10 +148,6 @@ static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
     ((ei_radiobutton_t*) widget)->title.text_color.blue = 0;
     ((ei_radiobutton_t*) widget)->title.text_color.alpha = 255;
     ((ei_radiobutton_t*) widget)->title.text_anchor = ei_anc_northwest;
-    if(((ei_radiobutton_t*) widget)->buttons)
-        free(((ei_radiobutton_t*) widget)->buttons);
-    ((ei_radiobutton_t*) widget)->nb_buttons = 0;
-    ((ei_radiobutton_t*) widget)->buttons = NULL;
     ((ei_radiobutton_t*) widget)->callback = NULL;
 	widget->content_rect = &(widget->screen_location);
 }
@@ -185,9 +182,9 @@ static ei_bool_t ei_rbutton_handlefunc(struct ei_widget_t*	widget,
 						 struct ei_event_t*	event) {
     if(ei_event_get_active_widget()) {
     	if (event->type == ei_ev_mouse_buttonup) {
-    		if (((ei_button_t*) widget)->callback) {
+    		if (((ei_radiobutton_t*) widget->parent)->callback) {
                 int number = ((ei_rbutton_t *) widget)->number;
-    		    ((ei_button_t*) widget)->callback(widget, event,
+    		    ((ei_radiobutton_t*) widget->parent)->callback(widget, event,
     									    &number);
             }
             ei_event_set_active_widget(NULL);
