@@ -38,14 +38,11 @@ int ei_main(int argc, char** argv)
 
 	ei_widget_t*	radiobutton;
 	ei_size_t	radiobutton_size		= {300,200};
-	int		radiobutton_corner_radius	= 20;
 	int		radiobutton_x		= 0;
 	int		radiobutton_y		= 0;
 	ei_color_t	radiobutton_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		radiobutton_text		= "Ceci est le texte global";
 	ei_color_t	radiobutton_text_color	= {0x00, 0x00, 0x00, 0xff};
-	ei_relief_t	radiobutton_relief		= ei_relief_raised;
-	int		radiobutton_border_width	= 6;
 	//ei_callback_t	radiobutton_callback 	= radiobutton_press;
 
 	ei_anchor_t radiobutton_text_anchor = ei_anc_north;

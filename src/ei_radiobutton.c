@@ -124,7 +124,10 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 							 ei_surface_t		surface,
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper) {
-	ei_fill(surface, &((ei_radiobutton_t*) widget)->bg_color, clipper);
+	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
+	if(drawing_wall)
+		ei_fill(surface, &((ei_radiobutton_t*) widget)->bg_color, drawing_wall);
+	free(drawing_wall);
     ei_widget_t *child = widget->children_head;
     while(child) {
         child->wclass->drawfunc(child, surface, pick_surface, clipper);
@@ -139,7 +142,7 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
         					&black,
         					clipper);
     }
-	ei_rect_t *drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
+	drawing_wall = ei_rect_intrsct(&widget->screen_location, clipper);
 	if(drawing_wall)
 		ei_fill(pick_surface, widget->pick_color, drawing_wall);
 	free(drawing_wall);
