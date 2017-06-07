@@ -12,36 +12,10 @@
 void ei_radiobutton_configure(ei_widget_t* widget,
                             ei_size_t* requested_size,
                             const ei_color_t* color,
-                            int* border_width,
-                            int* corner_radius,
-                            ei_relief_t* relief,
                             char** text,
                             ei_font_t* text_font,
                             ei_color_t* text_color,
-                            ei_anchor_t* text_anchor,
-                            ei_surface_t* img,
-                            ei_rect_t** img_rect,
-                            ei_anchor_t* img_anchor,
-                            ei_callback_t* callback,
-                            void** user_param) {
-    ei_frame_configure(widget, requested_size, color, border_width, relief,
-            text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
-    if (corner_radius) {
-        int min_size = (widget->requested_size.height < widget->requested_size.width) ?
-                        widget->requested_size.height : widget->requested_size.width;
-        if (*corner_radius * 2 > min_size)
-            ((ei_button_t*) widget)->corner_radius = min_size/2;
-        else ((ei_button_t*) widget)->corner_radius = *corner_radius;
-        int offset = ((ei_button_t*) widget)->corner_radius * (1 -(1 - sqrt(2)/2));
-        widget->requested_size.width += offset;
-        widget->requested_size.height += offset;
-        if(widget->placer_params)
-            ei_placer_run(widget);
-    }
-    if (callback)
-        ((ei_button_t*) widget)->callback = *callback;
-    if (user_param)
-        ((ei_button_t*) widget)->user_param = *user_param;
+                            ei_anchor_t* text_anchor) {
 }
 
 static void* ei_radiobutton_alloc();
@@ -72,15 +46,11 @@ static void* ei_radiobutton_alloc() {
 }
 
 static void ei_radiobutton_release_func(struct ei_widget_t* widget) {
-	if(((ei_button_t*) widget)->radiobutton.opt_type == TEXT &&
-		((ei_button_t*) widget)->radiobutton.opt.txt.text)
-			free(((ei_button_t*) widget)->radiobutton.opt.txt.text);
-	else if (((ei_button_t*) widget)->radiobutton.opt_type == IMAGE) {
-		if(((ei_button_t*) widget)->radiobutton.opt.img.img)
-			hw_surface_free(((ei_button_t*) widget)->radiobutton.opt.img.img);
-		if(((ei_button_t*) widget)->radiobutton.opt.img.img_rect)
-			free(((ei_button_t*) widget)->radiobutton.opt.img.img_rect);
-	}
+    if(((ei_radiobutton_t*) widget)->text) {
+
+        free(((ei_radiobutton_t*) widget)->text);
+    }
+
 }
 
 static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
@@ -101,9 +71,10 @@ static void ei_radiobutton_drawfunc(struct ei_widget_t*	widget,
 
 static void ei_radiobutton_setdefaultsfunc(struct ei_widget_t* widget) {
 	((ei_radiobutton_t*) widget)->bg_color = ei_default_background_color;
-	((ei_radiobutton_t*) widget)->border_width = 0;
-	((ei_radiobutton_t*) widget)->relief = ei_relief_none;
-	((ei_radiobutton_t*) widget)->opt_type = NONE;
+    if(((ei_radiobutton_t*) widget)->title)
+        free(((ei_radiobutton_t*) widget)->title);
+    ((ei_radiobutton_t*) widget)->title = NULL;
+	((ei_radiobutton_t*) widget)->buttons = NULL;
 	widget->content_rect = &(widget->screen_location);
 }
 
