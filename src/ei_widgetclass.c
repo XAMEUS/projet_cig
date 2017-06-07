@@ -25,7 +25,9 @@ void ei_widgetclass_unregister() {
     while(ptr_class) {
         if(strncmp(ptr_class->name, "frame", 20) == 0 ||
            strncmp(ptr_class->name, "toplevel", 20) == 0 ||
-           strncmp(ptr_class->name, "button", 20) == 0) {
+           strncmp(ptr_class->name, "button", 20) == 0 ||
+           strncmp(ptr_class->name, "radiobutton", 20) == 0 ||
+           strncmp(ptr_class->name, "rbutton", 20) == 0) {
             tmp = ptr_class;
             ptr_class = ptr_class->next;
             free(tmp);

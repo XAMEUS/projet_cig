@@ -31,6 +31,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen) {
     ei_toplevel_register_class();
     ei_button_register_class();
     ei_radiobutton_register_class();
+    ei_rbutton_register_class();
     /* Root window */
     ROOT_SURFACE = hw_create_window(main_window_size, fullscreen);
     ei_size_t first = hw_surface_get_size(ROOT_SURFACE);

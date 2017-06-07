@@ -17,6 +17,7 @@
  *		\ref ei_radiobutton_configure.
  */
 void			ei_radiobutton_register_class 	();
+void			ei_rbutton_register_class 	();
 
 /**
 * \brief Widget rbutton
